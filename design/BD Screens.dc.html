@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://2efdac9a-3788-4e11-a987-0644e66f94ac.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@0.469.0/font/lucide.css">
+<script src="./image-slot.js"></script>
+<style>body{margin:0;background:#e9e7e2;font-family:system-ui,sans-serif}a{color:#1a1a1a}a:hover{color:#000}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 24px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:12px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6)}.dv-card{border-radius:28px;box-shadow:0 2px 10px rgba(0,0,0,.18);overflow:hidden}</style>
+</helmet>
+
+<section class="dv-turn" id="data">
+<div class="dv-thd"><a class="dv-tid" href="#data">A</a><span class="dv-tname">QUIET · 5 מסכים עם נתונים</span></div>
+<div class="dv-opts">
+
+<!-- 01 HOME DATA -->
+<div class="dv-opt" id="s01"><div class="dv-olabel"><a class="dv-oid" href="#s01">01</a>בית</div>
+<div class="dv-card" dir="rtl" data-screen-label="01 Home" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:112px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span><span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#A09C94"><span>1,840 קק״ל</span><span>0 ק״ג</span></span></div>
+<div style="padding:24px 16px 0;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:16px;color:#A09C94">שני, 19 באוקטובר</span><span style="font-size:32px;line-height:38px">אימון</span></div>
+<div style="height:56px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><i class="icon-plus" style="font-size:20px"></i>התחל אימון ריק</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:24px 16px 8px"><span style="font-size:13px;font-weight:500;color:#A09C94">תבניות · 4</span><div style="width:44px;height:44px;margin-inline-end:-12px;display:flex;align-items:center;justify-content:center;color:#5AA2F0"><i class="icon-plus" style="font-size:20px"></i></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px">
+<sc-for list="{{ templates }}" as="t" hint-placeholder-count="4">
+<div style="background:#1C1C1A;border-radius:14px;padding:12px 16px 16px;display:flex;flex-direction:column;gap:4px;min-height:120px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:19px;line-height:26px;font-weight:500">{{ t.en }}</span><div style="width:44px;height:44px;margin:-8px 0 -8px -14px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:20px"></i></div></div>
+<span style="font-size:16px;color:#A09C94">{{ t.he }}</span>
+<span style="font-size:13px;color:#A09C94;flex:1">{{ t.muscles }}</span>
+<span style="font-size:13px;color:#A09C94;display:flex;gap:4px;align-items:center"><i class="icon-history" style="font-size:14px"></i>{{ t.last }}</span>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:24px 16px 8px"><span style="font-size:13px;font-weight:500;color:#A09C94">היסטוריה</span><span style="font-size:16px;height:44px;display:flex;align-items:center;color:#5AA2F0">הכל</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:0 16px">
+<sc-for list="{{ history }}" as="h" hint-placeholder-count="2">
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:19px;font-weight:500">{{ h.en }} <span style="color:#A09C94;font-weight:400">· {{ h.he }}</span></span><span style="font-size:13px;color:#A09C94">{{ h.date }}</span></div>
+<div style="display:flex;gap:16px;font-size:16px;color:#A09C94">
+<span style="display:flex;gap:6px;align-items:center"><i class="icon-clock" style="font-size:16px"></i><span style="font-family:'IBM Plex Mono',monospace">{{ h.dur }}</span></span>
+<span style="display:flex;gap:6px;align-items:center"><i class="icon-weight" style="font-size:16px"></i><span style="font-family:'IBM Plex Mono',monospace">{{ h.vol }}</span> ק״ג</span>
+<sc-if value="{{ h.hasPr }}"><span style="display:flex;gap:6px;align-items:center;color:#8DB596"><i class="icon-trophy" style="font-size:16px"></i>{{ h.prs }} שיאים</span></sc-if>
+</div>
+<div style="display:flex;flex-direction:column;border-top:1px solid #2E2D2A;padding-top:8px">
+<div style="display:flex;justify-content:space-between;font-size:13px;color:#A09C94;padding-bottom:4px"><span>תרגיל</span><span>הסט הטוב · ק״ג × חזרות</span></div>
+<sc-for list="{{ h.ex }}" as="e" hint-placeholder-count="3">
+<div style="display:flex;justify-content:space-between;align-items:center;min-height:32px;font-size:16px"><span>{{ e.n }}</span><span style="display:flex;gap:6px;align-items:center"><sc-if value="{{ e.pr }}"><i class="icon-trophy" style="font-size:14px;color:#8DB596"></i></sc-if><span dir="ltr" style="font-family:'IBM Plex Mono',monospace">{{ e.best }}</span></span></div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<dc-import name="BDNav" active="workout" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 02 ACTIVE DATA -->
+<div class="dv-opt" id="s02"><div class="dv-olabel"><a class="dv-oid" href="#s02">02</a>אימון פעיל · סט שבוצע צובע את השורה, שיא = גביע</div>
+<div class="dv-card" dir="rtl" data-screen-label="02 Active workout" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:32px;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:8px;padding:12px 8px 8px 16px">
+<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-chevron-down" style="font-size:24px"></i></div>
+<span style="flex:1;font-size:19px;font-weight:500">Push <span style="color:#A09C94;font-weight:400">· דחיפה</span></span>
+<div style="height:44px;padding:0 20px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;font-size:16px;font-weight:600">סיים</div>
+</div>
+<div style="display:grid;grid-template-columns:1.1fr 1fr 1fr;border-top:1px solid #2E2D2A;border-bottom:1px solid #2E2D2A">
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#A09C94;display:flex;gap:6px;align-items:center"><span style="width:6px;height:6px;border-radius:999px;background:#5AA2F0"></span>זמן</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:24px;line-height:30px;text-align:right">42:17</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #2E2D2A"><span style="font-size:13px;color:#A09C94">נפח · ק״ג</span><span style="font-family:'IBM Plex Mono',monospace;font-size:24px;line-height:30px">4,860</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #2E2D2A"><span style="font-size:13px;color:#A09C94">סטים</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:24px;line-height:30px;text-align:right">7<span style="color:#A09C94">/22</span></span></div>
+</div>
+<div style="padding:16px 16px 8px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;gap:12px;align-items:center">
+<div style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;color:#EDEAE3">B</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:19px;line-height:26px;font-weight:500;color:#5AA2F0">Bench Press (Barbell)</span><span style="font-size:16px;color:#A09C94">לחיצת חזה במוט</span></div>
+<div style="width:44px;height:44px;margin-inline-end:-8px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:22px"></i></div>
+</div>
+<div style="font-size:16px;color:#A09C94;display:flex;gap:8px;align-items:center"><i class="icon-pin" style="font-size:16px"></i>מרפקים ב-45°, ירידה איטית</div>
+</div>
+<div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;padding:0 16px 4px;font-size:13px;color:#A09C94"><span style="text-align:center">סט</span><span>קודם</span><span style="text-align:center">ק״ג</span><span style="text-align:center">חזרות</span><span style="text-align:center"><i class="icon-check" style="font-size:16px"></i></span></div>
+<div style="display:flex;flex-direction:column;gap:4px;padding:0 8px">
+<sc-for list="{{ bench }}" as="s" hint-placeholder-count="4">
+<sc-if value="{{ s.done }}"><div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;align-items:center;height:56px;padding:0 8px;background:#1E2A21;border-radius:8px;font-family:'IBM Plex Mono',monospace"><span style="text-align:center;font-size:16px;color:#A09C94">{{ s.n }}</span><span dir="ltr" style="text-align:right;font-size:16px;color:#A09C94">{{ s.prev }}</span><span style="text-align:center;font-size:24px">{{ s.kg }}</span><span style="text-align:center;font-size:24px">{{ s.reps }}</span><div style="width:44px;height:44px;background:#8DB596;color:#121211;border-radius:8px;display:flex;align-items:center;justify-content:center"><i class="{{ s.icon }}" style="font-size:22px"></i></div></div></sc-if>
+<sc-if value="{{ s.current }}"><div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;align-items:center;height:60px;padding:0 8px;font-family:'IBM Plex Mono',monospace"><span style="text-align:center;font-size:16px">{{ s.n }}</span><span dir="ltr" style="text-align:right;font-size:16px;color:#A09C94;text-decoration:underline dotted #3D3C38;text-underline-offset:4px">{{ s.prev }}</span><div style="height:48px;background:#262624;border:1.5px solid #5AA2F0;border-radius:8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:24px">{{ s.kg }}</div><div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#6E6C66">{{ s.reps }}</div><div style="width:44px;height:44px;border:1.5px solid #3D3C38;border-radius:8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;color:#6E6C66"><i class="icon-check" style="font-size:22px"></i></div></div></sc-if>
+<sc-if value="{{ s.pending }}"><div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;align-items:center;height:60px;padding:0 8px;font-family:'IBM Plex Mono',monospace"><span style="text-align:center;font-size:16px;color:#A09C94">{{ s.n }}</span><span dir="ltr" style="text-align:right;font-size:16px;color:#A09C94">{{ s.prev }}</span><div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#6E6C66">{{ s.kg }}</div><div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#6E6C66">{{ s.reps }}</div><div style="width:44px;height:44px;border:1.5px solid #3D3C38;border-radius:8px;box-sizing:border-box"></div></div></sc-if>
+</sc-for>
+</div>
+<div style="margin:4px 16px 0;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:500;color:#5AA2F0;background:#1C1C1A"><i class="icon-plus" style="font-size:18px"></i>הוסף סט</div>
+<div style="padding:24px 16px 8px;display:flex;gap:12px;align-items:center;border-top:1px solid #2E2D2A;margin-top:24px">
+<div style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;color:#EDEAE3">T</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-size:19px;line-height:26px;font-weight:500;color:#5AA2F0">Triceps Pushdown (Cable)</span><span style="font-size:16px;color:#A09C94">פשיטת מרפקים בכבל</span></div>
+<div style="width:44px;height:44px;margin-inline-end:-8px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:22px"></i></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px;padding:0 8px">
+<sc-for list="{{ pushdown }}" as="s" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;align-items:center;height:60px;padding:0 8px;font-family:'IBM Plex Mono',monospace"><span style="text-align:center;font-size:16px;color:#A09C94">{{ s.n }}</span><span dir="ltr" style="text-align:right;font-size:16px;color:#A09C94">{{ s.prev }}</span><div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#6E6C66">{{ s.kg }}</div><div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#6E6C66">{{ s.reps }}</div><div style="width:44px;height:44px;border:1.5px solid #3D3C38;border-radius:8px;box-sizing:border-box"></div></div>
+</sc-for>
+</div>
+</div></div>
+
+<!-- 03 LIBRARY A–Z -->
+<div class="dv-opt" id="s03"><div class="dv-olabel"><a class="dv-oid" href="#s03">03</a>ספרייה · ברירת מחדל: מיון A–Z</div>
+<div class="dv-card" dir="rtl" data-screen-label="03 Library A-Z" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:168px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span><span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#A09C94"><span>1,840 קק״ל</span><span>4,860 ק״ג</span></span></div>
+<div style="padding:16px 16px 0;display:flex;justify-content:space-between;align-items:center"><span style="font-size:32px;line-height:38px">תרגילים</span><div style="height:44px;display:flex;align-items:center;gap:4px;font-size:16px;color:#5AA2F0"><i class="icon-plus" style="font-size:18px"></i>חדש</div></div>
+<div style="padding:12px 16px 0;display:flex;flex-direction:column;gap:8px">
+<div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 12px;color:#6E6C66;font-size:16px"><i class="icon-search" style="font-size:20px;color:#A09C94"></i>חיפוש ב-85 תרגילים</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 48px;gap:8px">
+<div style="height:44px;background:#1C1C1A;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:500;white-space:nowrap">כל קבוצות השריר<i class="icon-chevron-down" style="font-size:16px;color:#A09C94"></i></div>
+<div style="height:44px;background:#1C1C1A;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:500;white-space:nowrap">כל הציוד<i class="icon-chevron-down" style="font-size:16px;color:#A09C94"></i></div>
+<div style="height:44px;background:#1C1C1A;border-radius:8px;display:flex;align-items:center;justify-content:center"><i class="icon-arrow-down-a-z" style="font-size:20px"></i></div>
+</div></div>
+<div style="padding-inline-end:28px">
+<sc-for list="{{ libAZ }}" as="g" hint-placeholder-count="3">
+<div style="padding:16px 16px 4px;font-size:13px;font-weight:600;color:#A09C94;border-bottom:1px solid #2E2D2A" dir="ltr"><span style="display:block;text-align:right">{{ g.name }}</span></div>
+<sc-for list="{{ g.items }}" as="x" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:12px;padding-inline-start:16px">
+<div style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;color:#EDEAE3">{{ x.letter }}</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid #2E2D2A;min-height:68px;padding:10px 0;box-sizing:border-box"><span dir="ltr" style="font-size:16px;font-weight:500;text-align:right">{{ x.en }}</span><span style="font-size:13px;color:#A09C94">{{ x.sub }}</span></div>
+</div></sc-for>
+</sc-for>
+</div>
+<div dir="ltr" style="position:absolute;left:2px;top:236px;width:24px;display:flex;flex-direction:column;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:15px;color:#A09C94">
+<sc-for list="{{ azIndex }}" as="ch" hint-placeholder-count="26"><span style="width:24px;text-align:center">{{ ch }}</span></sc-for>
+</div>
+<div style="position:absolute;left:8px;right:8px;bottom:88px;height:56px;background:#262624;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.45);display:flex;align-items:center;gap:12px;padding:0 16px;font-size:16px"><span style="width:6px;height:6px;border-radius:999px;background:#5AA2F0"></span><span style="flex:1">Push · אימון פעיל</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace">42:17</span><i class="icon-chevron-up" style="font-size:20px;color:#A09C94"></i></div>
+<dc-import name="BDNav" active="library" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 03b LIBRARY BY MUSCLE -->
+<div class="dv-opt" id="s03b"><div class="dv-olabel"><a class="dv-oid" href="#s03b">03b</a>ספרייה · אפשרות מיון נוספת: לפי שריר (אינדקס בעברית)</div>
+<div class="dv-card" dir="rtl" data-screen-label="03b Library by muscle" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:112px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span><span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#A09C94"><span>1,840 קק״ל</span><span>4,860 ק״ג</span></span></div>
+<div style="padding:16px 16px 0;display:flex;justify-content:space-between;align-items:center"><span style="font-size:32px;line-height:38px">תרגילים</span><div style="height:44px;display:flex;align-items:center;gap:4px;font-size:16px;color:#5AA2F0"><i class="icon-plus" style="font-size:18px"></i>חדש</div></div>
+<div style="padding:12px 16px 0;display:flex;flex-direction:column;gap:8px">
+<div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 12px;color:#6E6C66;font-size:16px"><i class="icon-search" style="font-size:20px;color:#A09C94"></i>חיפוש ב-85 תרגילים</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 48px;gap:8px">
+<div style="height:44px;background:#1C1C1A;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:500;white-space:nowrap">כל קבוצות השריר<i class="icon-chevron-down" style="font-size:16px;color:#A09C94"></i></div>
+<div style="height:44px;background:#1C1C1A;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:16px;font-weight:500;white-space:nowrap">כל הציוד<i class="icon-chevron-down" style="font-size:16px;color:#A09C94"></i></div>
+<div style="height:44px;background:#1C1C1A;border-radius:8px;display:flex;align-items:center;justify-content:center"><i class="icon-layers" style="font-size:20px"></i></div>
+</div></div>
+<div style="padding-inline-end:36px">
+<sc-for list="{{ libMuscle }}" as="g" hint-placeholder-count="3">
+<div style="padding:16px 16px 4px;font-size:13px;font-weight:600;color:#A09C94;border-bottom:1px solid #2E2D2A;display:flex;gap:6px"><span>{{ g.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:400">{{ g.count }}</span></div>
+<sc-for list="{{ g.items }}" as="x" hint-placeholder-count="2"><div style="display:flex;align-items:center;gap:12px;padding-inline-start:16px">
+<div style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;color:#EDEAE3">{{ x.letter }}</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid #2E2D2A;min-height:68px;padding:10px 0;box-sizing:border-box"><span dir="ltr" style="font-size:16px;font-weight:500;text-align:right">{{ x.en }}</span><span style="font-size:13px;color:#A09C94">{{ x.sub }}</span></div>
+</div></sc-for>
+</sc-for>
+</div>
+<div style="position:absolute;left:0;top:236px;width:36px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;color:#A09C94">
+<sc-for list="{{ muscleIndex }}" as="ch" hint-placeholder-count="8"><span style="height:28px;display:flex;align-items:center">{{ ch }}</span></sc-for>
+</div>
+<dc-import name="BDNav" active="library" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 04 NUTRITION DATA -->
+<div class="dv-opt" id="s04"><div class="dv-olabel"><a class="dv-oid" href="#s04">04</a>תזונה · שומן מעל היעד</div>
+<div class="dv-card" dir="rtl" data-screen-label="04 Nutrition" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:112px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span><span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#A09C94"><span>1,840 קק״ל</span><span>0 ק״ג</span></span></div>
+<div style="padding:24px 16px 0;display:flex;justify-content:space-between;align-items:center"><span style="font-size:32px;line-height:38px">תזונה</span><div style="height:36px;padding:0 12px;border:1px solid #3D3C38;border-radius:999px;box-sizing:border-box;display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap;flex:none"><i class="icon-dumbbell" style="font-size:14px"></i>יום אימון<i class="icon-chevron-down" style="font-size:14px;color:#A09C94"></i></div></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:16px 12px 0">
+<sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+<div style="height:64px;border-radius:14px;background:{{ d.bg }};color:{{ d.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:13px">{{ d.l }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:16px">{{ d.d }}</span><span style="width:4px;height:4px;border-radius:999px;background:{{ d.dot }}"></span></div>
+</sc-for>
+</div>
+<div style="margin:16px 16px 0;background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column"><span style="font-size:13px;color:#A09C94">קלוריות</span><span style="font-family:'IBM Plex Mono',monospace;font-size:48px;line-height:52px">1,840</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;font-size:16px;color:#A09C94;white-space:nowrap;flex:none"><span>מתוך <span style="font-family:'IBM Plex Mono',monospace">2,600</span></span><span>נותרו <span style="font-family:'IBM Plex Mono',monospace;color:#EDEAE3">760</span></span></div></div>
+<sc-for list="{{ macros }}" as="m" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:16px"><span style="display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:999px;background:{{ m.c }}"></span>{{ m.l }}</span><span style="display:flex;gap:4px;white-space:nowrap"><bdi dir="ltr" style="font-family:'IBM Plex Mono',monospace;color:#A09C94"><span style="color:{{ m.vc }}">{{ m.v }}</span> / {{ m.t }}</bdi><span style="color:#A09C94">ג׳</span></span></div><div style="height:6px;border-radius:999px;background:#262624;overflow:hidden"><div style="height:6px;border-radius:999px;width:{{ m.w }};background:{{ m.c }}"></div></div></div>
+</sc-for>
+</div>
+<sc-for list="{{ meals }}" as="ml" hint-placeholder-count="4">
+<div style="padding:16px 16px 0">
+<sc-if value="{{ ml.has }}">
+<div style="display:flex;align-items:center;gap:8px;height:44px"><span style="font-size:19px;font-weight:500;flex:1">{{ ml.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:#A09C94">{{ ml.kcal }}</span><div style="width:44px;height:44px;margin-inline-end:-12px;display:flex;align-items:center;justify-content:center;color:#5AA2F0"><i class="icon-plus" style="font-size:20px"></i></div></div>
+<sc-for list="{{ ml.items }}" as="it" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:8px;min-height:52px;border-top:1px solid #2E2D2A"><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px">{{ it.n }}</span><span style="font-size:13px;color:#A09C94">{{ it.q }}</span></div><span style="font-family:'IBM Plex Mono',monospace;font-size:16px">{{ it.k }}</span></div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ ml.empty }}"><div style="height:52px;border:1px dashed #3D3C38;border-radius:14px;display:flex;align-items:center;gap:8px;padding:0 16px;font-size:16px;color:#A09C94"><i class="icon-plus" style="font-size:18px;color:#5AA2F0"></i>הוסף {{ ml.name }}</div></sc-if>
+</div>
+</sc-for>
+<dc-import name="BDNav" active="nutrition" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 05 PROGRESS DATA -->
+<div class="dv-opt" id="s05"><div class="dv-olabel"><a class="dv-oid" href="#s05">05</a>מעקב · גלילה מלאה</div>
+<div class="dv-card" dir="rtl" data-screen-label="05 Progress" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:112px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span><span style="display:flex;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#A09C94"><span>1,840 קק״ל</span><span>0 ק״ג</span></span></div>
+<div style="padding:24px 16px 16px"><span style="font-size:32px;line-height:38px">מעקב</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:0 16px">
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="display:flex;flex-direction:column"><span style="font-size:13px;color:#A09C94">משקל גוף</span><span style="font-size:16px;color:#A09C94"><span style="font-family:'IBM Plex Mono',monospace;font-size:32px;line-height:38px;color:#EDEAE3">82.4</span> ק״ג</span><span style="font-size:13px;color:#A09C94"><span dir="ltr" style="font-family:'IBM Plex Mono',monospace">−1.2</span> ב-30 יום</span></div><div style="width:44px;height:44px;border:1px solid #3D3C38;border-radius:999px;box-sizing:border-box;display:flex;align-items:center;justify-content:center"><i class="icon-plus" style="font-size:20px"></i></div></div>
+<svg width="326" height="96" style="display:block"><line x1="0" y1="24" x2="326" y2="24" style="stroke:#2E2D2A"></line><line x1="0" y1="72" x2="326" y2="72" style="stroke:#2E2D2A"></line><polyline points="{{ weightPts }}" style="fill:none;stroke:#5AA2F0;stroke-width:2;stroke-linejoin:round;stroke-linecap:round"></polyline></svg>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:#A09C94">סטים השבוע לשריר</span><span style="font-size:13px;color:#A09C94">יעד <span dir="ltr" style="font-family:'IBM Plex Mono',monospace">10–20</span></span></div>
+<sc-for list="{{ muscles }}" as="mu" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:72px 1fr 32px;gap:12px;align-items:center;min-height:28px"><span style="font-size:16px">{{ mu.m }}</span><div style="position:relative;height:8px;border-radius:999px;background:#262624"><div style="position:absolute;top:0;bottom:0;inset-inline-start:40%;width:40%;background:#3D3C38"></div><div style="position:absolute;top:0;bottom:0;inset-inline-start:0;border-radius:999px;width:{{ mu.w }};background:{{ mu.c }}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;text-align:left">{{ mu.v }}</span></div>
+</sc-for>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#A09C94">התקדמות לפי תרגיל</span><div style="height:44px;display:flex;align-items:center;gap:6px;font-size:16px;font-weight:500">Bench Press<i class="icon-chevron-down" style="font-size:16px;color:#A09C94"></i></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div style="display:flex;flex-direction:column"><span style="font-size:13px;color:#A09C94">1RM משוער · ק״ג</span><span style="font-family:'IBM Plex Mono',monospace;font-size:32px;line-height:38px">101</span></div><div style="display:flex;flex-direction:column"><span style="font-size:13px;color:#8DB596;display:flex;gap:4px;align-items:center"><i class="icon-trophy" style="font-size:14px"></i>שיא · ק״ג × חזרות</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:32px;line-height:38px;text-align:right">80 × 8</span></div></div>
+<svg width="326" height="56" style="display:block"><polyline points="{{ benchPts }}" style="fill:none;stroke:#5AA2F0;stroke-width:2;stroke-linejoin:round;stroke-linecap:round"></polyline></svg>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:#A09C94">נפח · 12 אימונים אחרונים</span><span style="font-size:13px;color:#A09C94">ממוצע <span style="font-family:'IBM Plex Mono',monospace;color:#EDEAE3">9.6t</span></span></div>
+<div style="display:flex;align-items:flex-end;gap:6px;height:80px">
+<sc-for list="{{ vol }}" as="b" hint-placeholder-count="12"><div style="flex:1;height:{{ b.h }};background:{{ b.c }};border-radius:4px 4px 0 0"></div></sc-for>
+</div>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:#A09C94">קלוריות השבוע</span><span style="font-size:13px;color:#A09C94">קו = יעד</span></div>
+<div style="position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:80px">
+<div style="position:absolute;left:0;right:0;bottom:64px;border-top:1px dashed #A09C94"></div>
+<sc-for list="{{ kcalWeek }}" as="k" hint-placeholder-count="7"><div style="height:{{ k.h }};background:{{ k.c }};border-radius:4px 4px 0 0"></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;font-size:13px;color:#A09C94;text-align:center"><span>א</span><span>ב</span><span>ג</span><span>ד</span><span>ה</span><span>ו</span><span>ש</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 4px;border-top:1px solid #2E2D2A;margin-top:8px"><i class="icon-archive" style="font-size:20px;color:#A09C94"></i><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px">גיבוי ושחזור</span><span style="font-size:13px;color:#A09C94">גיבוי אחרון: אתמול 22:10</span></div><i class="icon-chevron-left" style="font-size:20px;color:#A09C94"></i></div>
+</div>
+<dc-import name="BDNav" active="progress" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+</div>
+</section>
+
+<section class="dv-turn" id="empty">
+<div class="dv-thd"><a class="dv-tid" href="#empty">B</a><span class="dv-tname">מצבי ריק · משתמש חדש</span></div>
+<div class="dv-opts">
+
+<!-- 06 HOME EMPTY -->
+<div class="dv-opt" id="s06"><div class="dv-olabel"><a class="dv-oid" href="#s06">06</a>בית · ריק</div>
+<div class="dv-card" dir="rtl" data-screen-label="06 Home empty" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span></div>
+<div style="padding:24px 16px 0;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:16px;color:#A09C94">שני, 19 באוקטובר</span><span style="font-size:32px;line-height:38px">אימון</span></div>
+<div style="height:56px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><i class="icon-plus" style="font-size:20px"></i>התחל אימון ריק</div>
+</div>
+<div style="padding:24px 16px 8px"><span style="font-size:13px;font-weight:500;color:#A09C94">תבניות</span></div>
+<div style="margin:0 16px;border:1px dashed #3D3C38;border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+<i class="icon-layout-list" style="font-size:24px;color:#A09C94"></i>
+<span style="font-size:19px;font-weight:500">עוד אין תבניות</span>
+<span style="font-size:16px;color:#A09C94;text-wrap:pretty">תבנית שומרת את התרגילים והסטים שלך. בפעם הבאה מתחילים בלחיצה אחת.</span>
+<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><div style="height:48px;padding:0 16px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500;white-space:nowrap;flex:none">צור תבנית</div><div style="min-height:48px;padding:0 4px;display:flex;align-items:center;font-size:16px;color:#A09C94">או טען <span dir="ltr" style="margin:0 4px">Push · Pull · Legs</span></div></div>
+</div>
+<div style="padding:32px 16px 8px"><span style="font-size:13px;font-weight:500;color:#A09C94">היסטוריה</span></div>
+<div style="padding:0 16px;font-size:16px;color:#A09C94">האימון הראשון שתשמור יופיע כאן.</div>
+<dc-import name="BDNav" active="workout" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 07 ACTIVE EMPTY -->
+<div class="dv-opt" id="s07"><div class="dv-olabel"><a class="dv-oid" href="#s07">07</a>אימון ריק · "סיים" מושבת</div>
+<div class="dv-card" dir="rtl" data-screen-label="07 Active empty" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:8px;padding:12px 8px 8px 16px">
+<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-chevron-down" style="font-size:24px"></i></div>
+<span style="flex:1;font-size:19px;font-weight:500">אימון ריק</span>
+<div style="height:44px;padding:0 20px;background:#262624;color:#6E6C66;border-radius:14px;display:flex;align-items:center;font-size:16px;font-weight:600">סיים</div>
+</div>
+<div style="display:grid;grid-template-columns:1.1fr 1fr 1fr;border-top:1px solid #2E2D2A;border-bottom:1px solid #2E2D2A">
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#A09C94;display:flex;gap:6px;align-items:center"><span style="width:6px;height:6px;border-radius:999px;background:#5AA2F0"></span>זמן</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:24px;line-height:30px;text-align:right">00:12</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #2E2D2A"><span style="font-size:13px;color:#A09C94">נפח · ק״ג</span><span style="font-family:'IBM Plex Mono',monospace;font-size:24px;line-height:30px;color:#6E6C66">0</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #2E2D2A"><span style="font-size:13px;color:#A09C94">סטים</span><span style="font-family:'IBM Plex Mono',monospace;font-size:24px;line-height:30px;color:#6E6C66">0</span></div>
+</div>
+<div style="padding:64px 24px 0;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center">
+<span style="font-size:24px;line-height:30px">התרגיל הראשון</span>
+<span style="font-size:16px;color:#A09C94;text-wrap:pretty;max-width:280px">בחר מתוך 85 תרגילים. אפשר להוסיף, להחליף ולסדר תוך כדי האימון.</span>
+</div>
+<div style="padding:24px 16px 0"><div style="height:56px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><i class="icon-plus" style="font-size:20px"></i>הוסף תרגיל</div></div>
+<div style="position:absolute;bottom:32px;left:0;right:0;display:flex;justify-content:center"><div style="height:48px;padding:0 16px;display:flex;align-items:center;gap:8px;font-size:16px;color:#E0846F"><i class="icon-x" style="font-size:18px"></i>בטל אימון</div></div>
+</div></div>
+
+<!-- 08 LIBRARY EMPTY -->
+<div class="dv-opt" id="s08"><div class="dv-olabel"><a class="dv-oid" href="#s08">08</a>ספרייה · אין תוצאות</div>
+<div class="dv-card" dir="rtl" data-screen-label="08 Library empty" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span></div>
+<div style="padding:24px 16px 0;display:flex;justify-content:space-between;align-items:center"><span style="font-size:32px;line-height:38px">ספרייה</span><div style="width:44px;height:44px;border:1px solid #3D3C38;border-radius:999px;box-sizing:border-box;display:flex;align-items:center;justify-content:center"><i class="icon-plus" style="font-size:20px"></i></div></div>
+<div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:12px">
+<div style="height:48px;background:#262624;border:1.5px solid #5AA2F0;border-radius:8px;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:16px"><i class="icon-search" style="font-size:20px;color:#A09C94"></i><span dir="ltr" style="flex:1;text-align:right">Zercher Squat</span><i class="icon-circle-x" style="font-size:20px;color:#A09C94"></i></div>
+<div style="display:flex;gap:8px;align-items:center"><div style="height:36px;padding:0 12px;border-radius:8px;background:#262624;display:flex;align-items:center;gap:6px;font-size:16px">רגליים<i class="icon-x" style="font-size:14px;color:#A09C94"></i></div></div>
+</div>
+<div style="padding:48px 24px 0;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+<span style="font-size:19px;font-weight:500">לא מצאנו את <span dir="ltr">"Zercher Squat"</span></span>
+<span style="font-size:16px;color:#A09C94;text-wrap:pretty">בדוק את האיות או נקה את הסינון "רגליים". אם התרגיל חסר, אפשר להוסיף אותו.</span>
+<div style="margin-top:8px;height:48px;padding:0 16px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500;white-space:nowrap;flex:none"><i class="icon-plus" style="font-size:18px"></i>צור תרגיל</div>
+</div>
+<dc-import name="BDNav" active="library" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 09 NUTRITION EMPTY -->
+<div class="dv-opt" id="s09"><div class="dv-olabel"><a class="dv-oid" href="#s09">09</a>תזונה · יום ריק</div>
+<div class="dv-card" dir="rtl" data-screen-label="09 Nutrition empty" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span></div>
+<div style="padding:24px 16px 0;display:flex;justify-content:space-between;align-items:center"><span style="font-size:32px;line-height:38px">תזונה</span><div style="height:36px;padding:0 12px;border:1px solid #3D3C38;border-radius:999px;box-sizing:border-box;display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap;flex:none"><i class="icon-moon" style="font-size:14px"></i>יום מנוחה<i class="icon-chevron-down" style="font-size:14px;color:#A09C94"></i></div></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:16px 12px 0">
+<sc-for list="{{ weekEmpty }}" as="d" hint-placeholder-count="7">
+<div style="height:64px;border-radius:14px;background:{{ d.bg }};color:{{ d.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span style="font-size:13px">{{ d.l }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:16px">{{ d.d }}</span><span style="width:4px;height:4px"></span></div>
+</sc-for>
+</div>
+<div style="margin:16px 16px 0;background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column"><span style="font-size:13px;color:#A09C94">יעד להיום</span><span style="font-family:'IBM Plex Mono',monospace;font-size:48px;line-height:52px">2,100</span></div><span style="font-size:16px;color:#5AA2F0;height:44px;display:flex;align-items:center;white-space:nowrap">ערוך יעדים</span></div>
+<sc-for list="{{ macrosEmpty }}" as="m" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:16px"><span style="display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:999px;background:{{ m.c }}"></span>{{ m.l }}</span><span style="color:#A09C94">יעד <span style="font-family:'IBM Plex Mono',monospace">{{ m.t }}</span> ג׳</span></div><div style="height:6px;border-radius:999px;background:#262624"></div></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:24px 16px 0">
+<sc-for list="{{ mealNames }}" as="n" hint-placeholder-count="4">
+<div style="height:52px;border:1px dashed #3D3C38;border-radius:14px;display:flex;align-items:center;gap:8px;padding:0 16px;font-size:16px;color:#A09C94"><i class="icon-plus" style="font-size:18px;color:#5AA2F0"></i>הוסף {{ n }}</div>
+</sc-for>
+</div>
+<dc-import name="BDNav" active="nutrition" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+<!-- 10 PROGRESS EMPTY -->
+<div class="dv-opt" id="s10"><div class="dv-olabel"><a class="dv-oid" href="#s10">10</a>מעקב · ריק</div>
+<div class="dv-card" dir="rtl" data-screen-label="10 Progress empty" style="width:390px;min-height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;padding-bottom:112px;box-sizing:border-box">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;height:44px"><span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em">BUILT DIFFERENT</span></div>
+<div style="padding:24px 16px 16px"><span style="font-size:32px;line-height:38px">מעקב</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;padding:0 16px">
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+<span style="font-size:13px;color:#A09C94">משקל גוף</span>
+<span style="font-size:19px;font-weight:500">רשום משקל, תראה מגמה</span>
+<span style="font-size:16px;color:#A09C94;text-wrap:pretty">שקילה אחת בשבוע, באותה שעה, מספיקה כדי לראות לאן זה הולך.</span>
+<div style="margin-top:8px;height:48px;padding:0 16px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500;white-space:nowrap;flex:none"><i class="icon-plus" style="font-size:18px"></i>רשום משקל</div>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:#A09C94">סטים השבוע לשריר</span><span style="font-size:13px;color:#A09C94">יעד <span dir="ltr" style="font-family:'IBM Plex Mono',monospace">10–20</span></span></div>
+<span style="font-size:16px;color:#A09C94;text-wrap:pretty">אחרי האימון הראשון תראה כאן כמה סטים עשית לכל שריר. האזור המסומן הוא היעד.</span>
+<sc-for list="{{ muscleNames }}" as="mn" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;min-height:28px"><span style="font-size:16px;color:#A09C94">{{ mn }}</span><div style="position:relative;height:8px;border-radius:999px;background:#262624"><div style="position:absolute;top:0;bottom:0;inset-inline-start:40%;width:40%;background:#3D3C38"></div></div></div>
+</sc-for>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:13px;color:#A09C94">התקדמות לפי תרגיל</span>
+<span style="font-size:16px;color:#A09C94;text-wrap:pretty">שיאים ו-1RM משוער יופיעו לכל תרגיל אחרי הסט הראשון שתסמן.</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;min-height:64px;padding:0 4px;border-top:1px solid #2E2D2A;margin-top:8px"><i class="icon-archive-restore" style="font-size:20px;color:#A09C94"></i><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px">שחזור מגיבוי</span><span style="font-size:13px;color:#A09C94">עברת מכשיר? טען קובץ גיבוי.</span></div><i class="icon-chevron-left" style="font-size:20px;color:#A09C94"></i></div>
+</div>
+<dc-import name="BDNav" active="progress" style="position:absolute;left:0;right:0;bottom:0" hint-size="390px,80px"></dc-import>
+</div></div>
+
+</div>
+</section>
+
+<section class="dv-turn" id="overlays">
+<div class="dv-thd"><a class="dv-tid" href="#overlays">C</a><span class="dv-tname">חלונות קופצים</span></div>
+<div class="dv-opts">
+
+<!-- 11 ADD FOOD -->
+<div class="dv-opt" id="s11"><div class="dv-olabel"><a class="dv-oid" href="#s11">11</a>הוספת מאכל · sheet</div>
+<div class="dv-card" dir="rtl" data-screen-label="11 Add food" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="padding:68px 16px 0"><span style="font-size:32px;line-height:38px">תזונה</span></div>
+<div style="position:absolute;inset:0;background:rgba(8,8,7,.72)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:96px;background:#1C1C1A;border-radius:14px 14px 0 0;box-shadow:0 8px 24px rgba(0,0,0,.45);display:flex;flex-direction:column">
+<div style="display:flex;justify-content:center;padding-top:8px"><span style="width:36px;height:4px;border-radius:999px;background:#3D3C38"></span></div>
+<div style="display:flex;align-items:center;padding:8px 16px 0 8px"><span style="flex:1;font-size:24px;line-height:30px">הוסף לבוקר</span><div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-x" style="font-size:22px"></i></div></div>
+<div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:12px">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:#121211;border-radius:14px;padding:4px;height:48px;box-sizing:border-box"><div style="background:#262624;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">חיפוש</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">שמורות</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">מאתמול</div></div>
+<div style="height:48px;background:#262624;border:1.5px solid #5AA2F0;border-radius:8px;box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:16px"><i class="icon-search" style="font-size:20px;color:#A09C94"></i>יוגורט</div>
+</div>
+<div style="padding:8px 8px 0;display:flex;flex-direction:column;flex:1">
+<div style="background:#262624;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><div style="display:flex;flex-direction:column"><span style="font-size:16px;font-weight:500">יוגורט חלבון 0%</span><span style="font-size:13px;color:#A09C94">ל-100 ג׳: 60 קק״ל · 10 ג׳ חלבון</span></div><i class="icon-check" style="font-size:20px"></i></div>
+<div style="display:flex;align-items:center;gap:8px"><div style="width:48px;height:48px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center"><i class="icon-minus" style="font-size:20px"></i></div><div style="flex:1;height:48px;background:#121211;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:16px;color:#A09C94"><span style="font-family:'IBM Plex Mono',monospace;font-size:24px;color:#EDEAE3">200</span>ג׳</div><div style="width:48px;height:48px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center"><i class="icon-plus" style="font-size:20px"></i></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);font-size:13px;color:#A09C94;text-align:center"><span><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#EDEAE3">120</span>קק״ל</span><span><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#EDEAE3">20</span>חלבון</span><span><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#EDEAE3">8</span>פחמימות</span><span><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#EDEAE3">0</span>שומן</span></div>
+</div>
+<sc-for list="{{ foods }}" as="fd" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:8px;min-height:60px;padding:0 12px;border-bottom:1px solid #2E2D2A"><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px">{{ fd.n }}</span><span style="font-size:13px;color:#A09C94">{{ fd.q }}</span></div><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:#A09C94">{{ fd.k }}</span></div>
+</sc-for>
+</div>
+<div style="padding:12px 16px 32px;border-top:1px solid #2E2D2A"><div style="height:56px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600">הוסף · <span style="font-family:'IBM Plex Mono',monospace">120</span> קק״ל</div></div>
+</div>
+</div></div>
+
+<!-- 12 EDIT TEMPLATE -->
+<div class="dv-opt" id="s12"><div class="dv-olabel"><a class="dv-oid" href="#s12">12</a>עריכת תבנית · sheet מלא</div>
+<div class="dv-card" dir="rtl" data-screen-label="12 Edit template" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="position:absolute;inset:0;background:rgba(8,8,7,.72)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:48px;background:#1C1C1A;border-radius:14px 14px 0 0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:8px;padding:12px 16px 12px 16px;border-bottom:1px solid #2E2D2A"><span style="height:44px;display:flex;align-items:center;font-size:16px;color:#A09C94">ביטול</span><span style="flex:1;text-align:center;font-size:19px;font-weight:500">עריכת תבנית</span><div style="height:44px;padding:0 20px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;font-size:16px;font-weight:600">שמור</div></div>
+<div style="padding:16px;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#A09C94">שם התבנית</span><div style="height:48px;background:#262624;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-size:16px">Push · דחיפה</div></div>
+<div style="padding:8px 16px 4px;font-size:13px;color:#A09C94">תרגילים · 4 · גרור לסידור</div>
+<sc-for list="{{ tplEx }}" as="te" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:8px;min-height:68px;padding:0 4px 0 8px;border-bottom:1px solid #2E2D2A">
+<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#6E6C66"><i class="icon-grip-vertical" style="font-size:20px"></i></div>
+<div style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;color:#EDEAE3">{{ te.letter }}</div>
+<div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px;font-weight:500">{{ te.en }}</span><span style="font-size:13px;color:#A09C94">{{ te.meta }}</span></div>
+<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:20px"></i></div>
+</div>
+</sc-for>
+<div style="margin:12px 16px 0;height:48px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:500"><i class="icon-plus" style="font-size:18px"></i>הוסף תרגיל</div>
+<div style="margin-top:auto;padding:16px 16px 32px;display:flex;justify-content:center"><div style="height:48px;padding:0 16px;display:flex;align-items:center;gap:8px;font-size:16px;color:#E0846F"><i class="icon-trash-2" style="font-size:18px"></i>מחק תבנית</div></div>
+</div>
+</div></div>
+
+
+<!-- 13 TEMPLATE PREVIEW -->
+<div class="dv-opt" id="s13"><div class="dv-olabel"><a class="dv-oid" href="#s13">13</a>תצוגת תבנית · לחיצה על כרטיס בבית</div>
+<div class="dv-card" dir="rtl" data-screen-label="13 Template preview" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="padding:68px 16px 0"><span style="font-size:32px;line-height:38px">אימון</span></div>
+<div style="position:absolute;inset:0;background:rgba(8,8,7,.72)"></div>
+<div style="position:absolute;left:8px;right:8px;top:120px;bottom:96px;background:#1C1C1A;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.45);display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:8px;padding:8px 8px 8px 8px"><div style="width:44px;height:44px;border-radius:999px;background:#262624;display:flex;align-items:center;justify-content:center"><i class="icon-x" style="font-size:20px"></i></div><span dir="ltr" style="flex:1;text-align:center;font-size:19px;font-weight:500">Full Body</span><div style="height:44px;padding:0 12px;display:flex;align-items:center;font-size:16px;color:#5AA2F0">ערוך</div></div>
+<div style="padding:0 16px 8px;font-size:16px;color:#A09C94">בוצע לאחרונה: 13 באוגוסט 2026</div>
+<div style="display:flex;flex-direction:column;flex:1;padding:0 8px 0 16px">
+<sc-for list="{{ preview }}" as="x" hint-placeholder-count="6">
+<div style="display:flex;align-items:center;gap:12px;min-height:72px">
+<div style="width:56px;height:56px;flex:none;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:500;color:#EDEAE3">{{ x.letter }}</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column"><span dir="ltr" style="font-size:16px;font-weight:500;text-align:right"><span style="font-family:'IBM Plex Mono',monospace;color:#A09C94;font-weight:400">{{ x.sets }} × </span>{{ x.en }}</span><span style="font-size:13px;color:#A09C94">{{ x.muscle }}</span></div>
+<div style="width:44px;height:44px;flex:none;border-radius:999px;border:1px solid #3D3C38;box-sizing:border-box;display:flex;align-items:center;justify-content:center;color:#5AA2F0"><i class="icon-circle-help" style="font-size:20px"></i></div>
+</div>
+</sc-for>
+</div>
+<div style="padding:16px"><div style="height:56px;background:#5AA2F0;color:#121211;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><i class="icon-play" style="font-size:18px"></i>התחל אימון</div></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:80px;background:#121211;border-top:1px solid #2E2D2A"></div>
+</div></div>
+
+<!-- 14 EXERCISE ABOUT -->
+<div class="dv-opt" id="s14"><div class="dv-olabel"><a class="dv-oid" href="#s14">14</a>דף תרגיל · אודות (התחלה וסיום)</div>
+<div class="dv-card" dir="rtl" data-screen-label="14 Exercise about" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="position:absolute;inset:0;background:rgba(8,8,7,.72)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:48px;background:#1C1C1A;border-radius:14px 14px 0 0;display:flex;flex-direction:column;overflow:hidden">
+<div style="display:flex;align-items:center;gap:8px;padding:8px 8px 8px 8px"><div style="width:44px;height:44px;border-radius:999px;background:#262624;display:flex;align-items:center;justify-content:center"><i class="icon-x" style="font-size:20px"></i></div><span dir="ltr" style="flex:1;text-align:center;font-size:19px;font-weight:500">Bench Press (Barbell)</span><div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:22px"></i></div></div>
+<div style="margin:0 16px;display:grid;grid-template-columns:repeat(4,1fr);background:#121211;border-radius:14px;padding:4px;height:48px;box-sizing:border-box"><div style="background:#262624;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">אודות</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">היסטוריה</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">גרפים</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">שיאים</div></div>
+<div style="margin:16px 16px 0;background:#F7F6F2;border-radius:14px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;overflow:hidden">
+<div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;min-width:0;text-align:center"><image-slot id="ex-bench-start" shape="rect" fit="contain" placeholder="תנוחת התחלה" style="width:100%;height:132px"></image-slot><span style="font-size:13px;color:#5E5B55">התחלה</span></div>
+<div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;min-width:0;text-align:center"><image-slot id="ex-bench-end" shape="rect" fit="contain" placeholder="תנוחת סיום" style="width:100%;height:132px"></image-slot><span style="font-size:13px;color:#5E5B55">סיום</span></div>
+</div>
+<div style="padding:16px 16px 0;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:19px;font-weight:500">לחיצת חזה במוט</span>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span style="height:28px;padding:0 10px;border-radius:999px;white-space:nowrap;background:#262624;display:flex;align-items:center;font-size:13px">ראשי: חזה</span><span style="height:28px;padding:0 10px;border-radius:999px;white-space:nowrap;border:1px solid #3D3C38;box-sizing:border-box;display:flex;align-items:center;font-size:13px;color:#A09C94">משני: כתפיים · יד אחורית</span><span style="height:28px;padding:0 10px;border-radius:999px;white-space:nowrap;border:1px solid #3D3C38;box-sizing:border-box;display:flex;align-items:center;font-size:13px;color:#A09C94">מוט + ספסל</span></div>
+</div>
+<div style="padding:24px 16px 0;font-size:13px;font-weight:500;color:#A09C94">הוראות ביצוע</div>
+<div style="padding:8px 16px 0;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ steps }}" as="st" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:16px;line-height:24px"><span style="font-family:'IBM Plex Mono',monospace;color:#A09C94">{{ st.i }}</span><span style="text-wrap:pretty">{{ st.t }}</span></div></sc-for>
+</div>
+</div>
+</div></div>
+
+<!-- 15 EXERCISE RECORDS -->
+<div class="dv-opt" id="s15"><div class="dv-olabel"><a class="dv-oid" href="#s15">15</a>דף תרגיל · שיאים (איור מונפש)</div>
+<div class="dv-card" dir="rtl" data-screen-label="15 Exercise records" style="width:390px;height:844px;position:relative;background:#121211;color:#EDEAE3;font-family:'IBM Plex Sans Hebrew',sans-serif;box-sizing:border-box">
+<div style="position:absolute;inset:0;background:rgba(8,8,7,.72)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:48px;background:#1C1C1A;border-radius:14px 14px 0 0;display:flex;flex-direction:column;overflow:hidden">
+<div style="display:flex;align-items:center;gap:8px;padding:8px 8px 8px 8px"><div style="width:44px;height:44px;border-radius:999px;background:#262624;display:flex;align-items:center;justify-content:center"><i class="icon-x" style="font-size:20px"></i></div><span dir="ltr" style="flex:1;text-align:center;font-size:19px;font-weight:500">Bench Press (Barbell)</span><div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:22px"></i></div></div>
+<div style="margin:0 16px;display:grid;grid-template-columns:repeat(4,1fr);background:#121211;border-radius:14px;padding:4px;height:48px;box-sizing:border-box"><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">אודות</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">היסטוריה</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">גרפים</div><div style="background:#262624;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">שיאים</div></div>
+<div style="margin:16px 16px 0;background:#F7F6F2;border-radius:14px;padding:12px;position:relative;overflow:hidden">
+<image-slot id="ex-bench-anim" shape="rect" fit="contain" placeholder="GIF / וידאו בלולאה" style="width:100%;height:156px"></image-slot>
+<div style="position:absolute;left:12px;bottom:12px;width:44px;height:44px;border-radius:999px;background:#1A1A18;color:#F4F2ED;display:flex;align-items:center;justify-content:center"><i class="icon-pause" style="font-size:18px"></i></div>
+</div>
+<div style="padding:16px 16px 0;display:flex;flex-direction:column">
+<sc-for list="{{ records }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:12px;min-height:64px;border-bottom:1px solid #2E2D2A">
+<div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px">{{ r.l }}</span><span style="font-size:13px;color:#A09C94;display:flex;gap:6px"><bdi dir="ltr" style="font-family:'IBM Plex Mono',monospace">{{ r.date }}</bdi><sc-if value="{{ r.set }}"><span>·</span><bdi dir="ltr" style="font-family:'IBM Plex Mono',monospace">{{ r.set }}</bdi></sc-if></span></div>
+<span style="display:flex;gap:4px;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:24px">{{ r.v }}</span><span style="font-size:13px;color:#A09C94">{{ r.unit }}</span></span>
+</div>
+</sc-for>
+</div>
+<div style="padding:24px 16px 8px;font-size:13px;font-weight:500;color:#A09C94">שיאים אחרונים</div>
+<div style="padding:0 16px;display:flex;flex-direction:column">
+<sc-for list="{{ prHist }}" as="p" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:8px;min-height:44px;font-size:16px"><i class="icon-trophy" style="font-size:16px;color:#8DB596"></i><span style="flex:1">{{ p.d }}</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace">{{ p.v }}</span></div></sc-for>
+</div>
+</div>
+</div></div>
+
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const templates = [
+      { en: 'Push', he: 'דחיפה', muscles: 'חזה · כתפיים · יד אחורית', last: 'אתמול' },
+      { en: 'Pull', he: 'משיכה', muscles: 'גב · יד קדמית', last: 'לפני 3 ימים' },
+      { en: 'Legs', he: 'רגליים', muscles: 'ארבע ראשי · ירך אחורית', last: 'לפני 5 ימים' },
+      { en: 'Full Body', he: 'כל הגוף', muscles: 'כל הגוף', last: 'טרם בוצעה' }
+    ];
+    const history = [
+      { en: 'Push', he: 'דחיפה', date: 'שבת, 18.10', dur: '58:12', vol: '9,420', prs: 2, hasPr: true, ex: [
+        { n: 'Bench Press', best: '80 × 8', pr: true }, { n: 'Incline Dumbbell Press', best: '28 × 10' },
+        { n: 'Overhead Press', best: '50 × 6', pr: true }, { n: 'Triceps Pushdown', best: '27.5 × 12' }] },
+      { en: 'Pull', he: 'משיכה', date: 'חמישי, 16.10', dur: '52:40', vol: '8,150', prs: 0, hasPr: false, ex: [
+        { n: 'Pull Up', best: '0 × 10' }, { n: 'Barbell Row', best: '70 × 8' }, { n: 'Dumbbell Curl', best: '16 × 10' }] }
+    ];
+    const bench = [
+      { n: 1, prev: '77.5 × 8', kg: '80', reps: '8', done: true, icon: 'icon-check' },
+      { n: 2, prev: '77.5 × 8', kg: '80', reps: '8', done: true, icon: 'icon-trophy' },
+      { n: 3, prev: '77.5 × 7', kg: '80', reps: '7', current: true },
+      { n: 4, prev: '—', kg: '', reps: '', pending: true }
+    ];
+    const pushdown = [1, 2, 3].map(n => ({ n, prev: '25 × 12', kg: '25', reps: '12' }));
+    const X = (en, sub, slot) => ({ en, sub, letter: en[0], slot: slot || '', hasImg: !!slot, noImg: !slot });
+    const libAZ = [
+      { name: 'A', items: [X('Ab Wheel', 'בטן', 'lib-ab-wheel'), X('Arnold Press (Dumbbell)', 'כתפיים', 'lib-arnold')] },
+      { name: 'B', items: [X('Back Extension', 'גב תחתון'), X('Back Squat (Barbell)', 'רגליים', 'lib-squat'), X('Bench Press (Barbell)', 'חזה', 'lib-bench'), X('Bicep Curl (Dumbbell)', 'יד קדמית')] },
+      { name: 'C', items: [X('Cable Fly', 'חזה'), X('Calf Raise (Machine)', 'תאומים')] }
+    ];
+    const azIndex = 'ABCDEFGHILMOPRSTUVW'.split('');
+    const libMuscle = [
+      { name: 'חזה', count: 12, items: [X('Bench Press (Barbell)', 'מוט', 'lib-bench-m'), X('Cable Fly', 'כבל'), X('Incline Dumbbell Press', 'משקולות')] },
+      { name: 'גב', count: 14, items: [X('Barbell Row', 'מוט'), X('Lat Pulldown (Cable)', 'כבל'), X('Pull Up', 'משקל גוף')] },
+      { name: 'כתפיים', count: 9, items: [X('Arnold Press (Dumbbell)', 'משקולות'), X('Lateral Raise (Dumbbell)', 'משקולות')] }
+    ];
+    const muscleIndex = ['חזה', 'גב', 'כתפ׳', 'ידיים', 'רגל׳', 'ישבן', 'בטן', 'קרדיו'];
+    const preview = [['Lat Pulldown (Cable)', 'גב'], ['Seated Row (Machine)', 'גב'], ['Incline Bench Press (Smith Machine)', 'חזה'], ['Chest Fly (Machine)', 'חזה'], ['Lateral Raise (Dumbbell)', 'כתפיים'], ['Bicep Curl (Dumbbell)', 'יד קדמית']].map(([en, muscle]) => ({ en, muscle, sets: 3, letter: en[0] }));
+    const steps = ['שכב על הספסל, עיניים מתחת למוט. כפות הרגליים יציבות על הרצפה.', 'אחוז במוט ברוחב מעט יותר מהכתפיים. משוך את השכמות לאחור ולמטה.', 'הורד את המוט בשליטה עד אמצע החזה, מרפקים בזווית של כ-45°.', 'דחוף את המוט בחזרה למעלה בקו ישר, בלי לנעול את המרפקים בחדות.', 'נשוף בזמן הדחיפה. חזור לפי מספר החזרות.'].map((t, i) => ({ i: (i + 1) + '.', t }));
+    const records = [{ l: '1RM משוער', date: '18.10.26', set: '80 × 8', v: '101', unit: 'ק״ג' }, { l: 'משקל מרבי', date: '04.10.26', set: '82.5 × 3', v: '82.5', unit: 'ק״ג' }, { l: 'נפח מרבי בסט', date: '18.10.26', set: '80 × 8', v: '640', unit: 'ק״ג' }, { l: 'הכי הרבה חזרות', date: '21.09.26', set: '60 × 12', v: '12', unit: 'חזרות' }];
+    const prHist = [{ d: '18.10 · 1RM משוער', v: '80 × 8' }, { d: '04.10 · משקל מרבי', v: '82.5 × 3' }, { d: '21.09 · חזרות', v: '60 × 12' }];
+    const L = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
+    const week = L.map((l, i) => ({ l, d: 18 + i, bg: i === 1 ? '#5AA2F0' : 'transparent', fg: i === 1 ? '#121211' : (i > 1 ? '#6E6C66' : '#EDEAE3'), dot: i === 0 ? '#A09C94' : 'transparent' }));
+    const weekEmpty = L.map((l, i) => ({ l, d: 18 + i, bg: i === 1 ? '#5AA2F0' : 'transparent', fg: i === 1 ? '#121211' : (i > 1 ? '#6E6C66' : '#EDEAE3') }));
+    const macros = [['חלבון', 132, 180, '#D7A3B8'], ['פחמימות', 190, 260, '#D6BF8A'], ['שומן', 78, 70, '#8FA9CF']].map(([l, v, t, c]) => {
+      const over = v > t;
+      return { l, v, t, w: Math.min(100, v / t * 100) + '%', c, vc: over ? '#E0846F' : '#EDEAE3' };
+    });
+    const macrosEmpty = [['חלבון', 180, '#D7A3B8'], ['פחמימות', 260, '#D6BF8A'], ['שומן', 70, '#8FA9CF']].map(([l, t, c]) => ({ l, t, c }));
+    const meals = [
+      { name: 'בוקר', kcal: '455', has: true, items: [{ n: 'שיבולת שועל', q: '60 ג׳', k: '230' }, { n: 'יוגורט חלבון 0%', q: '200 ג׳', k: '120' }, { n: 'בננה', q: '1 יח׳', k: '105' }] },
+      { name: 'צהריים', kcal: '780', has: true, items: [{ n: 'חזה עוף', q: '200 ג׳', k: '330' }, { n: 'אורז לבן', q: '250 ג׳', k: '325' }, { n: 'סלט ירקות + טחינה', q: '1 מנה', k: '125' }] },
+      { name: 'ערב', kcal: '605', has: true, items: [{ n: 'חביתה מ-3 ביצים', q: '3 יח׳', k: '280' }, { n: 'לחם מלא', q: '2 פרוסות', k: '200' }, { n: 'גבינה לבנה 5%', q: '125 ג׳', k: '125' }] },
+      { name: 'ביניים / שייק', empty: true }
+    ];
+    const mealNames = ['ארוחת בוקר', 'ארוחת צהריים', 'ארוחת ערב', 'ביניים / שייק'];
+    const muscles = [['חזה', 16], ['גב', 14], ['רגליים', 9], ['כתפיים', 12], ['ידיים', 18], ['בטן', 4]].map(([m, v]) => ({ m, v, w: (v / 25 * 100) + '%', c: v >= 10 && v <= 20 ? '#5AA2F0' : '#A09C94' }));
+    const muscleNames = ['חזה', 'גב', 'רגליים', 'כתפיים', 'ידיים', 'בטן'];
+    const wv = [83.6, 83.5, 83.7, 83.4, 83.3, 83.4, 83.1, 83.2, 83.0, 82.9, 83.1, 82.8, 82.9, 82.7, 82.8, 82.6, 82.7, 82.5, 82.6, 82.4];
+    const mn = 82.2, mx = 83.8;
+    const weightPts = wv.map((v, i) => `${(326 - i * (326 / (wv.length - 1))).toFixed(1)},${(6 + (mx - v) / (mx - mn) * 84).toFixed(1)}`).join(' ');
+    const bv = [92, 94, 94, 96, 97, 97, 99, 101];
+    const benchPts = bv.map((v, i) => `${(326 - i * (326 / (bv.length - 1))).toFixed(1)},${(50 - (v - 90) / 12 * 44).toFixed(1)}`).join(' ');
+    const vol = [8.1, 9.4, 12.3, 8.6, 9.0, 11.8, 8.9, 9.6, 12.6, 8.2, 9.4, 9.4].map((v, i) => ({ h: (v / 13 * 80) + 'px', c: i === 11 ? '#5AA2F0' : '#3D3C38' }));
+    const kcalWeek = [2480, 1840, 0, 0, 0, 0, 0].map((v, i) => ({ h: (v / 2600 * 64) + 'px', c: i === 1 ? '#5AA2F0' : '#3D3C38' }));
+    const foods = [{ n: 'יוגורט יווני 5%', q: '100 ג׳ · 9 ג׳ חלבון', k: '95' }, { n: 'יוגורט + גרנולה (שמורה)', q: '1 מנה', k: '310' }, { n: 'יוגורט שתייה פרו', q: '250 מ״ל · 25 ג׳ חלבון', k: '150' }];
+    const tpl = (en, meta) => ({ en, meta, letter: en[0] });
+    const tplEx = [tpl('Bench Press', '4 סטים'), tpl('Incline Dumbbell Press', '3 סטים'), tpl('Overhead Press', '3 סטים'), tpl('Triceps Pushdown', '3 סטים')];
+    return { templates, history, bench, pushdown, libAZ, azIndex, libMuscle, muscleIndex, preview, steps, records, prHist, week, weekEmpty, macros, macrosEmpty, meals, mealNames, muscles, muscleNames, weightPts, benchPts, vol, kcalWeek, foods, tplEx };
+  }
+}
+</script>
+</body>
+</html>
