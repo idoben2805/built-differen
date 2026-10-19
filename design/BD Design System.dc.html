@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{{const n=new URLSearchParams(location.search).get("theme");if(n==="light"||n==="dark"){document.documentElement.dataset.theme=n}}{if(new URLSearchParams(location.search).get("_omthumb")==="1"){const n=(f)=>{const g=f.focus;if(!g)return;f.focus=function(h){g.call(this,{...h,preventScroll:true})}};n(HTMLElement.prototype);n(SVGElement.prototype);if(typeof MathMLElement!=="undefined"){n(MathMLElement.prototype)}const d=(f)=>{f.removeAttribute("autofocus");f.inert=true;if(!(f instanceof HTMLElement))f.removeAttribute("tabindex")};const p=(f)=>{if(f.hasAttribute("autofocus"))d(f);for(const g of f.querySelectorAll("[autofocus]")){d(g)}};p(document.documentElement);new MutationObserver((f)=>{for(const g of f){for(const h of g.addedNodes){if(h.nodeType===1)p(h)}}}).observe(document,{childList:true,subtree:true})}}{const n=()=>{try{if(document.querySelector('meta[name="color-scheme"]'))return;const d=getComputedStyle(document.documentElement).getPropertyValue("color-scheme").trim();if(d&&d!=="normal")return;const p=(y)=>{if(!y)return null;const m=getComputedStyle(y).backgroundColor.match(/^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s/]+([\d.]+%?))?\s*\)$/);if(!m)return null;const w=m[4]==null?1:parseFloat(m[4])/(m[4].endsWith("%")?100:1);if(w<0.99)return null;return[+m[1],+m[2],+m[3]]};const f=p(document.body)||p(document.documentElement);if(!f)return;const g=(y)=>{const m=y/255;return m<=0.04045?m/12.92:((m+0.055)/1.055)**2.4};const h=0.2126*g(f[0])+0.7152*g(f[1])+0.0722*g(f[2]);document.documentElement.style.setProperty("color-scheme",h<0.4?"dark":"light")}catch{}};if(document.readyState==="complete")n();else window.addEventListener("load",n)}var I=["https://claude.ai","https://preview.claude.ai","https://2efdac9a-3788-4e11-a987-0644e66f94ac.claudeusercontent.com"];var B=true;var K=false;var C=()=>{};if(K===true){try{const n=setTimeout.bind(window);const d=1e4;const p=15;const f=1e4;const g=120000;const h=200;const y=(o)=>{try{let r;if(typeof o==="string")r=o;else if(o instanceof URL)r=o.href;else if(typeof Request!=="undefined"&&o instanceof Request)r=o.url;else return null;if(!r)return null;const l=document.baseURI;const i=new URL(r,l);if(i.protocol!=="http:"&&i.protocol!=="https:")return null;if(i.origin!==new URL(l).origin)return null;return i.origin+i.pathname}catch{return null}};const m=new Map;const w=(o)=>{let r=m.get(o);if(!r){if(m.size>=h){const l=m.keys().next().value;if(l!==undefined)m.delete(l)}r={fails:[],until:0,cooldown:f,hard:false};m.set(o,r)}return r};const R=(o)=>{const r=m.get(o);return r!==undefined&&r.until>Date.now()};const O=(o,r)=>{const l=Date.now();const i=w(o);if(r)i.hard=true;if(i.until>l)return;i.fails.push(l);while(i.fails.length>0&&i.fails[0]<=l-d)i.fails.shift();if(i.fails.length>=p){i.until=l+i.cooldown;if(i.hard)i.cooldown=Math.min(i.cooldown*2,g);i.fails.length=0;try{n(()=>{try{S(true)}catch{}},i.until-l+100)}catch{}console.warn("[omelette] asset circuit breaker: pausing requests to "+o+" for "+Math.round((i.until-l)/1000)+"s after "+p+" failures in "+d/1000+"s")}};const e=(o)=>{m.delete(o)};const t=100;const a=new WeakMap;const u=new Set;let s=null;const S=(o)=>{for(const r of Array.from(u)){try{const l=a.get(r);if(l===undefined){u.delete(r);continue}if(o){const i=y(l);if(i!==null&&R(i))continue}a.delete(r);u.delete(r);if(s!==null)s.call(r,l)}catch{}}};C=()=>{try{m.clear();S(false)}catch{}};document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")C()});const _=window.fetch;if(typeof _==="function"){const o=function(...r){let l=null;try{l=y(r[0])}catch{}if(l!==null&&R(l)){let c;try{if(r[1]&&r[1].signal!==undefined){c=r[1].signal||undefined}else if(typeof Request!=="undefined"&&r[0]instanceof Request){c=r[0].signal||undefined}}catch{c=undefined}return new Promise((k,b)=>{const E=()=>{try{return c.reason!==undefined?c.reason:new DOMException("The operation was aborted.","AbortError")}catch{return new DOMException("The operation was aborted.","AbortError")}};try{if(c&&c.aborted){b(E());return}}catch{}let T=false;const j=()=>{if(T)return;T=true;b(E())};try{if(c)c.addEventListener("abort",j,{once:true})}catch{}n(()=>{if(T)return;T=true;try{if(c)c.removeEventListener("abort",j)}catch{}let L;try{L=new Response(null,{status:429,statusText:"Too Many Requests",headers:{"Retry-After":"10"}})}catch{L={ok:false,status:429}}k(L)},250)})}const i=_.apply(window,r);if(l!==null){const c=l;i.then((k)=>{try{if(k.ok)e(c);else if(k.status===401||k.status===403||k.status===404||k.status===429){O(c,k.status!==404)}}catch{}},()=>{})}return i};window.fetch=o}const v=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,"src");if(v!==undefined&&v.set!==undefined&&v.get!==undefined){const o=v.set;s=o;Object.defineProperty(HTMLImageElement.prototype,"src",{configurable:true,enumerable:v.enumerable,get:v.get,set(r){const l=`${r}`;try{const i=y(l);if(i!==null&&R(i)){a.set(this,l);if(u.size<t)u.add(this);return}}catch{}try{a.delete(this);u.delete(this)}catch{}o.call(this,l)}})}try{const o=HTMLImageElement.prototype.setAttribute;HTMLImageElement.prototype.setAttribute=function(r,l){if(arguments.length<2){o.apply(this,arguments);return}if(typeof r==="string"&&r.toLowerCase()==="src"){const i=`${l}`;try{const c=y(i);if(c!==null&&R(c)){a.set(this,i);if(u.size<t)u.add(this);return}a.delete(this);u.delete(this)}catch{}o.call(this,r,i);return}o.call(this,r,l)}}catch{}window.addEventListener("error",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)O(l,true)}}catch{}},true);window.addEventListener("load",(o)=>{try{const r=o.target;if(r instanceof HTMLImageElement){const l=y(r.currentSrc||r.src||"");if(l!==null)e(l);const i=a.get(r);if(i!==undefined){let c=false;try{c=new URL(i,document.baseURI).href===new URL(r.currentSrc||r.src||"",document.baseURI).href}catch{c=false}if(c){a.delete(r);u.delete(r)}}}}catch{}},true)}catch{}}var J=30000;var G=3000;document.addEventListener("DOMContentLoaded",()=>{const n=window.Babel;const d="om-src-id";if(n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[d])){n.registerPlugin(d,({types:h})=>({visitor:{JSXOpeningElement(y,m){const w=y.node;if(w.name&&w.name.type==="JSXMemberExpression")return;for(let t=0;t<w.attributes.length;t++){const a=w.attributes[t];if(a.type==="JSXAttribute"&&a.name&&a.name.name==="data-om-id")return}const R=m.file&&m.file.opts&&m.file.opts.filename||"?";const O=w.loc&&w.loc.start;const e=`jsx:${R}:${w.start??0}:${O?O.line:0}:${O?O.column+1:0}`;w.attributes.push(h.jsxAttribute(h.jsxIdentifier("data-om-id"),h.stringLiteral(e)))}}}))}const p="om-text-extract";let f=false;if(B&&n&&n.registerPlugin&&!(n.availablePlugins&&n.availablePlugins[p])){const h=window.React;if(h&&h.useSyncExternalStore&&h.createElement){f=true;const y={};const m=new Set;let w=0;window.__omTextO=y;window.__omTextSet=(e)=>{for(const t in e){const a=e[t];if(a==null)delete y[t];else y[t]=a}w++;m.forEach((t)=>t())};const R=(e)=>{m.add(e);return()=>m.delete(e)};const O=()=>w;window.__OmT=function e(t){h.useSyncExternalStore(R,O,O);return h.createElement("span",{"data-om-text":t.i,className:"__om-t"},t.i in y?y[t.i]:t.children)};n.registerPlugin(p,({types:e})=>{const t={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const a={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const u=(o,r)=>e.logicalExpression("??",e.memberExpression(e.logicalExpression("||",e.memberExpression(e.identifier("window"),e.identifier("__omTextO")),e.objectExpression([])),e.stringLiteral(o),true),r);const s=(o)=>o.file&&o.file.opts&&o.file.opts.filename||"?";const S=(o)=>o.file&&o.file.code||"";const _=(o,r)=>{const l=(c)=>c&&c.start!=null&&c.end!=null&&(c.type==="StringLiteral"||c.type==="TemplateLiteral"&&c.expressions.length===0)?[c.start,c.end]:null;const i=l(r);if(i)return i;if(r&&r.type==="Identifier"){const c=o.scope.getBinding(r.name);if(c&&c.constant&&c.path.node.type==="VariableDeclarator"){return l(c.path.node.init)}}return null};const v=(o,r,l)=>{const i=o.node;let c=false;const k=(E,T)=>{c=true;return e.jsxElement(e.jsxOpeningElement(e.jsxIdentifier("__OmT"),[e.jsxAttribute(e.jsxIdentifier("i"),e.stringLiteral(E))],false),e.jsxClosingElement(e.jsxIdentifier("__OmT")),[T],false)};const b=i.children.map((E)=>{if(E.type==="JSXText"){if(E.start==null||E.end==null)return E;const T=l.slice(E.start,E.end);const j=T.length-T.trimStart().length;const L=T.length-T.trimEnd().length;if(j+L>=T.length)return E;return k(`txt:${r}:${E.start+j}:${E.end-L}`,E)}if(E.type==="JSXExpressionContainer"){const T=_(o,E.expression);if(T)return k(`str:${r}:${T[0]}:${T[1]}`,E)}return E});if(c)i.children=b};return{visitor:{JSXOpeningElement(o,r){const l=o.node;const i=s(r);const c={};for(let k=0;k<l.attributes.length;k++){const b=l.attributes[k];if(b.type!=="JSXAttribute"||!b.name)continue;const E=b.name.name;if(!a[E])continue;if(!b.value||b.value.type!=="StringLiteral")continue;if(b.value.start==null||b.value.end==null)continue;const T=`txt:${i}:${b.value.start}:${b.value.end}`;c[E]=T;b.value=e.jsxExpressionContainer(u(T,e.stringLiteral(b.value.value)))}if(Object.keys(c).length){l.attributes.push(e.jsxAttribute(e.jsxIdentifier("data-om-text-attrs"),e.stringLiteral(JSON.stringify(c))))}},JSXElement(o,r){const l=o.node.openingElement;const i=l&&l.name&&l.name.name;if(i==="__OmT")return;if(typeof i==="string"&&t[i])return;v(o,s(r),S(r))},JSXFragment(o,r){v(o,s(r),S(r))}}}})}}const g=f?["transform-react-jsx-source",d,p]:["transform-react-jsx-source",d];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach((h,y)=>{const m=h.getAttribute("data-plugins")||"";const w=g.filter((R)=>m.indexOf(R)<0);if(w.length){h.setAttribute("data-plugins",m?`${m},${w.join(",")}`:w.join(","))}if(!h.hasAttribute("data-filename")){h.setAttribute("data-filename",h.getAttribute("src")||`inline-${y}`)}})});var A=window.parent;var U="not editable here — open the project in the Claude Design editor to save";var W=()=>Promise.resolve({persisted:false,noHost:true,reason:U});var H=W;var M="data/storage.json";var z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.match(/\/projects\/([^/]+)\/serve\//);if(d)return d[1];return n.hostname.split(".")[0]||""}catch{return location.hostname.split(".")[0]||""}};var Z=()=>{try{const n=new URL(document.baseURI);const d=n.pathname.indexOf("/serve/");if(d>=0)return n.origin+n.pathname.slice(0,d+"/serve/".length)+M}catch{}return"./"+M};var x=null;var N=()=>{if(!x){x=fetch(Z(),{cache:"no-store"}).then((n)=>{if(n.ok)return n.text();return n.status===404?"":null}).catch(()=>null).then((n)=>{if(n===null){x=null;return null}const d=new Map;if(!n)return d;let p;try{p=JSON.parse(n)}catch{console.warn("[omelette.storage] "+M+" is not valid JSON; treating the store as unreadable so a save cannot overwrite the "+"hand-edited bytes. Fix the JSON (or delete the file) to re-enable persistence.");x=null;return null}if(p===null||typeof p!=="object"||Array.isArray(p)){console.warn("[omelette.storage] "+M+" doesn't hold a JSON object; treating the store as unreadable so a save cannot "+"overwrite the hand-edited bytes. Make the top level a JSON object to re-enable persistence.");x=null;return null}const f=p;if("data"in f){const g=f.data;if(g===null||typeof g!=="object"||Array.isArray(g)){console.warn("[omelette.storage] "+M+' has a "data" field that is not a JSON object; treating the store as unreadable so a '+'save cannot overwrite the hand-edited bytes. Make "data" a JSON object to re-enable persistence.');x=null;return null}const h=f._meta;const y=h!==null&&typeof h==="object"?h.project:undefined;if(typeof y==="string"&&y!==""&&y!==z())return d;for(const m of Object.keys(g))d.set(m,g[m]);return d}for(const g of Object.keys(f)){if(g!=="_meta")d.set(g,f[g])}return d})}return x};var F=(n)=>H(M,JSON.stringify({_meta:{project:z(),version:1},data:Object.fromEntries(n)},null,2));var D=Promise.resolve();var $=(n)=>{const d=D.then(n);D=d.then(()=>{return},()=>{return});return d};var V=/sk-(?:ant-)?[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|xox[a-z]-[A-Za-z0-9][A-Za-z0-9-]{9,}|AIza[0-9A-Za-z_-]{30,}|-----BEGIN [A-Z ]*PRIVATE KEY-----/;var Y=/password|passwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token|credential/i;var Q=(n,d,p)=>{if(V.test(d)||Y.test(n)&&typeof p==="string"&&p.length>=8){console.warn('[omelette.storage] the value for "'+n+'" looks like a credential. The storage file is a plaintext project file — visible to '+"everyone with project access and copied when the project is duplicated. Do not store secrets here.")}};var q={persisted:false,reason:"could not load the existing store — not overwriting it"};var X={persisted:false,reason:"stored value changed since a failed read — re-read this key before saving"};var P=new Set;var ee={get:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.get: key must be a string"))}return $(N).then((d)=>{if(d===null){P.add(n);return null}P.delete(n);if(!d.has(n))return null;const p=d.get(n);return p==null?null:JSON.parse(JSON.stringify(p))})},set:(n,d)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.set: key must be a string"))}let p;try{p=JSON.stringify(d)}catch(g){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable ("+String(g)+")"))}if(p===undefined){return Promise.reject(new TypeError("storage.set: value must be JSON-serializable"))}Q(n,p,d);const f=JSON.parse(p);return $(()=>N().then((g)=>{if(g===null)return q;if(P.has(n)){if(g.has(n))return X;P.delete(n)}g.set(n,f);return F(g)}))},delete:(n)=>{if(typeof n!=="string"){return Promise.reject(new TypeError("storage.delete: key must be a string"))}return $(()=>N().then((d)=>{if(d===null)return q;if(P.has(n)){if(d.has(n))return X;P.delete(n)}d.delete(n);return F(d)}))},keys:()=>$(N).then((n)=>n===null?[]:Array.from(n.keys()))};window.omelette={writeFile:(n,d)=>H(n,d).then((p)=>{if(!p.persisted&&!p.noHost){throw new Error(p.reason||"write failed")}}),storage:ee};if(A&&A!==window){const n=(e,t)=>{try{A.postMessage({__omelette_log:true,type:e,data:t},"*")}catch{}};["log","warn","error"].forEach((e)=>{const t=console[e];console[e]=(...a)=>{const u=a.map((s)=>{try{return typeof s==="object"?JSON.stringify(s):String(s)}catch{try{return String(s)}catch{return"[unstringifiable]"}}}).join(" ");n(e,u);t.apply(console,a)}});window.addEventListener("error",(e)=>{const t=e.target;if(t&&t!==window&&t.tagName){const a=t.src||t.href||"";n("resource_error",`${t.tagName} failed to load: ${a}`)}else{n("error",`${e.message||"Unknown error"} at ${e.filename||"?"}:${e.lineno||0}:${e.colno||0}`)}},true);window.addEventListener("unhandledrejection",(e)=>{const t=e.reason;const a=t instanceof Error?`${t.message} ${t.stack}`:String(t);n("error",`Unhandled rejection: ${a}`)});window.addEventListener("click",(e)=>{if(e.defaultPrevented||e.button!==0)return;if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const t=e.composedPath?e.composedPath():[];const a=["button","input","select","textarea","summary","label"];let u=null;for(const v of t){if(!(v instanceof Element))continue;if(v.localName==="a"){if(!(v instanceof HTMLAnchorElement))return;u=v;break}if(a.indexOf(v.localName)!==-1)return}if(!u)return;if(u.isContentEditable)return;const s=u.closest("[contenteditable]");if(s&&s.getAttribute("contenteditable")!=="false")return;const S=(u.getAttribute("target")||"_self").toLowerCase();if(S!=="_self"&&S!=="_top"&&S!=="_parent")return;let _;try{_=new URL(u.href)}catch{return}if(_.protocol!=="http:"&&_.protocol!=="https:")return;if(location.origin==="null")return;if(_.origin===location.origin)return;e.preventDefault();window.open(_.href,"_blank","noopener,noreferrer")});const d=()=>{try{A.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(window.ResizeObserver)new ResizeObserver(d).observe(document.documentElement);const p=()=>{d();if(!document.querySelector('script[type="text/babel"],script[type="text/jsx"]'))return;const e=()=>document.getElementById("root")||document.querySelector("body > div[id]");const t=e()?.firstElementChild??null;let a=0;const u=()=>{const s=e();if(s&&s.firstElementChild!==t||++a>30){d();return}setTimeout(u,100)};setTimeout(u,100)};if(document.readyState==="complete")p();else window.addEventListener("load",p);const f={};let g=0;const h=(e)=>new Promise((t,a)=>{if(!I.length){a(new Error("claude.complete: no parent origin"));return}const u=`c${++g}`;const s=()=>setTimeout(()=>{delete f[u];a(new Error(`claude.complete: no data for ${J/1000}s`))},J);const S=s();f[u]={resolve:t,reject:a,text:"",t:S,arm:s};try{for(const _ of I){A.postMessage({__om_api:true,id:u,body:e},_)}}catch(_){clearTimeout(S);delete f[u];a(_)}});const y=8;const m=async(e,t)=>{if(!Array.isArray(e.messages)){throw new Error("claude.complete: tools require a messages array")}const a=e.messages.slice();const u={...e,tools:e.tools.map((_)=>{if(_===null||typeof _!=="object")return _;const v={};for(const o of Object.keys(_)){if(typeof _[o]!=="function")v[o]=_[o]}return v})};const s=u.tool_choice;const S=s!=null&&(s.type==="any"||s.type==="tool")?{...u,tool_choice:s.disable_parallel_tool_use!==undefined?{type:"auto",disable_parallel_tool_use:s.disable_parallel_tool_use}:{type:"auto"}}:u;for(let _=0;_<y;_++){const v=await h({..._===0?u:S,messages:a});const o=v.message;const r=o&&Array.isArray(o.content)?o.content:null;const l=r?r.filter((c)=>c?.type==="tool_use"):[];if(o?.stop_reason!=="tool_use"||l.length===0){return v.text}const i=[];for(const c of l){const k=t.get(c.name);if(!k){i.push({type:"tool_result",tool_use_id:c.id,content:`no handler for tool "${c.name}"`,is_error:true});continue}try{const b=await k(c.input);const E=typeof b==="string"?b:O(b)??"";i.push({type:"tool_result",tool_use_id:c.id,content:E})}catch(b){i.push({type:"tool_result",tool_use_id:c.id,content:String(b?.message??b??"tool handler failed"),is_error:true})}}a.push({role:"assistant",content:r},{role:"user",content:i})}throw new Error(`claude.complete: exceeded ${y} tool turns`)};window.claude={complete(e){const t=e;if(t!==null&&typeof t==="object"&&Array.isArray(t.tools)&&t.tools.some((a)=>a!==null&&typeof a==="object"&&typeof a.run==="function")){const a=new Map;for(const u of t.tools){if(u!==null&&typeof u==="object"&&typeof u.run==="function"){a.set(String(u.name),u.run)}}return m(t,a)}return h(e).then((a)=>a.text)}};const w={};let R=0;H=(e,t)=>new Promise((a)=>{if(!I.length){a({persisted:false,noHost:true,reason:U});return}const u=`f${++R}`;const s=setTimeout(()=>{delete w[u];a({persisted:false,noHost:true,reason:U})},G);w[u]={settle:a,t:s};try{for(const S of I){A.postMessage({__om_file:true,id:u,op:"write",path:e,content:t},S)}}catch{clearTimeout(s);delete w[u];a({persisted:false,noHost:true,reason:U})}});const O=(e)=>{try{return JSON.stringify(e)}catch{return JSON.stringify(String(e))}};window.addEventListener("message",(e)=>{if(I.indexOf(e.origin)<0)return;if(e.source!==A)return;const t=e.data;if(!t)return;if(t.type==="omelette-preview-refresh"){if(typeof t.token!=="string"||!/^[0-9a-f.-]+(\.(rc|pr-[0-9]+))?(\.[0-9]+\.[0-9a-f]{16})?$/.test(t.token))return;const s=Math.max(1,Math.floor((t.expiresAt||0)-Date.now()/1000));document.cookie="__Host-omelette-preview="+t.token+"; Path=/; Secure; SameSite=None; Partitioned; Max-Age="+s;C();return}if(t.__om_file_r){const s=w[t.id];if(!s)return;clearTimeout(s.t);delete w[t.id];s.settle(t.ok?{persisted:true}:{persisted:false,reason:t.error||"write failed"});return}if(t.__om_api_r){const s=f[t.id];if(!s)return;if(t.error!=null){clearTimeout(s.t);delete f[t.id];s.reject(new Error(t.error));return}if(t.chunk!=null){clearTimeout(s.t);s.t=s.arm();s.text+=t.chunk;return}if(t.done){clearTimeout(s.t);delete f[t.id];s.resolve({text:t.text!=null?t.text:s.text,message:t.message});return}return}if(!t.__om_eval)return;const a=t;const u=(s)=>{e.source.postMessage({...s,__om_eval_r:1,id:a.id},e.origin)};try{const s=(0,eval)(a.code);if(s&&typeof s.then==="function"){s.then((S)=>u({ok:1,v:O(S)}),(S)=>u({ok:0,e:String(S)}))}else{u({ok:1,v:O(s)})}}catch(s){u({ok:0,e:String(s)})}})}})();
+</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@0.469.0/font/lucide.css">
+<script src="./image-slot.js"></script>
+<style>body{margin:0;background:#121211;color:#EDEAE3}a{color:#EDEAE3}a:hover{color:#CFCBC2}</style>
+</helmet>
+<div dir="rtl" style="font-family:'IBM Plex Sans Hebrew',sans-serif;max-width:1180px;margin:0 auto;padding:48px 24px 96px;display:flex;flex-direction:column;gap:64px">
+
+<header style="display:flex;flex-direction:column;gap:12px">
+<span dir="ltr" style="font-size:13px;font-weight:600;letter-spacing:.22em;text-align:right">BUILT DIFFERENT · QUIET v1.1 · Signal</span>
+<h1 style="margin:0;font-size:48px;line-height:52px;font-weight:300">מערכת עיצוב</h1>
+<p style="margin:0;font-size:19px;line-height:28px;color:#A09C94;max-width:720px;text-wrap:pretty">שקט מגיע מצבע ומריווח, לא מכתב קטן. כחול Signal אחד מסמן כל מה שאפשר ללחוץ עליו. מרווה מסמנת "בוצע" ו"שיא". צבעי המאקרו שייכים לנתונים בלבד. קבצי מקור: <a href="tokens.css">tokens.css</a> · <a href="DESIGN_RULES.md">DESIGN_RULES.md</a> · <a href="BD Screens.dc.html">מסכים</a></p>
+</header>
+
+<section style="display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font-size:24px;font-weight:500">אייקון אפליקציה</h2>
+<div style="display:flex;gap:32px;align-items:flex-end;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:180px;height:180px;border-radius:40px;background:#121211;border:1px solid #2E2D2A;box-sizing:border-box;position:relative;display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:76px;font-weight:500;letter-spacing:-.03em;line-height:1;margin-top:-10px">BD</span><span style="position:absolute;bottom:44px;width:48px;height:4px;border-radius:999px;background:#5AA2F0"></span></div><span style="font-size:13px;color:#A09C94">180 · iOS</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:64px;height:64px;border-radius:14px;background:#121211;border:1px solid #2E2D2A;box-sizing:border-box;position:relative;display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:27px;font-weight:500;letter-spacing:-.03em;line-height:1;margin-top:-4px">BD</span><span style="position:absolute;bottom:15px;width:17px;height:2px;border-radius:999px;background:#5AA2F0"></span></div><span style="font-size:13px;color:#A09C94">64</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:40px;height:40px;border-radius:9px;background:#121211;border:1px solid #2E2D2A;box-sizing:border-box;display:flex;align-items:center;justify-content:center"><span dir="ltr" style="font-size:17px;font-weight:600;letter-spacing:-.03em;line-height:1">BD</span></div><span style="font-size:13px;color:#A09C94">40 · favicon</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:180px;height:180px;border-radius:40px;background:#F4F2ED;position:relative;display:flex;align-items:center;justify-content:center;color:#1A1A18"><span dir="ltr" style="font-size:76px;font-weight:500;letter-spacing:-.03em;line-height:1;margin-top:-10px">BD</span><span style="position:absolute;bottom:44px;width:48px;height:4px;border-radius:999px;background:#1F6FCC"></span></div><span style="font-size:13px;color:#A09C94">בהיר</span></div>
+<p style="margin:0;font-size:16px;color:#A09C94;max-width:300px;text-wrap:pretty">BD במשקל 500 וקו כחול מתחת: הקו הוא מוט, או הקו שמתחת לסט שבוצע. בגודל 40 ומטה הקו יורד. ב-PWA צריך גרסת maskable: שוליים של 20% מסביב.</p>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font-size:24px;font-weight:500">צבע · 18 tokens, ואין אחרים</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px">
+<sc-for list="{{ colors }}" as="c" hint-placeholder-count="12">
+<div style="display:flex;gap:12px;align-items:center;padding:12px;background:#1C1C1A;border-radius:14px">
+<span style="width:48px;height:48px;flex:none;border-radius:8px;background:{{ c.hex }};border:1px solid #3D3C38;box-sizing:border-box"></span>
+<div style="display:flex;flex-direction:column;min-width:0"><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:right">{{ c.name }}</span><span style="font-size:13px;color:#A09C94">{{ c.role }}</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#6E6C66;text-align:right">{{ c.hex }}</span></div>
+</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:8px;font-size:16px">
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="color:#8DB596;font-size:13px;font-weight:500">DO</span><span>accent רק ל: primary אחד במסך, טאב פעיל, טקסט שלוחצים עליו ו"+", פוקוס ונבחר, נקודת "רץ", וסדרת הנתונים בגרף.</span><span>done רק לסט שבוצע ולשיא אישי. danger רק למחיקה, לחריגה מיעד ולשגיאה. צבעי מאקרו רק בנתוני תזונה.</span><span>שלוש רמות משטח: bg ← surface-1 ← surface-2. כל רמה בהירה יותר.</span></div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="color:#E0846F;font-size:13px;font-weight:500">DON'T</span><span>accent כרקע של כרטיס או שורה, על כותרת או מספר, או על "בוצע". שני רכיבי accent מלאים באותו כרטיס.</span><span>צבע לקטגוריה, לשריר או לסוג ארוחה. גרדיאנט, זכוכית או glow.</span><span>text-3 לטקסט שמכיל מידע. הוא מיועד רק ל-placeholder ולמצב מושבת.</span></div>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font-size:24px;font-weight:500">טיפוגרפיה · 6 גדלים</h2>
+<p style="margin:0;font-size:16px;color:#A09C94">IBM Plex Sans Hebrew לטקסט, IBM Plex Mono לכל מספר. גוף מינימלי 16, תווית מינימלית 13.</p>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ type }}" as="t" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:24px;align-items:baseline;padding:16px 0;border-top:1px solid #2E2D2A">
+<div style="display:flex;flex-direction:column"><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:right">{{ t.tok }}</span><span style="font-size:13px;color:#A09C94">{{ t.spec }} · {{ t.use }}</span></div>
+<span style="font-size:{{ t.px }};line-height:1.2;font-weight:{{ t.w }}">{{ t.sample }}</span>
+<span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:{{ t.px }};line-height:1.2;text-align:right">{{ t.num }}</span>
+</div>
+</sc-for>
+</div>
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;font-size:16px;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#A09C94">אנגלית בתוך עברית</span><span>שם התרגיל באנגלית הוא הכותרת (md 500), והשם בעברית מתחתיו (sm, text-2). זוגות מספרים כמו <span dir="ltr" style="font-family:'IBM Plex Mono',monospace">80 × 8</span> תמיד בתוך <span dir="ltr" style="font-family:'IBM Plex Mono',monospace">.ltr</span>. אחרת ה-RTL הופך אותם ל-"8 × 80".</span></div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-size:24px;font-weight:500">ריווח</h2>
+<sc-for list="{{ space }}" as="s" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px"><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px;width:92px;text-align:right">{{ s.tok }}</span><span style="height:16px;width:{{ s.px }};background:#EDEAE3;border-radius:2px"></span><span style="font-size:13px;color:#A09C94">{{ s.use }}</span></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-size:24px;font-weight:500">רדיוס וצל</h2>
+<div style="display:flex;gap:16px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:6px;align-items:center"><span style="width:72px;height:72px;background:#262624;border-radius:8px"></span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px">sm 8</span><span style="font-size:13px;color:#A09C94">קלט · שורה</span></div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:center"><span style="width:72px;height:72px;background:#262624;border-radius:14px"></span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px">md 14</span><span style="font-size:13px;color:#A09C94">כרטיס · כפתור</span></div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:center"><span style="width:72px;height:72px;background:#262624;border-radius:999px"></span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px">full</span><span style="font-size:13px;color:#A09C94">אייקון · תג</span></div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:center"><span style="width:72px;height:72px;background:#262624;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.6)"></span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px">shadow-float</span><span style="font-size:13px;color:#A09C94">רק לשכבה צפה</span></div>
+</div>
+<p style="margin:0;font-size:16px;color:#A09C94">יעדי מגע: 44 מינימום · 48 קלט ומשני · 56 ראשי.</p>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font-size:24px;font-weight:500">רכיבים · ספרייה סגורה</h2>
+<p style="margin:0;font-size:16px;color:#A09C94;max-width:760px">כל מסך חדש נבנה רק מהרכיבים האלה. החוק: פעולה ראשית אחת לכל מסך או כרטיס.</p>
+
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap"><span style="font-size:19px;font-weight:500">Button</span><span style="font-size:13px;color:#A09C94;max-width:640px">primary: אחד בלבד בכל מסך (התחל, סיים, שמור, הוסף). secondary: פעולה חלופית. ghost: ביטול או ניווט. icon: פעולה חוזרת בתוך שורה. danger-ghost: מחיקה. לא לשים שני primary זה ליד זה.</span></div>
+<sc-for list="{{ btnRows }}" as="r" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:120px repeat(4,minmax(0,1fr));gap:12px;align-items:center">
+<span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#A09C94;text-align:right">{{ r.name }}</span>
+<sc-for list="{{ r.states }}" as="b" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:{{ r.h }};border-radius:14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:{{ r.w }};background:{{ b.bg }};color:{{ b.fg }};border:{{ b.bd }}"><sc-if value="{{ b.loading }}"><i class="icon-loader-circle" style="font-size:18px"></i></sc-if>{{ b.label }}</div><span style="font-size:13px;color:#6E6C66">{{ b.st }}</span></div>
+</sc-for>
+</div>
+</sc-for>
+<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding-top:8px;border-top:1px solid #2E2D2A">
+<div style="display:flex;gap:8px;align-items:center"><div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#A09C94"><i class="icon-ellipsis-vertical" style="font-size:22px"></i></div><div style="width:44px;height:44px;border-radius:999px;background:#262624;display:flex;align-items:center;justify-content:center"><i class="icon-ellipsis-vertical" style="font-size:22px"></i></div><div style="width:44px;height:44px;border:1px solid #3D3C38;box-sizing:border-box;border-radius:999px;display:flex;align-items:center;justify-content:center"><i class="icon-plus" style="font-size:20px"></i></div><span style="font-size:13px;color:#A09C94">icon: רגיל · לחוץ · מוקף</span></div>
+<div style="display:flex;gap:8px;align-items:center"><div style="height:48px;padding:0 16px;display:flex;align-items:center;gap:8px;font-size:16px;color:#E0846F"><i class="icon-trash-2" style="font-size:18px"></i>מחק תבנית</div><span style="font-size:13px;color:#A09C94">danger-ghost</span></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap"><span style="font-size:19px;font-weight:500">SetRow</span><span style="font-size:13px;color:#A09C94;max-width:640px">רק בטבלת סטים. עמודות: סט 40 · קודם · ק״ג 80 · חזרות 72 · ✓ 48. לחיצה על "קודם" ממלאת את ק״ג וחזרות. ה-placeholder בקלט הוא הערך מהאימון הקודם. בוצע = כל השורה ב-done-surface.</span></div>
+<div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;padding:0 8px;font-size:13px;color:#A09C94;max-width:440px"><span style="text-align:center">סט</span><span>קודם</span><span style="text-align:center">ק״ג</span><span style="text-align:center">חזרות</span><span></span></div>
+<sc-for list="{{ setStates }}" as="s" hint-placeholder-count="5">
+<div style="display:grid;grid-template-columns:440px 1fr;gap:24px;align-items:center">
+<div style="display:grid;grid-template-columns:40px 1fr 80px 72px 48px;gap:8px;align-items:center;height:60px;padding:0 8px;background:{{ s.rowBg }};border-radius:8px;font-family:'IBM Plex Mono',monospace">
+<span style="text-align:center;font-size:16px;color:{{ s.nC }}">{{ s.n }}</span>
+<span dir="ltr" style="text-align:right;font-size:16px;color:#A09C94">{{ s.prev }}</span>
+<div style="height:48px;border-radius:8px;box-sizing:border-box;background:{{ s.inBg }};border:{{ s.kgBd }};display:flex;align-items:center;justify-content:center;font-size:24px;color:{{ s.kgC }}">{{ s.kg }}</div>
+<div style="height:48px;border-radius:8px;box-sizing:border-box;background:{{ s.inBg }};display:flex;align-items:center;justify-content:center;font-size:24px;color:{{ s.rC }}">{{ s.reps }}</div>
+<div style="width:44px;height:44px;border-radius:8px;box-sizing:border-box;background:{{ s.ckBg }};border:{{ s.ckBd }};color:{{ s.ckC }};display:flex;align-items:center;justify-content:center"><i class="{{ s.ckI }}" style="font-size:22px"></i></div>
+</div>
+<span style="font-size:16px;color:#A09C94"><span style="color:#EDEAE3">{{ s.st }}</span> · {{ s.desc }}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">Input</span><span style="font-size:13px;color:#A09C94">תווית xs מעל, גובה 48, רקע surface-2. למספרים: מונו ו-inputmode="decimal".</span>
+<sc-for list="{{ inputs }}" as="i" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#A09C94">{{ i.st }}</span><div style="height:48px;background:#262624;border-radius:8px;box-sizing:border-box;border:{{ i.bd }};display:flex;align-items:center;gap:8px;padding:0 12px;font-size:16px;color:{{ i.fg }};opacity:{{ i.op }}"><i class="icon-search" style="font-size:20px;color:#A09C94"></i>{{ i.v }}</div><sc-if value="{{ i.err }}"><span style="font-size:13px;color:#E0846F">משקל חייב להיות מספר</span></sc-if></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">MacroBar</span><span style="font-size:13px;color:#A09C94">פס של 6px, track surface-2, מילוי בצבע המאקרו. חריגה: המילוי נשאר, הערך עובר ל-danger. ריק: מציג רק את היעד.</span>
+<sc-for list="{{ macroStates }}" as="m" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:16px"><span>{{ m.st }}</span><span style="font-family:'IBM Plex Mono',monospace;color:{{ m.vc }}">{{ m.v }}</span></div><div style="height:6px;border-radius:999px;background:#262624;overflow:hidden"><div style="height:6px;border-radius:999px;width:{{ m.w }};background:{{ m.c }}"></div></div></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">Badge · Chip · Segmented</span><span style="font-size:13px;color:#A09C94">Badge מציג סטטוס, ולא לוחצים עליו. Chip הוא מסנן שאפשר להפעיל ולכבות. Segmented מחליף בין 2–3 תצוגות.</span>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="height:28px;padding:0 10px;border-radius:999px;background:#262624;display:flex;align-items:center;font-size:13px">יום אימון</span>
+<span style="height:28px;padding:0 10px;border-radius:999px;background:#1E2A21;color:#8DB596;display:flex;align-items:center;gap:4px;font-size:13px"><i class="icon-check" style="font-size:14px"></i>בוצע</span>
+<span style="height:28px;padding:0 10px;border-radius:999px;background:#1E2A21;color:#8DB596;display:flex;align-items:center;gap:4px;font-size:13px"><i class="icon-trophy" style="font-size:14px"></i>שיא</span>
+<span style="height:28px;padding:0 10px;border-radius:999px;background:#2E1D19;color:#E0846F;display:flex;align-items:center;font-size:13px">מעל היעד</span>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #3D3C38;box-sizing:border-box;display:flex;align-items:center;font-size:16px">כבוי</span>
+<span style="height:36px;padding:0 14px;border-radius:8px;background:#5AA2F0;color:#121211;display:flex;align-items:center;font-size:16px;font-weight:500">פעיל</span>
+<span style="height:36px;padding:0 12px;border-radius:8px;background:#262624;display:flex;align-items:center;gap:6px;font-size:16px">רגליים<i class="icon-x" style="font-size:14px;color:#A09C94"></i></span>
+<span style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #2E2D2A;box-sizing:border-box;display:flex;align-items:center;font-size:16px;color:#6E6C66">מושבת</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:#121211;border-radius:14px;padding:4px;height:48px;box-sizing:border-box"><div style="background:#262624;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">חיפוש</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">שמורות</div><div style="display:flex;align-items:center;justify-content:center;font-size:16px;color:#A09C94">מאתמול</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">Card · ListRow · EmptyState</span><span style="font-size:13px;color:#A09C94">כרטיס על surface-1, בלי צל ובלי מסגרת. לוחצים על הכרטיס כולו, ויש ⋮ אחד לכל היותר. מצב ריק: כותרת, משפט אחד ועד כפתור secondary אחד. בלי 0 ובלי —.</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:#262624;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:2px"><span style="font-size:19px;font-weight:500">Pull</span><span style="font-size:13px;color:#A09C94">רגיל</span></div>
+<div style="background:#2E2D2A;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:2px"><span style="font-size:19px;font-weight:500">Pull</span><span style="font-size:13px;color:#A09C94">לחוץ</span></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;min-height:64px;border-top:1px solid #2E2D2A;border-bottom:1px solid #2E2D2A"><div style="width:48px;height:48px;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500">B</div><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:16px;font-weight:500">Back Squat</span><span style="font-size:13px;color:#A09C94">סקוואט · מוט</span></div><i class="icon-chevron-left" style="font-size:20px;color:#A09C94"></i></div>
+<div style="border:1px dashed #3D3C38;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="font-size:19px;font-weight:500">עוד אין תבניות</span><span style="font-size:16px;color:#A09C94">משפט אחד שמסביר מה יופיע כאן ואיך.</span><div style="margin-top:6px;height:48px;padding:0 16px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;font-size:16px;font-weight:500">צור תבנית</div></div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px">
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">Toast · Dialog</span><span style="font-size:13px;color:#A09C94">Toast: שורה אחת, 3 שניות, פעולה אחת לכל היותר. Dialog: רק לאישור פעולה הרסנית. כל הוספה ועריכה נעשית ב-Sheet (ראה <a href="BD Screens.dc.html#s11">מסכים 11–12</a>).</span>
+<div style="background:#262624;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.45);padding:12px 16px;display:flex;gap:12px;align-items:center;font-size:16px"><i class="icon-check" style="font-size:20px;color:#A09C94"></i><span style="flex:1">התבנית נשמרה</span></div>
+<div style="background:#262624;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.45);padding:4px 8px 4px 16px;display:flex;gap:12px;align-items:center;font-size:16px"><i class="icon-trash-2" style="font-size:20px;color:#A09C94"></i><span style="flex:1">הסט נמחק</span><span style="height:44px;padding:0 8px;display:flex;align-items:center;font-weight:500">בטל</span></div>
+<div style="background:#121211;border-radius:14px;padding:24px;display:flex;justify-content:center"><div style="width:320px;background:#1C1C1A;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.45);padding:24px;display:flex;flex-direction:column;gap:8px"><span style="font-size:19px;font-weight:500">למחוק את התבנית Push?</span><span style="font-size:16px;color:#A09C94">ההיסטוריה של האימונים נשמרת. התבנית עצמה תימחק.</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px"><div style="height:48px;border:1px solid #3D3C38;border-radius:14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">ביטול</div><div style="height:48px;background:#E0846F;color:#121211;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">מחק</div></div></div></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap"><span style="font-size:19px;font-weight:500">BottomNav · MiniWorkoutBar · StatCell</span><span style="font-size:13px;color:#A09C94;max-width:640px">ארבעה טאבים קבועים. לא מוסיפים טאב חמישי: מסך חדש נכנס כ-sheet או כשורה בתוך טאב קיים. בזמן אימון פעיל מופיע MiniWorkoutBar מעל הניווט, בכל טאב.</span></div>
+<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+<div style="width:390px;max-width:100%;display:flex;flex-direction:column;gap:8px;background:#121211;padding-top:8px;border-radius:14px;overflow:hidden">
+<div style="margin:0 8px;height:56px;background:#262624;border-radius:14px;display:flex;align-items:center;gap:12px;padding:0 16px;font-size:16px"><span style="width:6px;height:6px;border-radius:999px;background:#5AA2F0"></span><span style="flex:1">Push · אימון פעיל</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace">42:17</span><i class="icon-chevron-up" style="font-size:20px;color:#A09C94"></i></div>
+<dc-import name="BDNav" active="nutrition" hint-size="390px,80px"></dc-import>
+</div>
+<div style="display:grid;grid-template-columns:1.1fr 1fr 1fr;border:1px solid #2E2D2A;border-radius:8px;width:390px;max-width:100%">
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#A09C94;display:flex;gap:6px;align-items:center"><span style="width:6px;height:6px;border-radius:999px;background:#5AA2F0"></span>זמן · רץ</span><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:24px;text-align:right">42:17</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #2E2D2A"><span style="font-size:13px;color:#A09C94">נפח · ק״ג</span><span style="font-family:'IBM Plex Mono',monospace;font-size:24px">4,860</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #2E2D2A"><span style="font-size:13px;color:#A09C94">ריק</span><span style="font-family:'IBM Plex Mono',monospace;font-size:24px;color:#6E6C66">0</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font-size:24px;font-weight:500">מסגרת לאיורי תרגילים</h2>
+<p style="margin:0;font-size:16px;color:#A09C94;max-width:760px;text-wrap:pretty">האיורים מגיעים מספרייה מוכנה, כ-PNG או WebP שקוף. אנחנו מגדירים רק את המסגרת. אפשר לגרור איור אמיתי לכל אחד מהמקומות כאן ולראות איך הוא יושב.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">ExerciseThumb</span><span style="font-size:13px;color:#A09C94">48 ברשימות, 56 בתצוגת תבנית. בלי רקע, מסגרת, רדיוס או צל. object-fit: contain.</span>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:#121211;border-radius:8px;padding:16px">
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><image-slot id="ds-thumb-img" shape="rect" fit="contain" placeholder="PNG" style="width:48px;height:48px"></image-slot><span style="font-size:13px;color:#A09C94">איור</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500">A</div><span style="font-size:13px;color:#A09C94">אין איור</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;color:#6E6C66">A</div><span style="font-size:13px;color:#A09C94">טוען</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;align-items:center"><div style="width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:500">L</div><span style="font-size:13px;color:#A09C94">56 · תבנית</span></div>
+</div>
+<span style="font-size:13px;color:#A09C94">טוען: האות ב-text-3, והתמונה נכנסת ב-opacity (base). שגיאה: האות נשארת ב-text.</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:#1C1C1A;border-radius:14px">
+<span style="font-size:19px;font-weight:500">ExerciseBoard</span><span style="font-size:13px;color:#A09C94">רק בדף תרגיל. רקע --color-board, radius-md, ריפוד 12. תנוחות: 2 × 1:1. אנימציה: 2:1 עם play/pause 44.</span>
+<div style="background:#F7F6F2;border-radius:14px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;overflow:hidden">
+<div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;min-width:0;text-align:center"><image-slot id="ds-board-start" shape="rect" fit="contain" placeholder="התחלה" style="width:100%;height:130px"></image-slot><span style="font-size:13px;color:#5E5B55">התחלה</span></div>
+<div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;min-width:0;text-align:center"><image-slot id="ds-board-end" shape="rect" fit="contain" placeholder="סיום" style="width:100%;height:130px"></image-slot><span style="font-size:13px;color:#5E5B55">סיום</span></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:#F7F6F2;border-radius:14px;height:96px;position:relative"><div style="position:absolute;left:8px;bottom:8px;width:44px;height:44px;border-radius:999px;background:#1A1A18;color:#F4F2ED;display:flex;align-items:center;justify-content:center"><i class="icon-pause" style="font-size:18px"></i></div><span style="position:absolute;top:8px;right:12px;font-size:13px;color:#5E5B55">מתנגן</span></div>
+<div style="background:#F7F6F2;border-radius:14px;height:96px;position:relative"><div style="position:absolute;left:8px;bottom:8px;width:44px;height:44px;border-radius:999px;background:#1A1A18;color:#F4F2ED;display:flex;align-items:center;justify-content:center"><i class="icon-play" style="font-size:18px"></i></div><span style="position:absolute;top:8px;right:12px;font-size:13px;color:#5E5B55">בהשהיה</span></div>
+<div style="background:#F7F6F2;border-radius:14px;height:96px;display:flex;align-items:center;justify-content:center"><i class="icon-loader-circle" style="font-size:22px;color:#9C988F"></i></div>
+<div style="background:#F7F6F2;border-radius:14px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px"><span dir="ltr" style="font-size:36px;font-weight:500;color:#1A1A18;line-height:1">B</span><span style="font-size:13px;color:#5E5B55">אין איור</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font-size:24px;font-weight:500">תנועה</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+<sc-for list="{{ motionTok }}" as="mt" hint-placeholder-count="5"><div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px"><span dir="ltr" style="font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:right">{{ mt.k }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:19px" dir="ltr">{{ mt.v }}</span><span style="font-size:13px;color:#A09C94">{{ mt.use }}</span></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:8px">
+<sc-for list="{{ motions }}" as="mo" hint-placeholder-count="3">
+<div style="background:#1C1C1A;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px"><span style="font-size:19px;font-weight:500">{{ mo.name }}</span>
+<sc-for list="{{ mo.steps }}" as="st" hint-placeholder-count="3"><div style="display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:16px"><span style="font-family:'IBM Plex Mono',monospace;color:#A09C94">{{ st.i }}</span><span>{{ st.t }}</span></div></sc-for>
+</div>
+</sc-for>
+</div>
+<p style="margin:0;font-size:16px;color:#A09C94">בלי bounce, בלי spring, בלי scale מעל 1, בלי קונפטי. עם prefers-reduced-motion כל המשכים הם 0.</p>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px">
+<div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-size:24px;font-weight:500">חוקי עיצוב ל-AI · <a href="DESIGN_RULES.md" style="font-size:16px;font-weight:400">DESIGN_RULES.md</a></h2>
+<pre style="margin:0;background:#1C1C1A;border-radius:14px;padding:16px;font-family:'IBM Plex Sans Hebrew',sans-serif;font-size:13px;line-height:20px;white-space:pre-wrap;max-height:720px;overflow:auto">{{ rulesText }}</pre></div>
+<div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-size:24px;font-weight:500">Tokens · <a href="tokens.css" style="font-size:16px;font-weight:400">tokens.css</a></h2>
+<pre dir="ltr" style="margin:0;background:#1C1C1A;border-radius:14px;padding:16px;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:20px;white-space:pre-wrap;max-height:720px;overflow:auto">{{ tokensText }}</pre></div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tokensText: 'טוען…', rulesText: 'טוען…' };
+  componentDidMount() {
+    fetch('tokens.css').then(r => r.text()).then(t => this.setState({ tokensText: t })).catch(() => {});
+    fetch('DESIGN_RULES.md').then(r => r.text()).then(t => this.setState({ rulesText: t })).catch(() => {});
+  }
+  renderVals() {
+    const colors = [
+      ['--color-bg', '#121211', 'רקע האפליקציה'], ['--color-surface-1', '#1C1C1A', 'כרטיס, sheet'], ['--color-surface-2', '#262624', 'קלט, שכבה צפה'],
+      ['--color-border', '#2E2D2A', 'קו מפריד'], ['--color-border-strong', '#3D3C38', 'מסגרת של רכיב'], ['--color-accent', '#5AA2F0', 'פעולה ראשית · טאב פעיל · קישור · פוקוס'], ['--color-accent-pressed', '#4A8FDB', 'accent לחוץ'], ['--color-text', '#EDEAE3', 'טקסט ראשי'],
+      ['--color-text-2', '#A09C94', 'טקסט משני, תווית'], ['--color-text-3', '#6E6C66', 'placeholder ומושבת בלבד'],
+      ['--color-done', '#8DB596', 'בוצע · שיא אישי'], ['--color-done-surface', '#1E2A21', 'שורת סט שבוצע'], ['--color-danger', '#E0846F', 'מחיקה · חריגה · שגיאה'],
+      ['--color-danger-surface', '#2E1D19', 'תג סכנה'], ['--color-protein', '#D7A3B8', 'נתונים · חלבון'], ['--color-carbs', '#D6BF8A', 'נתונים · פחמימות'], ['--color-fat', '#8FA9CF', 'נתונים · שומן'], ['--color-chart-muted', '#3D3C38', 'גרף · עבר, אזור יעד']
+    ].map(([name, hex, role]) => ({ name, hex, role }));
+    const type = [
+      ['--text-2xl', '48/52', 'טיימר, קלוריות', '48px', 300, 'מנוחה', '01:24'],
+      ['--text-xl', '32/38', 'כותרת מסך', '32px', 400, 'אימון', '82.4'],
+      ['--text-lg', '24/30', 'כותרת sheet, ק״ג וחזרות', '24px', 400, 'הוסף לבוקר', '80   8'],
+      ['--text-md', '19/26', 'שם תרגיל, כותרת כרטיס', '19px', 500, 'Bench Press', '4,860'],
+      ['--text-sm', '16/24', 'גוף, שורות, כפתורים', '16px', 400, 'לחיצת חזה במוט', '77.5 × 8'],
+      ['--text-xs', '13/18', 'תוויות, מטא', '13px', 400, 'סטים השבוע לשריר', '10–20']
+    ].map(([tok, spec, use, px, w, sample, num]) => ({ tok, spec, use, px, w, sample, num }));
+    const space = [['--space-1', 4, 'אייקון↔טקסט'], ['--space-2', 8, 'בין כרטיסים'], ['--space-3', 12, 'בתוך שורה'], ['--space-4', 16, 'שולי מסך, ריפוד כרטיס'], ['--space-5', 24, 'בין מקטעים'], ['--space-6', 32, 'אוויר מעל מצב ריק']]
+      .map(([tok, n, use]) => ({ tok, px: n * 4 + 'px', use: `${n} · ${use}` }));
+    const st = (label, s, bg, fg, bd, loading) => ({ label, st: s, bg, fg, bd: bd || '0', loading: !!loading });
+    const btnRows = [
+      { name: 'primary', h: '56px', w: 600, states: [st('התחל', 'רגיל', '#5AA2F0', '#121211'), st('התחל', 'לחוץ', '#4A8FDB', '#121211'), st('התחל', 'מושבת', '#262624', '#6E6C66'), st('שומר', 'טוען', '#5AA2F0', '#121211', 0, true)] },
+      { name: 'secondary', h: '48px', w: 500, states: [st('צור תבנית', 'רגיל', 'transparent', '#EDEAE3', '1px solid #3D3C38'), st('צור תבנית', 'לחוץ', '#262624', '#EDEAE3', '1px solid #3D3C38'), st('צור תבנית', 'מושבת', 'transparent', '#6E6C66', '1px solid #2E2D2A'), st('טוען', 'טוען', 'transparent', '#EDEAE3', '1px solid #3D3C38', true)] },
+      { name: 'ghost', h: '48px', w: 400, states: [st('הוסף סט', 'רגיל', 'transparent', '#5AA2F0'), st('הוסף סט', 'לחוץ', '#262624', '#5AA2F0'), st('הוסף סט', 'מושבת', 'transparent', '#6E6C66'), st('', 'טוען', 'transparent', '#EDEAE3', 0, true)] }
+    ];
+    const S = (o) => ({ rowBg: 'transparent', nC: '#A09C94', inBg: '#262624', kgBd: '0', kgC: '#6E6C66', rC: '#6E6C66', ckBg: 'transparent', ckBd: '1.5px solid #3D3C38', ckC: '#6E6C66', ckI: 'icon-check', ...o });
+    const setStates = [
+      S({ n: 1, prev: '77.5 × 8', kg: '80', reps: '8', st: 'ממתין', desc: 'placeholder מהאימון הקודם' }),
+      S({ n: 2, prev: '77.5 × 8', kg: '80', reps: '8', nC: '#EDEAE3', kgBd: '1.5px solid #5AA2F0', kgC: '#EDEAE3', st: 'בעריכה', desc: 'מסגרת text בקלט עם הפוקוס' }),
+      S({ n: 3, prev: '77.5 × 8', kg: '80', reps: '8', rowBg: '#1E2A21', inBg: 'transparent', kgC: '#EDEAE3', rC: '#EDEAE3', ckBg: '#8DB596', ckBd: '0', ckC: '#121211', st: 'בוצע', desc: 'כל השורה ב-done-surface, ✓ מלא' }),
+      S({ n: 4, prev: '77.5 × 8', kg: '82.5', reps: '8', rowBg: '#1E2A21', inBg: 'transparent', kgC: '#EDEAE3', rC: '#EDEAE3', ckBg: '#8DB596', ckBd: '0', ckC: '#121211', ckI: 'icon-trophy', st: 'שיא אישי', desc: 'כמו בוצע, וה-✓ מתחלף ב-trophy' }),
+      S({ n: 5, prev: '—', kg: '', reps: '', st: 'ריק', desc: 'אין היסטוריה, הקלטים ריקים' }),
+      S({ n: 6, prev: '77.5 × 8', kg: '', reps: '', inBg: '#1C1C1A', ckBd: '1.5px solid #2E2D2A', ckC: '#3D3C38', st: 'מושבת', desc: 'האימון נשמר וננעל לעריכה' })
+    ];
+    const inputs = [
+      { st: 'ריק', v: 'חיפוש תרגיל', fg: '#6E6C66', bd: '0', op: 1 }, { st: 'פוקוס', v: 'Bench', fg: '#EDEAE3', bd: '1.5px solid #5AA2F0', op: 1 },
+      { st: 'מלא', v: 'Bench Press', fg: '#EDEAE3', bd: '0', op: 1 }, { st: 'שגיאה', v: '8O', fg: '#EDEAE3', bd: '1.5px solid #E0846F', op: 1, err: true },
+      { st: 'מושבת', v: 'חיפוש תרגיל', fg: '#6E6C66', bd: '0', op: 0.5 }
+    ];
+    const macroStates = [
+      { st: 'ריק', v: 'יעד 180 ג׳', w: '0%', c: '#A09C94', vc: '#A09C94' }, { st: 'חלבון · בתהליך', v: '132 / 180', w: '73%', c: '#D7A3B8', vc: '#EDEAE3' },
+      { st: 'פחמימות · הושלם', v: '260 / 260', w: '100%', c: '#D6BF8A', vc: '#EDEAE3' }, { st: 'שומן · חריגה', v: '78 / 70', w: '100%', c: '#8FA9CF', vc: '#E0846F' }
+    ];
+    const motionTok = [['--motion-fast', '120ms', 'לחיצה, מילוי ✓'], ['--motion-base', '200ms', 'שינוי מצב שורה, toast'], ['--motion-slow', '320ms', 'sheet, סיכום אימון'], ['--ease-out', '.2,.8,.2,1', 'כניסה, כל שינוי מצב'], ['--ease-in-out', '.4,0,.2,1', 'יציאה, תנועה של איור']].map(([k, v, use]) => ({ k, v, use }));
+    const steps = (...a) => a.map((t, i) => ({ i: String(i + 1).padStart(2, '0'), t }));
+    const motions = [
+      { name: 'סימון סט', steps: steps('✓: רקע ל-done, scale מ-0.92 ל-1 · fast · ease-out', 'שורה: רקע ל-done-surface · base · ease-out', 'רטט קל (10ms). שום דבר לא קופץ ואין טיימר') },
+      { name: 'שיא אישי', steps: steps('ה-✓ מתחלף ב-trophy: crossfade · base', 'בלי toast בזמן אימון', 'השיאים מוצגים בסיכום הסיום, בתגי done') },
+      { name: 'סיום אימון', steps: steps('"סיים": מצב טוען עד שהשמירה מסתיימת', 'Sheet הסיכום עולה מלמטה · slow · ease-out', 'המספרים מופיעים מיד, בלי ספירה מונפשת. שיאים בתגי done') }
+    ];
+    return { colors, type, space, btnRows, setStates, inputs, macroStates, motionTok, motions, tokensText: this.state.tokensText, rulesText: this.state.rulesText };
+  }
+}
+</script>
+</body>
+</html>
