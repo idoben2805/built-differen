@@ -119,7 +119,7 @@
   let S = load();
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
-  const ui = { tab: 'workout', modal: null, menu: null, libQ: '', libMuscle: 'all', libEq: 'all', rest: null, nutriDate: null, explorerExId: null };
+  const ui = { tab: 'workout', modal: null, menu: null, libQ: '', libMuscle: 'all', libEq: 'all', libSort: 'az', libView: 'ex', rest: null, nutriDate: null, explorerExId: null };
 
   /* ============================ HELPERS ============================ */
   const $ = (s, r = document) => r.querySelector(s);
@@ -1004,7 +1004,7 @@
       <div class="q-ex__head">
         <span class="q-thumb"><span class="q-thumb__letter">${name.trim().charAt(0).toUpperCase()}</span></span>
         <div class="q-ex__text">
-          <span class="q-ex__name ltr">${name}</span>
+          <button class="q-ex__name ltr" data-action="ex-info" data-id="${e.exId}">${name}</button>
           <span class="q-ex__sub">${ex.heName || ex.he || ''}</span>
           <span class="q-ex__meta">${meta}${isSuperset ? `<span class="q-badge"><i data-lucide="link-2"></i>סופר-סט</span>` : ''}</span>
         </div>
@@ -1071,23 +1071,80 @@
   }
 
   function chips(map, cur, action) {
-    return `<div class="scroll-x"><button class="chip ${cur === 'all' ? 'active' : ''}" data-action="${action}" data-v="all">הכל</button>` +
-      Object.keys(map).map(k => `<button class="chip ${cur === k ? 'active' : ''}" data-action="${action}" data-v="${k}">${map[k].he}</button>`).join('') + '</div>';
+    return `<div class="q-chips"><button class="q-chip" aria-pressed="${cur === 'all'}" data-action="${action}" data-v="all">הכל</button>` +
+      Object.keys(map).map(k => `<button class="q-chip" aria-pressed="${cur === k}" data-action="${action}" data-v="${k}">${map[k].he}</button>`).join('') + '</div>';
+  }
+
+  const escQ = v => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  function searchInputHTML(kind, value) {
+    return `<label class="q-input"><i data-lucide="search" class="q-input__icon"></i><input class="q-input__control" autocomplete="off" placeholder="חיפוש תרגיל (באנגלית או בעברית)" data-search="${kind}" value="${escQ(value)}" /></label>`;
+  }
+  function qSheet(title, body, opts) {
+    opts = opts || {};
+    return `<div class="q-overlay" data-action="close-modal-bg"><div class="q-sheet ${opts.full ? 'q-sheet--full' : ''}" role="dialog" aria-modal="true">
+      <span class="q-sheet__grab"></span>
+      <div class="q-sheet__header"><span class="q-sheet__title ${opts.ltr ? 'ltr' : ''}">${title}</span>
+        <button class="q-sheet__close" data-action="close-modal" aria-label="סגור"><i data-lucide="x"></i></button></div>
+      <div class="q-sheet__body">${body}</div></div></div>`;
+  }
+
+  const exLetter = e => ((e.name || e.en || '?').trim().charAt(0) || '?').toUpperCase();
+  const exThumbHTML = e => `<span class="q-thumb"><span class="q-thumb__letter">${exLetter(e)}</span></span>`;
+  const muscleHe = e => MUSCLES[e.muscle] ? MUSCLES[e.muscle].he : (e.muscle || '');
+  const equipHe = e => EQUIP[e.equipment] ? EQUIP[e.equipment].he : (e.equip || '');
+  const exByName = (a, b) => (a.name || a.en || '').localeCompare(b.name || b.en || '', 'en');
+  function muscleAbbr(he) {
+    const w = String(he).split(' ');
+    if (w.length > 1) return w[0] + ' ' + w[1].charAt(0) + '׳';
+    return he.length > 4 ? he.slice(0, 3) + '׳' : he;
+  }
+
+  function exRowHTML(e, action, btnLabel, sub) {
+    const nm = e.name || e.en;
+    const text = `<span class="q-list-row__text"><span class="q-list-row__title ltr">${nm}</span><span class="q-list-row__sub">${sub}</span></span>`;
+    if (action === 'lib-add') {
+      return `<div class="q-list-row q-list-row--split">
+        <button class="q-list-row__main" data-action="ex-info" data-id="${e.id}">${exThumbHTML(e)}${text}</button>
+        <button class="q-icon-btn q-list-row__act" data-action="lib-add" data-id="${e.id}" aria-label="${btnLabel}: ${nm}"><i data-lucide="plus"></i></button>
+      </div>`;
+    }
+    return `<button class="q-list-row" data-action="${action}" data-id="${e.id}" aria-label="${btnLabel}: ${nm}">${exThumbHTML(e)}${text}<i data-lucide="plus" class="q-list-row__add"></i></button>`;
+  }
+
+  function libEmptyHTML() {
+    const q = (ui.libQ || '').trim();
+    const chipsOn = [];
+    if (ui.libMuscle !== 'all' && MUSCLES[ui.libMuscle]) chipsOn.push(`<button class="q-chip q-chip--removable" data-action="lib-muscle" data-v="all" aria-label="הסר סינון ${MUSCLES[ui.libMuscle].he}">${MUSCLES[ui.libMuscle].he}<i data-lucide="x" class="q-chip__remove"></i></button>`);
+    if (ui.libEq !== 'all' && EQUIP[ui.libEq]) chipsOn.push(`<button class="q-chip q-chip--removable" data-action="lib-eq" data-v="all" aria-label="הסר סינון ${EQUIP[ui.libEq].he}">${EQUIP[ui.libEq].he}<i data-lucide="x" class="q-chip__remove"></i></button>`);
+    const title = q ? `לא מצאנו את <bdi dir="auto">"${escQ(q)}"</bdi>` : 'לא נמצאו תרגילים';
+    return `<div class="q-empty"><span class="q-empty__title">${title}</span>
+      <span class="q-empty__text">בדוק את האיות או נקה את הסינון.</span>
+      ${chipsOn.length ? `<div class="q-chips">${chipsOn.join('')}</div>` : ''}
+      ${q ? `<button class="q-btn q-btn--secondary q-empty__action" data-action="lib-clear-q">נקה חיפוש</button>` : ''}</div>`;
   }
 
   function exerciseListHTML(list, action, btnLabel) {
-    if (!list.length) return '<div class="muted text-center py-6">לא נמצאו תרגילים</div>';
-    return list.map(e => `<div class="list-item">
-      <div class="flex items-center gap-3 flex-1 min-w-0">
-        ${getExerciseSvg(e)}
-        <div class="min-w-0 flex-1">
-          <div class="font-bold text-sm text-white truncate" dir="ltr" style="text-align: right;">${e.name || e.en}</div>
-          <div class="text-xs text-blue-400 font-semibold">${e.heName || e.he}</div>
-          <div class="text-[11px] muted">${MUSCLES[e.muscle] ? MUSCLES[e.muscle].he : e.muscle} · ${EQUIP[e.equipment] ? EQUIP[e.equipment].he : (e.equip || '')}</div>
-        </div>
-      </div>
-      <button class="btn btn-ghost" data-action="${action}" data-id="${e.id}">${btnLabel}</button>
-    </div>`).join('');
+    if (action === 'lib-add') {
+      if (!list.length) return libEmptyHTML();
+      let groups;
+      if (ui.libSort === 'muscle') {
+        groups = Object.keys(MUSCLES).map(k => ({ name: MUSCLES[k].he, idx: muscleAbbr(MUSCLES[k].he), items: list.filter(e => e.muscle === k) }));
+        const rest = list.filter(e => !MUSCLES[e.muscle]);
+        if (rest.length) groups.push({ name: 'אחר', idx: 'אחר', items: rest });
+      } else {
+        const by = {};
+        list.forEach(e => { const c = exLetter(e); const k = /[A-Z]/.test(c) ? c : '#'; (by[k] = by[k] || []).push(e); });
+        groups = Object.keys(by).sort((a, b) => a === '#' ? 1 : b === '#' ? -1 : a.localeCompare(b)).map(k => ({ name: k, idx: k, ltr: true, items: by[k] }));
+      }
+      groups = groups.filter(g => g.items.length);
+      const byMuscle = ui.libSort === 'muscle';
+      return `<div class="q-list">` + groups.map((g, i) => `
+        <div class="q-section-header q-section-header--anchor" id="lib-sec-${i}"><span class="q-section-header__title ${g.ltr ? 'ltr' : ''}">${g.name}</span><span class="q-section-header__count num">${g.items.length}</span></div>
+        ${g.items.slice().sort(exByName).map(e => exRowHTML(e, action, btnLabel, byMuscle ? `${e.heName || e.he || ''} · ${equipHe(e)}` : `${e.heName || e.he || ''} · ${muscleHe(e)}`)).join('')}`).join('') + `</div>
+        <nav class="q-section-index q-section-index--sticky" aria-label="קפיצה לקטע"><div class="q-section-index__rail">${groups.map((g, i) => `<button data-action="lib-jump" data-v="lib-sec-${i}">${g.idx}</button>`).join('')}</div></nav>`;
+    }
+    if (!list.length) return '<div class="q-empty"><span class="q-empty__title">לא נמצאו תרגילים</span><span class="q-empty__text">נסה חיפוש או סינון אחר.</span></div>';
+    return `<div class="q-list">` + list.map(e => exRowHTML(e, action, btnLabel, `${e.heName || e.he || ''} · ${muscleHe(e)}`)).join('') + `</div>`;
   }
 
   function homeRoutineCard(r) {
@@ -1110,31 +1167,44 @@
     </div>`;
   }
 
-  function routineCard(r) {
-    const exercises = normalizeRoutineExercises(r);
-    return `<div class="card"><div class="flex items-center justify-between">
-        <div><div class="font-bold text-white text-base">${r.name}</div><div class="text-xs text-blue-400 font-semibold">${exercises.length} תרגילים</div></div>
-        <div class="flex gap-1.5 items-center">
-          <button class="btn btn-success !py-1.5 !px-3 text-xs font-bold" data-action="start-routine" data-id="${r.id}">התחל אימון</button>
-          <button class="btn btn-ghost !py-1.5 !px-2.5 text-xs font-semibold border border-blue-500/30 text-blue-400" data-action="edit-routine" data-id="${r.id}">✏️ ערוך</button>
-          <button class="btn btn-danger !p-1.5" data-action="del-routine" data-id="${r.id}" aria-label="מחק תבנית">🗑️</button>
-        </div></div>
-        <div class="text-[11px] muted mt-1.5">${exercises.map(item => {
-          const ex = exById(item.exId);
-          const sCount = item.targetSets ? ` (${item.targetSets})` : '';
-          return (ex ? (ex.name || ex.en) : '?') + sCount;
-        }).join(' · ')}</div></div>`;
+  function routineCard(r) { return homeRoutineCard(r); }
+
+  function libDropdown(key, label, map, cur, action) {
+    const open = !!(ui.menu && ui.menu.dd === key);
+    const curLabel = cur !== 'all' && map[cur] ? map[cur].he : label;
+    return `<div class="q-filter ${key === 'mus' ? 'q-filter--wide' : ''}"><button class="q-dropdown q-dropdown--block" data-action="lib-dd" data-v="${key}" aria-haspopup="listbox" aria-expanded="${open}"><span class="q-dropdown__label">${curLabel}</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+      ${open ? `<div class="q-menu q-filter__menu" role="listbox">
+        <button class="q-menu__item" role="option" aria-selected="${cur === 'all'}" data-action="${action}" data-v="all">${label}</button>
+        ${Object.keys(map).map(k => `<button class="q-menu__item" role="option" aria-selected="${cur === k}" data-action="${action}" data-v="${k}">${map[k].he}</button>`).join('')}
+      </div>` : ''}</div>`;
   }
 
   function viewLibrary() {
-    return `<div class="flex items-center justify-between mb-2"><div class="card-title text-lg">התבניות שלי</div>
-        <button class="btn btn-primary !py-1.5" data-action="new-routine">+ תבנית חדשה</button></div>
-      ${S.routines.length ? S.routines.map(routineCard).join('')
-        : '<div class="card muted text-sm text-center">אין תבניות עדיין. לחץ על "+ תבנית חדשה".</div>'}
-      <div class="card-title mt-4 mb-2 text-lg">רשימת תרגילים (${EX.length})</div>
-      <input class="input mb-2" placeholder="חפש תרגיל (באנגלית או בעברית)..." data-search="lib" value="${ui.libQ}" />
-      ${chips(MUSCLES, ui.libMuscle, 'lib-muscle')}${chips(EQUIP, ui.libEq, 'lib-eq')}
-      <div class="card" id="lib-list">${exerciseListHTML(filteredExercises(ui.libQ, ui.libMuscle, ui.libEq), 'lib-add', 'הוסף לאימון')}</div>`;
+    const tab = (v, label, n) => `<button class="q-segmented__item" role="tab" aria-selected="${ui.libView === v}" data-action="lib-view" data-v="${v}">${label}&nbsp;<span class="num">${n}</span></button>`;
+    const head = `<div class="q-screen-title"><h1 class="q-screen-title__text">ספרייה</h1></div>
+      <div class="q-segmented" role="tablist">${tab('ex', 'תרגילים', EX.length)}${tab('tpl', 'תבניות', S.routines.length)}</div>`;
+    if (ui.libView === 'tpl') {
+      const body = S.routines.length
+        ? `<div class="q-section-header"><span class="q-section-header__title">תבניות · <span class="num">${S.routines.length}</span></span>
+            <button class="q-section-header__action q-row q-gap-1" data-action="new-routine"><i data-lucide="plus"></i>חדשה</button></div>
+           <div class="q-stack q-gap-2">${S.routines.map(routineCard).join('')}</div>`
+        : `<div class="q-empty"><i data-lucide="layout-list" class="q-icon-24 q-muted"></i>
+            <span class="q-empty__title">עוד אין תבניות</span>
+            <span class="q-empty__text">תבנית שומרת את התרגילים והסטים שלך. בפעם הבאה מתחילים בלחיצה אחת.</span>
+            <button class="q-btn q-btn--secondary q-empty__action" data-action="new-routine">צור תבנית</button></div>`;
+      return `<div class="q-stack q-gap-4">${head}${body}</div>`;
+    }
+    const sortOpen = !!(ui.menu && ui.menu.dd === 'sort');
+    const sort = `<div class="q-filter q-filter--end"><button class="q-icon-btn q-icon-btn--outlined" data-action="lib-dd" data-v="sort" aria-haspopup="listbox" aria-expanded="${sortOpen}" aria-label="מיון"><i data-lucide="${ui.libSort === 'muscle' ? 'layers' : 'arrow-down-a-z'}"></i></button>
+      ${sortOpen ? `<div class="q-menu q-filter__menu" role="listbox">
+        <button class="q-menu__item" role="option" aria-selected="${ui.libSort === 'az'}" data-action="lib-sort" data-v="az"><i data-lucide="arrow-down-a-z"></i>לפי שם A–Z</button>
+        <button class="q-menu__item" role="option" aria-selected="${ui.libSort === 'muscle'}" data-action="lib-sort" data-v="muscle"><i data-lucide="layers"></i>לפי שריר</button>
+      </div>` : ''}</div>`;
+    return `<div class="q-stack q-gap-4">${head}
+        ${searchInputHTML('lib', ui.libQ)}
+        <div class="q-filter-bar">${libDropdown('mus', 'כל קבוצות השריר', MUSCLES, ui.libMuscle, 'lib-muscle')}${libDropdown('eq', 'כל הציוד', EQUIP, ui.libEq, 'lib-eq')}${sort}</div>
+      </div>
+      <div class="q-indexed" id="lib-list">${exerciseListHTML(filteredExercises(ui.libQ, ui.libMuscle, ui.libEq), 'lib-add', 'הוסף לאימון')}</div>`;
   }
 
   /* ---- Nutrition Tab ---- */
@@ -1417,11 +1487,20 @@
     </div>`;
   }
 
-  function lineChartExercise(points, w = 320, h = 130) {
+  function lineChartExercise(points, w = 320, h = 130, quiet = false) {
     if (points.length < 2) return '';
     const vals = points.map(p => p.kg), min = Math.max(0, Math.min(...vals) - 2), max = Math.max(...vals) + 2, px = 14;
     const X = i => px + i * (w - 2 * px) / (points.length - 1), Y = v => h - 18 - (v - min) / (max - min) * (h - 36);
     const path = points.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.kg).toFixed(1)).join(' ');
+    if (quiet) {
+      return `<div class="q-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="גרף התקדמות משקל">
+        <line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="18" y2="18"/><line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="${h - 18}" y2="${h - 18}"/>
+        <path class="q-chart__line" d="${path}"/>
+        ${points.map((p, i) => `<circle class="q-chart__dot" cx="${X(i).toFixed(1)}" cy="${Y(p.kg).toFixed(1)}" r="3.5"/>`).join('')}
+        <text class="q-chart__label" x="${px}" y="12">${max.toFixed(1)}</text>
+        <text class="q-chart__label" x="${px}" y="${h - 3}">${min.toFixed(1)}</text>
+      </svg><div class="q-chart__axis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points[points.length - 1].date)}</span></div></div>`;
+    }
     return `<svg viewBox="0 0 ${w} ${h}" class="w-full" style="direction:ltr">
       <path d="${path}" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round"/>
       ${points.map((p, i) => `<circle cx="${X(i)}" cy="${Y(p.kg)}" r="3.5" fill="#f59e0b"/>`).join('')}
@@ -1433,19 +1512,8 @@
     </div>`;
   }
 
-  function exerciseExplorerHTML() {
-    let curId = ui.explorerExId;
-    if (!curId || !exById(curId)) {
-      if (S.history.length && S.history[0].exercises && S.history[0].exercises.length) {
-        curId = S.history[0].exercises[0].exId;
-      } else {
-        curId = EX[0] ? EX[0].id : null;
-      }
-      ui.explorerExId = curId;
-    }
-    const curEx = exById(curId);
-    if (!curEx) return '';
-
+  /* read-only per-exercise stats from S.history (shared by the progress explorer and the exercise page) */
+  function exerciseStats(curId) {
     const exHistory = [];
     [...S.history].reverse().forEach(w => {
       const found = (w.exercises || []).find(e => e.exId === curId);
@@ -1481,6 +1549,23 @@
         });
       }
     });
+    return { exHistory, bestKg, bestReps, best1RM };
+  }
+
+  function exerciseExplorerHTML() {
+    let curId = ui.explorerExId;
+    if (!curId || !exById(curId)) {
+      if (S.history.length && S.history[0].exercises && S.history[0].exercises.length) {
+        curId = S.history[0].exercises[0].exId;
+      } else {
+        curId = EX[0] ? EX[0].id : null;
+      }
+      ui.explorerExId = curId;
+    }
+    const curEx = exById(curId);
+    if (!curEx) return '';
+
+    const { exHistory, bestKg, bestReps, best1RM } = exerciseStats(curId);
 
     return `<div class="card">
       <div class="card-title mb-2">חקר תרגילים ושיאים (PR Explorer)</div>
@@ -1530,6 +1615,63 @@
         </div>
       ` : '<div class="muted text-xs text-center py-4 bg-slate-900/30 rounded-lg">תרגיל זה טרם נרשם באימונים שבוצעו.</div>'}
     </div>`;
+  }
+
+  /* ---- Exercise page (presentation only: reads S.history, writes nothing) ---- */
+  function setLabel(s) { return num(s.kg) > 0 ? `${fmtN(num(s.kg))} × ${num(s.reps)}` : `${num(s.reps)} חזרות`; }
+  function exInfoEmpty(title, text) { return `<div class="q-empty"><span class="q-empty__title">${title}</span><span class="q-empty__text">${text}</span></div>`; }
+
+  function exInfoHTML(m) {
+    const ex = exById(m.id);
+    if (!ex) return qSheet('תרגיל לא נמצא', exInfoEmpty('התרגיל לא נמצא', 'ייתכן שהוא הוסר מהספרייה.'), { full: true });
+    const tab = m.tab || 'about';
+    const tabs = [['about', 'אודות'], ['history', 'היסטוריה'], ['charts', 'גרפים'], ['records', 'שיאים']];
+    const sessions = [];
+    S.history.forEach(w => {
+      const f = (w.exercises || []).find(e => e.exId === ex.id);
+      const sets = f ? (f.sets || []).filter(s => s.type !== 'W') : [];
+      if (sets.length) sessions.push({ date: w.date, sets });
+    });
+    let body = '';
+    if (tab === 'about') {
+      const pose = cap => `<figure class="q-board__pose"><div class="q-board__frame"><div class="q-board__placeholder"><span class="q-board__letter">${exLetter(ex)}</span></div></div><figcaption class="q-board__caption">${cap}</figcaption></figure>`;
+      body = `<div class="q-board q-board--poses">${pose('התחלה')}${pose('סיום')}</div>
+        <div class="q-stack q-gap-2">
+          <span class="q-exp__name">${ex.heName || ex.he || ''}</span>
+          <div class="q-badges"><span class="q-badge">${muscleHe(ex)}</span><span class="q-badge">${equipHe(ex)}</span></div>
+        </div>
+        <div class="q-section-header"><span class="q-section-header__title">הוראות ביצוע</span></div>
+        ${exInfoEmpty('עוד אין הוראות ביצוע', 'לתרגיל הזה עוד לא נוספו הוראות ביצוע.')}`;
+    } else if (tab === 'history') {
+      body = sessions.length
+        ? `<div class="q-list">${sessions.slice(0, 30).map(x => `<div class="q-list-row q-list-row--static"><span class="q-list-row__text"><span class="q-list-row__title">${fmtDate(x.date)}</span><span class="q-list-row__sub ltr">${x.sets.map(setLabel).join(' · ')}</span></span></div>`).join('')}</div>`
+        : exInfoEmpty('עוד לא ביצעת את התרגיל', 'אחרי האימון הראשון תופיע כאן ההיסטוריה של הסטים.');
+    } else if (tab === 'charts') {
+      const st = exerciseStats(ex.id);
+      body = st.exHistory.length >= 2
+        ? `<div class="q-section-header"><span class="q-section-header__title">משקל עבודה מקסימלי · ק״ג</span></div>${lineChartExercise(st.exHistory.map(h => ({ date: h.date, kg: h.kg })), 320, 130, true)}`
+        : exInfoEmpty('אין מספיק נתונים לגרף', 'הגרף יופיע אחרי שני אימונים לפחות עם משקל בתרגיל הזה.');
+    } else {
+      const st = exerciseStats(ex.id);
+      const prs = [];
+      S.history.forEach(w => {
+        const f = (w.exercises || []).find(e => e.exId === ex.id);
+        const ps = f ? (f.sets || []).filter(s => s.pr) : [];
+        if (ps.length) { const b = ps.reduce((a, c) => num(c.kg) > num(a.kg) ? c : a); prs.push({ date: w.date, s: b }); }
+      });
+      body = st.best1RM > 0
+        ? `<div class="q-stat-row">
+            <div class="q-stat"><span class="q-stat__label">שיא עבודה · ק״ג</span><span class="q-stat__value" dir="ltr">${fmtN(st.bestKg)}×${st.bestReps}</span></div>
+            <div class="q-stat"><span class="q-stat__label">1RM משוער · ק״ג</span><span class="q-stat__value">${Math.round(st.best1RM)}</span></div>
+            <div class="q-stat"><span class="q-stat__label">אימונים</span><span class="q-stat__value">${st.exHistory.length}</span></div>
+          </div>
+          ${prs.length ? `<div class="q-section-header"><span class="q-section-header__title">שיאים אחרונים</span></div>
+            <div class="q-list">${prs.slice(0, 5).map(p => `<div class="q-list-row q-list-row--static"><i data-lucide="trophy" class="q-list-row__icon-done"></i><span class="q-list-row__text"><span class="q-list-row__title">${fmtDate(p.date)}</span></span><span class="q-list-row__value q-list-row__value--lg ltr">${setLabel(p.s)}</span></div>`).join('')}</div>` : ''}`
+        : exInfoEmpty('עוד אין שיאים', 'השיאים יופיעו אחרי שתבצע את התרגיל עם משקל באימון.');
+    }
+    return qSheet(ex.name || ex.en, `
+      <div class="q-segmented" role="tablist">${tabs.map(t => `<button class="q-segmented__item" role="tab" aria-selected="${tab === t[0]}" data-action="ex-tab" data-v="${t[0]}">${t[1]}</button>`).join('')}</div>
+      ${body}`, { full: true, ltr: true });
   }
 
   function backupCardHTML() {
@@ -1616,20 +1758,15 @@
 
   function routinePickHTML() {
     const m = ui.modal, list = filteredExercises(m.q, 'all', 'all');
-    return list.map(e => { 
-      const on = m.ids.includes(e.id); 
-      return `<div class="list-item">
-        <div class="flex items-center gap-3 flex-1 min-w-0">
-          ${getExerciseSvg(e)}
-          <div class="min-w-0 flex-1">
-            <div class="font-bold text-sm text-white truncate" dir="ltr" style="text-align: right;">${e.name || e.en}</div>
-            <div class="text-xs text-blue-400 font-semibold">${e.heName || e.he}</div>
-            <div class="text-[11px] muted">${MUSCLES[e.muscle] ? MUSCLES[e.muscle].he : e.muscle} · ${EQUIP[e.equipment] ? EQUIP[e.equipment].he : (e.equip || '')}</div>
-          </div>
-        </div>
-        <button class="btn ${on ? 'btn-success' : ''}" data-action="routine-toggle" data-id="${e.id}">${on ? '✓ נבחר' : 'בחר'}</button>
-      </div>`; 
-    }).join('') || '<div class="muted text-center py-6">לא נמצא</div>';
+    if (!list.length) return '<div class="q-empty"><span class="q-empty__title">לא נמצא</span><span class="q-empty__text">נסה חיפוש אחר.</span></div>';
+    return '<div class="q-list">' + list.map(e => {
+      const on = m.ids.includes(e.id);
+      return `<button class="q-list-row ${on ? 'is-selected' : ''}" data-action="routine-toggle" data-id="${e.id}" aria-pressed="${on}">
+        ${exThumbHTML(e)}
+        <span class="q-list-row__text"><span class="q-list-row__title ltr">${e.name || e.en}</span><span class="q-list-row__sub">${e.heName || e.he || ''} · ${muscleHe(e)}</span></span>
+        <i data-lucide="${on ? 'check' : 'plus'}" class="q-list-row__add"></i>
+      </button>`;
+    }).join('') + '</div>';
   }
 
   function foodRow(f) {
@@ -1771,26 +1908,28 @@
     if (m.type === 'pickEx') {
       const title = m.replaceEi !== undefined ? 'החלפת תרגיל' : 'בחר תרגיל';
       const btnLabel = m.replaceEi !== undefined ? 'החלף' : 'הוסף';
-      el.innerHTML = sheet(title, `<input class="input mb-2" placeholder="חיפוש תרגיל (באנגלית או בעברית)..." data-search="pick" value="${m.q || ''}" />
-        ${chips(MUSCLES, m.mus || 'all', 'pick-muscle')}<div id="pick-list">${exerciseListHTML(filteredExercises(m.q, m.mus || 'all', 'all'), 'pick-ex', btnLabel)}</div>`);
+      el.innerHTML = qSheet(title, `${searchInputHTML('pick', m.q || '')}
+        ${chips(MUSCLES, m.mus || 'all', 'pick-muscle')}<div id="pick-list">${exerciseListHTML(filteredExercises(m.q, m.mus || 'all', 'all'), 'pick-ex', btnLabel)}</div>`, { full: true });
+    } else if (m.type === 'exInfo') {
+      el.innerHTML = exInfoHTML(m);
     } else if (m.type === 'food') {
       el.innerHTML = foodModalHTML();
     } else if (m.type === 'editRoutine') {
       if (m.subview === 'addEx') {
         const filtered = filteredExercises(m.q, m.mus || 'all', 'all');
-        el.innerHTML = sheet('הוסף תרגיל לתבנית', `
+        el.innerHTML = qSheet('הוסף תרגיל לתבנית', `
           <div class="flex items-center justify-between mb-3">
             <button class="btn btn-ghost !p-1 text-xs flex items-center gap-1 text-blue-400 font-bold" data-action="routine-editor-add-back">
               <span>←</span> חזרה לעריכה
             </button>
             <div class="text-xs muted font-bold">${filtered.length} תרגילים זמינים</div>
           </div>
-          <input class="input mb-2" placeholder="חיפוש תרגיל (באנגלית או בעברית)..." data-search="redit-pick" value="${m.q || ''}" />
+          ${searchInputHTML('redit-pick', m.q || '')}
           ${chips(MUSCLES, m.mus || 'all', 'redit-muscle')}
-          <div id="redit-pick-list" style="max-height:46vh;overflow-y:auto;padding-right:2px">
+          <div id="redit-pick-list">
             ${exerciseListHTML(filtered, 'routine-editor-add-ex', '+ הוסף לתבנית')}
           </div>
-        `);
+        `, { full: true });
       } else {
         const rows = m.exercises.map((item, idx) => {
           const ex = exById(item.exId) || { name: 'Exercise', en: 'Exercise', heName: 'תרגיל', he: 'תרגיל', muscle: 'chest', equipment: 'barbell', pose: 'bench-press' };
@@ -1905,10 +2044,10 @@
       el.innerHTML = sheet('שמירת תבנית', `<input id="routine-name" class="input mb-3" placeholder="שם התבנית (למשל: דחיפה A)" value="${m.name || ''}" />
         <button class="btn btn-primary btn-block" data-action="routine-confirm">שמור תבנית</button>`);
     } else if (m.type === 'newRoutine') {
-      el.innerHTML = sheet('תבנית חדשה', `<input id="routine-name" class="input mb-2" placeholder="שם התבנית (למשל: רגליים כבד)" value="${m.name || ''}" />
-        <input class="input mb-2" placeholder="חיפוש תרגיל (באנגלית או בעברית)..." data-search="rpick" value="${m.q || ''}" />
-        <div id="rpick-list" style="max-height:42vh;overflow-y:auto">${routinePickHTML()}</div>
-        <button class="btn btn-success btn-block mt-3" data-action="routine-create">צור תבנית (<span id="rcount">${m.ids.length}</span> תרגילים)</button>`);
+      el.innerHTML = qSheet('תבנית חדשה', `<input id="routine-name" class="input mb-2" placeholder="שם התבנית (למשל: רגליים כבד)" value="${m.name || ''}" />
+        ${searchInputHTML('rpick', m.q || '')}
+        <div id="rpick-list">${routinePickHTML()}</div>
+        <button class="btn btn-success btn-block mt-3" data-action="routine-create">צור תבנית (<span id="rcount">${m.ids.length}</span> תרגילים)</button>`, { full: true });
     } else if (m.type === 'savedMeals') {
       const mealObj = MEALS.find(x => x.k === m.meal) || { he: 'ארוחה' };
       const curDate = ui.nutriDate || todayKey();
@@ -2062,7 +2201,7 @@
     const t = ev.target.closest('[data-action],[data-nav]'); if (!t) { if (ui.menu) { ui.menu = null; render(); } return; }
     if (t.dataset.nav) { if (t.dataset.nav === 'workout' && ui.tab !== 'workout') ui.prevTab = ui.tab; ui.tab = t.dataset.nav; ui.menu = null; render(); window.scrollTo(0, 0); return; }
     const d = t.dataset, ei = +d.ei, si = +d.si;
-    if (ui.menu && !['item-menu', 'type-menu', 'ex-menu', 'wk-menu'].includes(d.action)) { ui.menu = null; render(); }
+    if (ui.menu && !['item-menu', 'type-menu', 'ex-menu', 'wk-menu', 'lib-dd'].includes(d.action)) { ui.menu = null; render(); }
     switch (d.action) {
       case 'item-menu': ui.menu = ui.menu && ui.menu.mid === d.id ? null : { mid: d.id }; render(); ev.stopPropagation(); break;
       case 'ex-menu': ui.menu = ui.menu && ui.menu.exm === ei ? null : { exm: ei }; render(); ev.stopPropagation(); break;
@@ -2333,6 +2472,19 @@
       case 'rest-add': if (ui.rest) { ui.rest.end += 15000; ui.rest.total += 15; renderRest(); } break;
       case 'rest-sub': if (ui.rest) { ui.rest.end -= 15000; ui.rest.total = Math.max(1, ui.rest.total - 15); renderRest(); } break;
       case 'rest-skip': stopRest(); break;
+      case 'lib-dd': ui.menu = ui.menu && ui.menu.dd === d.v ? null : { dd: d.v }; render(); ev.stopPropagation(); break;
+      case 'lib-sort': ui.libSort = d.v === 'muscle' ? 'muscle' : 'az'; render(); break;
+      case 'lib-view': ui.libView = d.v === 'tpl' ? 'tpl' : 'ex'; render(); break;
+      case 'lib-clear-q': ui.libQ = ''; render(); break;
+      case 'lib-jump': {
+        const el = document.getElementById(d.v);
+        if (el) el.scrollIntoView({ block: 'start', behavior: window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        document.querySelectorAll('.q-section-index [aria-current]').forEach(b => b.removeAttribute('aria-current'));
+        t.setAttribute('aria-current', 'true');
+        break;
+      }
+      case 'ex-info': if (exById(d.id)) { ui.modal = { type: 'exInfo', id: d.id, tab: 'about' }; renderModal(); } break;
+      case 'ex-tab': if (ui.modal && ui.modal.type === 'exInfo') { ui.modal.tab = d.v; renderModal(); } break;
       case 'lib-muscle': ui.libMuscle = d.v; render(); break;
       case 'lib-eq': ui.libEq = d.v; render(); break;
       case 'lib-add': addExercise(d.id); toast('התרגיל נוסף לאימון הפעיל', true); renderHeader(); break;
@@ -2624,16 +2776,16 @@
       }, 600);
     } else if (d.search === 'lib') { 
       ui.libQ = t.value; 
-      const ll = $('#lib-list'); if (ll) ll.innerHTML = exerciseListHTML(filteredExercises(ui.libQ, ui.libMuscle, ui.libEq), 'lib-add', 'הוסף לאימון'); 
+      const ll = $('#lib-list'); if (ll) { ll.innerHTML = exerciseListHTML(filteredExercises(ui.libQ, ui.libMuscle, ui.libEq), 'lib-add', 'הוסף לאימון'); icons(); } 
     } else if (d.search === 'pick') { 
       ui.modal.q = t.value; 
-      const pl = $('#pick-list'); if (pl) pl.innerHTML = exerciseListHTML(filteredExercises(ui.modal.q, ui.modal.mus || 'all', 'all'), 'pick-ex', 'הוסף'); 
+      const pl = $('#pick-list'); if (pl) { pl.innerHTML = exerciseListHTML(filteredExercises(ui.modal.q, ui.modal.mus || 'all', 'all'), 'pick-ex', 'הוסף'); icons(); } 
     } else if (d.search === 'rpick') { 
       ui.modal.q = t.value; 
-      const rpl = $('#rpick-list'); if (rpl) rpl.innerHTML = routinePickHTML(); 
+      const rpl = $('#rpick-list'); if (rpl) { rpl.innerHTML = routinePickHTML(); icons(); } 
     } else if (d.search === 'redit-pick') { 
       ui.modal.q = t.value; 
-      const rpl = $('#redit-pick-list'); if (rpl) rpl.innerHTML = exerciseListHTML(filteredExercises(ui.modal.q, ui.modal.mus || 'all', 'all'), 'routine-editor-add-ex', '+ הוסף לתבנית'); 
+      const rpl = $('#redit-pick-list'); if (rpl) { rpl.innerHTML = exerciseListHTML(filteredExercises(ui.modal.q, ui.modal.mus || 'all', 'all'), 'routine-editor-add-ex', '+ הוסף לתבנית'); icons(); } 
     } else if (d.search === 'food') { 
       ui.modal.q = t.value; 
       const fl = $('#food-list'); if (fl) fl.innerHTML = foodListHTML(); 

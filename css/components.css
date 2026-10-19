@@ -61,6 +61,12 @@
    Exercise    .q-ex (+ --linked superset) ; parts __head (thumb + __text[__name .ltr, __sub, __meta (+ .q-badge)] + __more) __menu (.q-menu) __note (+ __note-input) __sets __add
                <section class="q-ex"><div class="q-ex__head"><span class="q-thumb">..</span><div class="q-ex__text"><span class="q-ex__name ltr">Bench Press</span><span class="q-ex__sub">לחיצת חזה</span></div><button class="q-icon-btn q-ex__more">..</button></div><div class="q-set-head">..</div><div class="q-ex__sets">.q-set-row..</div><button class="q-btn q-btn--ghost q-btn--block q-ex__add">הוסף סט</button></section>
                SetRow extras: .q-set-row__num is a button (set-type menu), .q-set-row__menu (.q-menu, absolute) ; StatCell extra: .q-stat-row--bleed (full width, borders top/bottom only)
+   Library     .q-filter-bar (row: 2 x .q-filter + sort) > .q-filter (position:relative) > .q-dropdown.q-dropdown--block + .q-menu.q-filter__menu ; .q-filter--end (menu opens to the other side)
+               .q-chips (horizontal chip row) ; .q-indexed (list wrapper, position:relative, room for the index) ; .q-section-header--anchor (jump target)
+               SectionIndex extras: .q-section-index--sticky > .q-section-index__rail (stays in view while the long list scrolls)
+               ListRow extras: .q-list-row--split > .q-list-row__main (tap = open) + .q-list-row__act (icon button) ; .q-list-row__add (accent + icon inside a whole-row button) ; .q-list-row--static (not tappable) ; .q-list-row__value--lg
+               <div class="q-list-row q-list-row--split"><button class="q-list-row__main">thumb + text</button><button class="q-icon-btn q-list-row__act" aria-label="הוסף"><i data-lucide="plus"></i></button></div>
+   ExercisePage .q-sheet(.q-sheet--full) with .q-segmented tabs ; .q-board__frame (1:1 box for a pose or a letter placeholder, holds .q-board__placeholder) ; .q-badges (wrapping badge row) ; .q-exp__name / __sub (title block) ; .q-chart svg is always ltr
    Layout      .q-screen (16 gutters) .q-stack .q-row .q-grow .q-between .q-wrap .q-gap-1..6 .q-section (gap 24)
    Text        .q-text-xs|sm|md|lg|xl|2xl (size+leading+weight) .q-muted (text-2) .q-faint (text-3, placeholder/disabled only) .q-link (accent)
    Icons       .q-icon-14 .q-icon-16 .q-icon-20 .q-icon-24 (size Lucide svg) ; .q-spin (loading spinner) ; .q-sr-only
@@ -576,3 +582,57 @@
 .q-ex__sets { display: flex; flex-direction: column; gap: var(--space-1); padding-inline: var(--space-2); }
 .q-ex__add { margin: var(--space-1) var(--space-4) 0; width: auto; background: var(--color-surface-1); }
 .q-ex__add:active { background: var(--color-surface-2); }
+
+/* ==========================================================================
+   Library: filters, indexed list, split rows
+   ========================================================================== */
+.q-filter-bar { display: flex; align-items: center; gap: var(--space-2); }
+.q-filter { position: relative; flex: 1; min-width: 0; }
+.q-filter--end { flex: none; }
+.q-dropdown--block { display: flex; width: 100%; justify-content: space-between; background: var(--color-surface-2); }
+.q-dropdown--block .q-dropdown__label { text-align: start; overflow-wrap: anywhere; white-space: normal; }
+.q-filter__menu { position: absolute; top: calc(100% + var(--space-1)); inset-inline-start: 0; z-index: 20; min-width: 100%; width: max-content; max-width: calc(100vw - var(--space-6)); max-height: 60vh; overflow-y: auto; }
+.q-filter--end .q-filter__menu { inset-inline-start: auto; inset-inline-end: 0; min-width: 180px; }
+.q-chips { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; }
+.q-chips::-webkit-scrollbar { display: none; }
+
+.q-indexed { position: relative; }
+.q-indexed > .q-list { padding-inline-end: calc(var(--space-5) + var(--space-4)); }
+.q-section-header--anchor { scroll-margin-top: calc(60px + var(--space-2)); }
+.q-section-index--sticky { align-items: flex-start; justify-content: flex-start; width: auto; min-width: 24px; pointer-events: none; }
+.q-section-index__rail { position: sticky; top: calc(60px + var(--space-5)); display: flex; flex-direction: column; align-items: center; pointer-events: auto; }
+.q-section-index--sticky button { min-width: 24px; min-height: 18px; padding-inline: 2px; white-space: nowrap; }
+
+.q-list-row--split { padding-block: 0; cursor: default; }
+.q-list-row--split:active { background: none; }
+.q-list-row__main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-3); min-height: 64px; padding: var(--space-2) 0;
+  background: none; border: 0; border-radius: var(--radius-sm); color: inherit; font: inherit; text-align: start; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.q-list-row__main:active { background: var(--color-surface-2); }
+.q-list-row__main:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.q-list-row__act { flex: none; color: var(--color-accent); }
+.q-list-row__add { flex: none; color: var(--color-accent); }
+.q-list-row--static { cursor: default; }
+.q-list-row--static:active { background: none; }
+.q-list-row__value--lg { font-size: var(--text-md); line-height: var(--leading-md); color: var(--color-text); }
+.q-list-row__sub.ltr { text-align: right; }
+.q-list-row.is-selected .q-list-row__add { color: var(--color-text); }
+
+/* ==========================================================================
+   Exercise page (sheet content)
+   ========================================================================== */
+.q-sheet__title.ltr { text-align: right; overflow-wrap: anywhere; }
+.q-board__frame { position: relative; aspect-ratio: 1 / 1; }
+.q-exp__name { font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); }
+.q-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.q-chart svg { direction: ltr; }
+.q-chart__axis { direction: ltr; display: flex; justify-content: space-between; margin-top: var(--space-1); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-list-row__icon-done { flex: none; color: var(--color-done); }
+
+/* exercise name that opens the exercise page (button in the active workout) */
+button.q-ex__name { background: none; border: 0; padding: 0; margin: 0; font-family: inherit; color: var(--color-accent); cursor: pointer; min-height: var(--size-hit); display: inline-flex; align-items: center; -webkit-tap-highlight-color: transparent; }
+button.q-ex__name:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.q-section-header__title.ltr { text-align: right; }
+.q-filter--wide { flex: 1.5; }
+.q-sheet__body > * { flex-shrink: 0; }
