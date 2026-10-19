@@ -9,7 +9,8 @@ Hebrew (RTL) fitness PWA: workouts, exercise library, nutrition, progress. Plain
 ## Files
 - `index.html`: app shell. `js/app.js`: all screens and logic (HTML is rendered from template strings). `js/data-*.js`: exercises and foods.
 - `css/tokens.css`: the ONLY place colors, sizes, spacing, radii, shadows and durations are defined.
-- `css/components.css`: the closed set of UI components. `styleguide.html` shows every component in every state. Look there before building UI.
+- `css/components.css`: the closed set of UI components (`css/styles.css` is only a tiny app-level reset). `styleguide.html` shows every component in every state. Look there before building UI.
+- `icon.svg`: app icon (fixed brand asset, literal hex allowed), used by `manifest.json` and `index.html`. `sw.js`: service worker; bump `CACHE_NAME` when shipped files change.
 - `design/`: reference files from Claude Design (screens, design system, rules). Read-only reference, do not edit or import from the app.
 
 ## Design rules (mandatory for any UI change)

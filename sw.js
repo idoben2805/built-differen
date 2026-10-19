@@ -1,8 +1,10 @@
 /* BUILT DIFFERENT — Service Worker (Offline Support & PWA) */
-const CACHE_NAME = 'built-different-v1';
+const CACHE_NAME = 'built-different-v2-quiet';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
+  './css/tokens.css',
+  './css/components.css',
   './css/styles.css',
   './js/data-exercises.js',
   './js/data-foods.js',
