@@ -1,0 +1,111 @@
+/* BUILT DIFFERENT · QUIET — design tokens v1.1 (accent: Signal)
+   Every color, size and duration in the app MUST come from this file. */
+:root {
+  /* — Surfaces & text (dark, default) — */
+  --color-bg: #121211;             /* app background */
+  --color-surface-1: #1C1C1A;      /* cards, sheets */
+  --color-surface-2: #262624;      /* inputs, floating bars, selected rows */
+  --color-border: #2E2D2A;         /* hairline dividers */
+  --color-border-strong: #3D3C38;  /* control outlines */
+  --color-text: #EDEAE3;           /* primary text, icons */
+  --color-text-2: #A09C94;         /* secondary text, labels */
+  --color-text-3: #6E6C66;         /* placeholder + disabled ONLY */
+
+  /* — Accent (Signal blue): interactive only — */
+  --color-accent: #5AA2F0;             /* primary button, active tab, links, focus, selected */
+  --color-accent-pressed: #4A8FDB;
+  --color-on-accent: #121211;       /* text/icons on accent */
+  --color-primary: var(--color-accent);
+  --color-on-primary: var(--color-on-accent);
+  --color-primary-pressed: var(--color-accent-pressed);
+
+  /* — Status — */
+  --color-done: #8DB596;           /* set done + personal record — nothing else */
+  --color-done-surface: #1E2A21;   /* background of a done set row */
+  --color-on-done: #121211;
+  --color-danger: #E0846F;         /* destructive, over target, errors */
+  --color-danger-surface: #2E1D19;
+  --color-overlay: rgba(8, 8, 7, .72);
+
+  /* — Data (charts & macros only, never on controls) — */
+  --color-protein: #D7A3B8;
+  --color-carbs: #D6BF8A;
+  --color-fat: #8FA9CF;
+  --color-chart: var(--color-accent);     /* the data series / current value */
+  --color-chart-muted: #3D3C38;           /* past bars, target band */
+  --color-chart-grid: var(--color-border);
+
+  /* — Type — */
+  --font-sans: 'IBM Plex Sans Hebrew', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;  /* every number */
+  --text-xs: 13px;  --leading-xs: 18px;   /* labels, meta (minimum size) */
+  --text-sm: 16px;  --leading-sm: 24px;   /* body, rows, buttons (minimum body) */
+  --text-md: 19px;  --leading-md: 26px;   /* exercise names, card titles */
+  --text-lg: 24px;  --leading-lg: 30px;   /* sheet titles, set kg/reps (mono) */
+  --text-xl: 32px;  --leading-xl: 38px;   /* screen titles, key stats */
+  --text-2xl: 48px; --leading-2xl: 52px;  /* rest timer, daily kcal (mono) */
+  --weight-light: 300; --weight-regular: 400; --weight-medium: 500; --weight-semibold: 600;
+
+  /* — Space — */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+
+  /* — Radius — */
+  --radius-sm: 8px;    /* inputs, set rows, thumbnails, chips */
+  --radius-md: 14px;   /* cards, buttons, sheets, toasts */
+  --radius-full: 999px;/* icon buttons, badges, progress tracks */
+
+  /* — Shadow (floating layers only: rest timer, toast, sheet) — */
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, .45);
+
+  /* — Sizes — */
+  --size-hit: 44px;        /* minimum touch target */
+  --size-control: 48px;    /* inputs, secondary buttons */
+  --size-button-lg: 56px;  /* primary button */
+  --size-nav: 80px;
+
+  /* — Motion — */
+  --motion-fast: 120ms;    /* press, check fill */
+  --motion-base: 200ms;    /* row state change, toast in */
+  --motion-slow: 320ms;    /* sheet in, finish summary */
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-in-out: cubic-bezier(.4, 0, .2, 1);
+
+  /* — Exercise illustrations (frame only) — */
+  --color-board: #F7F6F2;  /* exercise page board, same in both themes */
+  --size-thumb: 48px;      /* list thumbnail, no background */
+  --size-thumb-lg: 56px;   /* template preview */
+}
+
+[data-theme="light"] {
+  --color-bg: #F4F2ED;
+  --color-surface-1: #FFFFFF;
+  --color-surface-2: #EAE7E0;
+  --color-border: #DEDAD1;
+  --color-border-strong: #C9C4B9;
+  --color-text: #1A1A18;
+  --color-text-2: #5E5B55;
+  --color-text-3: #9C988F;
+  --color-accent: #1F6FCC;
+  --color-accent-pressed: #195BA8;
+  --color-on-accent: #FFFFFF;
+  --color-protein: #B5718C;
+  --color-carbs: #A88A45;
+  --color-fat: #5C7BA6;
+  --color-chart-muted: #D3CEC4;
+  --color-done: #3F7A50;
+  --color-done-surface: #E1ECE2;
+  --color-on-done: #FFFFFF;
+  --color-danger: #B54A36;
+  --color-danger-surface: #F6E3DE;
+  --color-overlay: rgba(26, 26, 24, .4);
+  --shadow-float: 0 8px 24px rgba(26, 26, 24, .14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-fast: 0ms; --motion-base: 0ms; --motion-slow: 0ms; }
+}
+
+html { background: var(--color-bg); color: var(--color-text); font: var(--weight-regular) var(--text-sm)/var(--leading-sm) var(--font-sans); }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.ltr { direction: ltr; unicode-bidi: isolate; }

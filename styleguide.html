@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BUILT DIFFERENT · Styleguide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); }
+    .sg { width: 390px; max-width: 100%; margin-inline: auto; padding: var(--space-4) var(--space-4) var(--space-6); display: flex; flex-direction: column; gap: var(--space-5); }
+    .sg h1 { margin: 0; font-size: var(--text-xl); line-height: var(--leading-xl); font-weight: var(--weight-regular); }
+    .sg h2 { margin: 0; padding-top: var(--space-4); border-top: 1px solid var(--color-border); font-size: var(--text-lg); line-height: var(--leading-lg); font-weight: var(--weight-medium); }
+    .sg h3 { margin: 0; font-size: var(--text-xs); line-height: var(--leading-xs); font-weight: var(--weight-regular); color: var(--color-text-2); }
+    .sg-block { display: flex; flex-direction: column; gap: var(--space-2); }
+    .sg-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+    .sg-frame { position: relative; height: 520px; overflow: hidden; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+    .sg-frame--short { height: 260px; }
+    .sg-frame .q-overlay, .sg-frame .q-sheet, .sg-frame .q-section-index { position: absolute; }
+    .sg-frame .q-sheet { top: var(--space-5); }
+    .sg-frame .q-overlay .q-sheet { top: var(--space-5); }
+    .sg-pad { padding: var(--space-4); }
+    .sg-surface { background: var(--color-surface-1); border-radius: var(--radius-md); padding: var(--space-4); }
+    .sg-toggle { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; padding-block: var(--space-2); background: var(--color-bg); }
+    .sg-rel { position: relative; }
+    .sg-toast-static { position: static; }
+  </style>
+</head>
+<body>
+<main class="sg">
+
+  <div class="sg-toggle">
+    <h1>Styleguide</h1>
+    <div class="q-segmented" id="theme-seg" style="width:140px">
+      <button class="q-segmented__item" data-theme-set="dark" aria-selected="true">כהה</button>
+      <button class="q-segmented__item" data-theme-set="light" aria-selected="false">בהיר</button>
+    </div>
+  </div>
+  <p class="q-text-sm q-muted" style="margin:0">QUIET · כל הרכיבים וכל המצבים. מקור: css/tokens.css + css/components.css.</p>
+
+  <!-- ============ Text ============ -->
+  <h2>טיפוגרפיה</h2>
+  <div class="q-stack q-gap-2">
+    <span class="q-text-2xl num">01:24</span>
+    <span class="q-text-xl">אימון</span>
+    <span class="q-text-lg">הוסף לבוקר</span>
+    <span class="q-text-md ltr">Bench Press (Barbell)</span>
+    <span class="q-text-sm">לחיצת חזה במוט · <span class="ltr num">77.5 × 8</span></span>
+    <span class="q-text-xs q-muted">סטים השבוע לשריר · <span class="ltr num">10–20</span></span>
+  </div>
+
+  <!-- ============ Button ============ -->
+  <h2>Button</h2>
+  <div class="q-block q-stack q-gap-2">
+    <h3>primary · 56 · רגיל / לחוץ / מושבת / טוען</h3>
+    <button class="q-btn q-btn--primary q-btn--block">התחל אימון</button>
+    <button class="q-btn q-btn--primary q-btn--block is-pressed">התחל אימון</button>
+    <button class="q-btn q-btn--primary q-btn--block" disabled>התחל אימון</button>
+    <button class="q-btn q-btn--primary q-btn--block is-loading"><i data-lucide="loader-circle" class="q-spin"></i>שומר</button>
+    <h3>secondary · 48</h3>
+    <div class="sg-grid2">
+      <button class="q-btn q-btn--secondary">צור תבנית</button>
+      <button class="q-btn q-btn--secondary is-pressed">צור תבנית</button>
+      <button class="q-btn q-btn--secondary" disabled>צור תבנית</button>
+      <button class="q-btn q-btn--secondary is-loading"><i data-lucide="loader-circle" class="q-spin"></i>טוען</button>
+    </div>
+    <h3>ghost · 48</h3>
+    <div class="sg-grid2">
+      <button class="q-btn q-btn--ghost">הוסף סט</button>
+      <button class="q-btn q-btn--ghost is-pressed">הוסף סט</button>
+      <button class="q-btn q-btn--ghost" disabled>הוסף סט</button>
+      <button class="q-btn q-btn--ghost is-loading"><i data-lucide="loader-circle" class="q-spin"></i></button>
+    </div>
+    <h3>danger-ghost · danger (דיאלוג)</h3>
+    <div class="sg-grid2">
+      <button class="q-btn q-btn--danger-ghost"><i data-lucide="trash-2"></i>מחק תבנית</button>
+      <button class="q-btn q-btn--danger">מחק</button>
+    </div>
+    <h3>icon · רגיל / לחוץ / מוקף / פעיל</h3>
+    <div class="q-row q-gap-2">
+      <button class="q-icon-btn" aria-label="עוד"><i data-lucide="ellipsis-vertical"></i></button>
+      <button class="q-icon-btn is-pressed" aria-label="עוד"><i data-lucide="ellipsis-vertical"></i></button>
+      <button class="q-icon-btn q-icon-btn--outlined" aria-label="הוסף"><i data-lucide="plus"></i></button>
+      <button class="q-icon-btn q-icon-btn--active" aria-label="הוסף"><i data-lucide="plus"></i></button>
+      <button class="q-icon-btn" disabled aria-label="עוד"><i data-lucide="ellipsis-vertical"></i></button>
+    </div>
+  </div>
+
+  <!-- ============ SetRow ============ -->
+  <h2>SetRow</h2>
+  <div class="q-stack q-gap-1" id="sets">
+    <div class="q-set-head"><span>סט</span><span>קודם</span><span>ק״ג</span><span>חזרות</span><span></span></div>
+    <h3>ממתין (placeholder מהקודם)</h3>
+    <div class="q-set-row">
+      <span class="q-set-row__num">1</span>
+      <button class="q-set-row__prev ltr" type="button">77.5 × 8</button>
+      <input class="q-set-row__input" inputmode="decimal" placeholder="80" aria-label="ק״ג" />
+      <input class="q-set-row__input" inputmode="numeric" placeholder="8" aria-label="חזרות" />
+      <button class="q-set-row__check" aria-pressed="false" aria-label="סיים סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+    </div>
+    <h3>מלא, לפני סימון</h3>
+    <div class="q-set-row">
+      <span class="q-set-row__num">2</span>
+      <button class="q-set-row__prev ltr" type="button">77.5 × 8</button>
+      <input class="q-set-row__input" inputmode="decimal" value="80" aria-label="ק״ג" />
+      <input class="q-set-row__input" inputmode="numeric" value="8" aria-label="חזרות" />
+      <button class="q-set-row__check" aria-pressed="false" aria-label="סיים סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+    </div>
+    <h3>בוצע (לחיצה על ה-✓ מחליפה מצב)</h3>
+    <div class="q-set-row is-done">
+      <span class="q-set-row__num">3</span>
+      <button class="q-set-row__prev ltr" type="button">77.5 × 8</button>
+      <input class="q-set-row__input" inputmode="decimal" value="80" aria-label="ק״ג" />
+      <input class="q-set-row__input" inputmode="numeric" value="8" aria-label="חזרות" />
+      <button class="q-set-row__check" aria-pressed="true" aria-label="סיים סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+    </div>
+    <h3>שיא אישי (גביע במקום ✓)</h3>
+    <div class="q-set-row is-done is-pr">
+      <span class="q-set-row__num">4</span>
+      <button class="q-set-row__prev ltr" type="button">77.5 × 8</button>
+      <input class="q-set-row__input" inputmode="decimal" value="82.5" aria-label="ק״ג" />
+      <input class="q-set-row__input" inputmode="numeric" value="8" aria-label="חזרות" />
+      <button class="q-set-row__check" aria-pressed="true" aria-label="סיים סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+    </div>
+    <h3>ריק (אין היסטוריה)</h3>
+    <div class="q-set-row">
+      <span class="q-set-row__num">5</span>
+      <span class="q-set-row__prev ltr" style="padding-inline-start:0">—</span>
+      <input class="q-set-row__input" inputmode="decimal" aria-label="ק״ג" />
+      <input class="q-set-row__input" inputmode="numeric" aria-label="חזרות" />
+      <button class="q-set-row__check" aria-pressed="false" aria-label="סיים סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+    </div>
+    <h3>נעול (אימון שמור)</h3>
+    <div class="q-set-row is-locked">
+      <span class="q-set-row__num">6</span>
+      <button class="q-set-row__prev ltr" type="button" tabindex="-1">77.5 × 8</button>
+      <input class="q-set-row__input" disabled aria-label="ק״ג" />
+      <input class="q-set-row__input" disabled aria-label="חזרות" />
+      <button class="q-set-row__check" disabled aria-label="סיים סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+    </div>
+  </div>
+
+  <!-- ============ Card / ListRow / SectionHeader / Index / Thumb ============ -->
+  <h2>Card</h2>
+  <div class="sg-surface">
+    <div class="sg-grid2">
+      <div class="q-card q-card--nested"><span class="q-card__title">Pull</span><span class="q-card__sub">רגיל</span></div>
+      <button class="q-card q-card--nested q-card--pressable is-pressed"><span class="q-card__title">Pull</span><span class="q-card__sub">לחוץ</span></button>
+    </div>
+  </div>
+  <div class="q-card q-card--pressable" role="button" tabindex="0">
+    <span class="q-card__title">Push · דחיפה</span>
+    <span class="q-card__sub">חמישה תרגילים · <span class="num">52</span> דקות</span>
+  </div>
+
+  <h2>ExerciseThumb</h2>
+  <div class="q-row q-gap-5">
+    <div class="q-stack q-gap-1" style="align-items:center"><span class="q-thumb"><span class="q-thumb__letter">B</span></span><h3>אין איור</h3></div>
+    <div class="q-stack q-gap-1" style="align-items:center"><span class="q-thumb is-loading"><span class="q-thumb__letter">B</span><img class="q-thumb__img" alt="" /></span><h3>טוען</h3></div>
+    <div class="q-stack q-gap-1" style="align-items:center"><span class="q-thumb is-loaded"><span class="q-thumb__letter">B</span><img class="q-thumb__img" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='12' r='6' fill='%23999'/%3E%3Crect x='14' y='20' width='20' height='20' rx='6' fill='%23999'/%3E%3C/svg%3E" /></span><h3>איור</h3></div>
+    <div class="q-stack q-gap-1" style="align-items:center"><span class="q-thumb q-thumb--lg"><span class="q-thumb__letter">L</span></span><h3>56 · תבנית</h3></div>
+  </div>
+
+  <h2>ListRow · SectionHeader</h2>
+  <div class="sg-rel">
+    <div class="q-section-header"><span class="q-section-header__title">B</span><span class="q-section-header__count num">3</span><button class="q-section-header__action">הכל</button></div>
+    <div class="q-list">
+      <a class="q-list-row" href="#">
+        <span class="q-thumb q-list-row__thumb"><span class="q-thumb__letter">B</span></span>
+        <span class="q-list-row__text"><span class="q-list-row__title ltr">Back Squat</span><span class="q-list-row__sub">סקוואט · מוט</span></span>
+        <i data-lucide="chevron-left" class="q-list-row__chevron"></i>
+      </a>
+      <a class="q-list-row" href="#">
+        <span class="q-thumb q-list-row__thumb is-loading"><span class="q-thumb__letter">B</span></span>
+        <span class="q-list-row__text"><span class="q-list-row__title ltr">Bench Press (Barbell)</span><span class="q-list-row__sub">לחיצת חזה · מוט</span></span>
+        <span class="q-list-row__value num">80 × 8</span>
+      </a>
+      <a class="q-list-row is-selected" href="#">
+        <span class="q-thumb q-list-row__thumb"><span class="q-thumb__letter">B</span></span>
+        <span class="q-list-row__text"><span class="q-list-row__title ltr">Bent Over Row</span><span class="q-list-row__sub">חתירה · מוט (נבחר)</span></span>
+        <button class="q-icon-btn q-list-row__more" aria-label="עוד"><i data-lucide="ellipsis-vertical"></i></button>
+      </a>
+    </div>
+  </div>
+
+  <h3>SectionIndex (A–Z, בקצה השמאלי של רשימה ארוכה)</h3>
+  <div class="sg-frame sg-frame--short sg-rel">
+    <div class="sg-pad">
+      <div class="q-section-header" style="padding-top:0"><span class="q-section-header__title">C</span><span class="q-section-header__count num">2</span></div>
+      <div class="q-list">
+        <a class="q-list-row" href="#"><span class="q-thumb"><span class="q-thumb__letter">C</span></span><span class="q-list-row__text"><span class="q-list-row__title ltr">Cable Fly</span><span class="q-list-row__sub">פרפר בכבלים</span></span></a>
+        <a class="q-list-row" href="#"><span class="q-thumb"><span class="q-thumb__letter">C</span></span><span class="q-list-row__text"><span class="q-list-row__title ltr">Chin Up</span><span class="q-list-row__sub">מתח אחיזה הפוכה</span></span></a>
+      </div>
+    </div>
+    <nav class="q-section-index" aria-label="קפיצה לאות">
+      <button>A</button><button>B</button><button aria-current="true">C</button><button>D</button><button>E</button><button>F</button><button>L</button><button>P</button><button>S</button>
+    </nav>
+  </div>
+
+  <!-- ============ ExerciseBoard ============ -->
+  <h2>ExerciseBoard</h2>
+  <div class="q-board q-board--poses">
+    <figure class="q-board__pose"><div class="q-board__img"></div><figcaption class="q-board__caption">התחלה</figcaption></figure>
+    <figure class="q-board__pose"><div class="q-board__img"></div><figcaption class="q-board__caption">סיום</figcaption></figure>
+  </div>
+  <div class="sg-grid2">
+    <div class="q-board q-board--anim"><span class="q-board__status">מתנגן</span><button class="q-board__toggle" aria-label="השהה"><i data-lucide="pause"></i></button></div>
+    <div class="q-board q-board--anim"><span class="q-board__status">בהשהיה</span><button class="q-board__toggle" aria-label="נגן"><i data-lucide="play"></i></button></div>
+    <div class="q-board q-board--anim"><div class="q-board__placeholder"><i data-lucide="loader-circle" class="q-spin"></i></div></div>
+    <div class="q-board q-board--anim"><div class="q-board__placeholder"><span class="q-board__letter ltr">B</span><span>אין איור</span></div></div>
+  </div>
+
+  <!-- ============ Input ============ -->
+  <h2>Input · Dropdown · Stepper</h2>
+  <div class="q-stack q-gap-3">
+    <label class="q-field"><span class="q-field__label">ריק</span><span class="q-input"><i data-lucide="search" class="q-input__icon"></i><input class="q-input__control" placeholder="חיפוש תרגיל" /></span></label>
+    <label class="q-field"><span class="q-field__label">מלא</span><span class="q-input"><i data-lucide="search" class="q-input__icon"></i><input class="q-input__control ltr" value="Bench Press" /></span></label>
+    <label class="q-field"><span class="q-field__label">פוקוס (לחץ על השדה)</span><span class="q-input"><input class="q-input__control" placeholder="שם התבנית" /></span></label>
+    <label class="q-field"><span class="q-field__label">משקל גוף · מספר</span><span class="q-input q-input--number is-error"><input class="q-input__control" inputmode="decimal" value="8O" /></span><span class="q-field__error">משקל חייב להיות מספר</span></label>
+    <label class="q-field"><span class="q-field__label">מושבת</span><span class="q-input is-disabled"><i data-lucide="search" class="q-input__icon"></i><input class="q-input__control" placeholder="חיפוש תרגיל" disabled /></span></label>
+  </div>
+  <div class="q-stack q-gap-3 sg-rel">
+    <h3>Dropdown · סגור / פתוח / שדה / inline</h3>
+    <div class="q-row q-gap-2 q-wrap">
+      <button class="q-dropdown" aria-haspopup="listbox" aria-expanded="false"><span class="q-dropdown__label">כל הציוד</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+      <button class="q-dropdown" aria-haspopup="listbox" aria-expanded="true"><span class="q-dropdown__label">כל קבוצות השריר</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+      <button class="q-dropdown q-dropdown--inline" aria-haspopup="listbox"><span class="q-dropdown__label ltr">Bench Press</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+    </div>
+    <button class="q-dropdown q-dropdown--field" aria-haspopup="listbox"><span class="q-dropdown__label">ארוחת בוקר</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+    <div class="q-menu" role="listbox">
+      <button class="q-menu__item" role="option" aria-selected="true">כל הציוד</button>
+      <button class="q-menu__item" role="option">מוט</button>
+      <button class="q-menu__item" role="option">משקולות יד</button>
+    </div>
+    <div class="q-menu" role="menu">
+      <button class="q-menu__item" role="menuitem"><i data-lucide="pencil"></i>ערוך</button>
+      <button class="q-menu__item q-menu__item--danger" role="menuitem"><i data-lucide="trash-2"></i>מחק</button>
+    </div>
+  </div>
+  <div class="q-stack q-gap-2">
+    <h3>Stepper</h3>
+    <div class="q-stepper">
+      <button class="q-stepper__btn" aria-label="הפחת"><i data-lucide="minus"></i></button>
+      <span class="q-stepper__value"><span>200</span><span class="q-stepper__unit">ג׳</span></span>
+      <button class="q-stepper__btn" aria-label="הוסף"><i data-lucide="plus"></i></button>
+    </div>
+    <div class="q-stepper">
+      <button class="q-stepper__btn" disabled aria-label="הפחת"><i data-lucide="minus"></i></button>
+      <span class="q-stepper__value"><span>0</span><span class="q-stepper__unit">ג׳</span></span>
+      <button class="q-stepper__btn" aria-label="הוסף"><i data-lucide="plus"></i></button>
+    </div>
+  </div>
+
+  <!-- ============ Segmented / Chip / Badge ============ -->
+  <h2>Segmented · Chip · Badge</h2>
+  <div class="q-segmented" role="tablist">
+    <button class="q-segmented__item" role="tab" aria-selected="true">חיפוש</button>
+    <button class="q-segmented__item" role="tab" aria-selected="false">שמורות</button>
+    <button class="q-segmented__item" role="tab" aria-selected="false">מאתמול</button>
+  </div>
+  <div class="q-row q-gap-2 q-wrap">
+    <button class="q-chip" aria-pressed="false">כבוי</button>
+    <button class="q-chip" aria-pressed="true">פעיל</button>
+    <button class="q-chip q-chip--removable">רגליים<i data-lucide="x" class="q-chip__remove"></i></button>
+    <button class="q-chip" disabled>מושבת</button>
+  </div>
+  <div class="q-row q-gap-2 q-wrap">
+    <span class="q-badge">יום אימון</span>
+    <span class="q-badge q-badge--done"><i data-lucide="check"></i>בוצע</span>
+    <span class="q-badge q-badge--pr"><i data-lucide="trophy"></i>שיא</span>
+    <span class="q-badge q-badge--danger">מעל היעד</span>
+  </div>
+
+  <!-- ============ MacroBar / StatCell ============ -->
+  <h2>MacroBar · StatCell</h2>
+  <div class="q-stack q-gap-4">
+    <div class="q-macro is-empty"><div class="q-macro__head"><span class="q-macro__label">ריק</span><span class="q-macro__value">יעד 180 ג׳</span></div><progress class="q-macro__bar" value="0" max="180"></progress></div>
+    <div class="q-macro q-macro--protein"><div class="q-macro__head"><span class="q-macro__label">חלבון · בתהליך</span><span class="q-macro__value">132 / 180</span></div><progress class="q-macro__bar" value="132" max="180"></progress></div>
+    <div class="q-macro q-macro--carbs"><div class="q-macro__head"><span class="q-macro__label">פחמימות · הושלם</span><span class="q-macro__value">260 / 260</span></div><progress class="q-macro__bar" value="260" max="260"></progress></div>
+    <div class="q-macro q-macro--fat is-over"><div class="q-macro__head"><span class="q-macro__label">שומן · חריגה</span><span class="q-macro__value">78 / 70</span></div><progress class="q-macro__bar" value="78" max="70"></progress></div>
+  </div>
+  <div class="q-stat-row">
+    <div class="q-stat"><span class="q-stat__label"><span class="q-stat__dot"></span>זמן · רץ</span><span class="q-stat__value ltr">42:17</span></div>
+    <div class="q-stat"><span class="q-stat__label">נפח · ק״ג</span><span class="q-stat__value">4,860</span></div>
+    <div class="q-stat is-empty"><span class="q-stat__label">ריק</span><span class="q-stat__value">0</span></div>
+  </div>
+  <div class="q-stat-row">
+    <div class="q-stat"><span class="q-stat__label">משקל גוף</span><span class="q-stat__value q-stat__value--xl">82.4 <span class="q-stat__unit">ק״ג</span></span></div>
+    <div class="q-stat"><span class="q-stat__label">קלוריות</span><span class="q-stat__value q-stat__value--xl">1,840</span></div>
+  </div>
+
+  <!-- ============ Nav ============ -->
+  <h2>BottomNav · MiniWorkoutBar</h2>
+  <div class="sg-frame sg-frame--short" style="display:flex;flex-direction:column;justify-content:flex-end;gap:var(--space-2)">
+    <a class="q-mini-bar q-mini-bar--float" href="#"><span class="q-mini-bar__dot"></span><span class="q-mini-bar__title">Push · אימון פעיל</span><span class="q-mini-bar__time">42:17</span><i data-lucide="chevron-up" class="q-mini-bar__chevron"></i></a>
+    <nav class="q-nav" aria-label="ניווט ראשי">
+      <a class="q-nav__item" href="#"><i data-lucide="dumbbell"></i><span>אימון</span></a>
+      <a class="q-nav__item" href="#"><i data-lucide="library"></i><span>ספרייה</span></a>
+      <a class="q-nav__item" aria-current="page" href="#"><i data-lucide="utensils"></i><span>תזונה</span></a>
+      <a class="q-nav__item" href="#"><i data-lucide="chart-line"></i><span>מעקב</span></a>
+    </nav>
+  </div>
+
+  <!-- ============ Sheet / Dialog ============ -->
+  <h2>Sheet</h2>
+  <div class="sg-frame">
+    <div class="q-overlay">
+      <div class="q-sheet" role="dialog" aria-modal="true" aria-label="הוסף לבוקר">
+        <span class="q-sheet__grab"></span>
+        <div class="q-sheet__header"><span class="q-sheet__title">הוסף לבוקר</span><button class="q-sheet__close" aria-label="סגור"><i data-lucide="x"></i></button></div>
+        <div class="q-sheet__body">
+          <div class="q-segmented"><button class="q-segmented__item" aria-selected="true">חיפוש</button><button class="q-segmented__item" aria-selected="false">שמורות</button><button class="q-segmented__item" aria-selected="false">מאתמול</button></div>
+          <label class="q-input"><i data-lucide="search" class="q-input__icon"></i><input class="q-input__control" value="יוגורט" /></label>
+          <div class="q-card q-card--nested" style="gap:var(--space-3)">
+            <div class="q-row q-between"><div class="q-stack"><span class="q-text-sm" style="font-weight:var(--weight-medium)">יוגורט חלבון 0%</span><span class="q-text-xs q-muted">ל-100 ג׳: <span class="num">60</span> קק״ל</span></div></div>
+            <div class="q-stepper"><button class="q-stepper__btn" aria-label="הפחת"><i data-lucide="minus"></i></button><span class="q-stepper__value"><span>200</span><span class="q-stepper__unit">ג׳</span></span><button class="q-stepper__btn" aria-label="הוסף"><i data-lucide="plus"></i></button></div>
+          </div>
+        </div>
+        <div class="q-sheet__footer"><button class="q-btn q-btn--primary q-btn--block">הוסף · <span class="num">120</span> קק״ל</button></div>
+      </div>
+    </div>
+  </div>
+  <h3>Sheet מלא (כותרת: ביטול | שם | שמור)</h3>
+  <div class="sg-frame">
+    <div class="q-overlay">
+      <div class="q-sheet q-sheet--full" role="dialog" aria-modal="true" aria-label="עריכת תבנית">
+        <div class="q-sheet__bar"><button class="q-btn q-btn--ghost q-btn--compact" style="color:var(--color-text-2)">ביטול</button><span class="q-sheet__title">עריכת תבנית</span><button class="q-btn q-btn--primary q-btn--compact">שמור</button></div>
+        <div class="q-sheet__body">
+          <label class="q-field"><span class="q-field__label">שם התבנית</span><span class="q-input"><input class="q-input__control" value="Push · דחיפה" /></span></label>
+          <div class="q-list">
+            <div class="q-list-row"><span class="q-thumb q-thumb--lg"><span class="q-thumb__letter">B</span></span><span class="q-list-row__text"><span class="q-list-row__title ltr">Bench Press (Barbell)</span><span class="q-list-row__sub"><span class="num ltr">3 × 8</span></span></span><button class="q-icon-btn" aria-label="עוד"><i data-lucide="ellipsis-vertical"></i></button></div>
+          </div>
+          <button class="q-btn q-btn--ghost"><i data-lucide="plus"></i>הוסף תרגיל</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Dialog</h2>
+  <div class="sg-frame sg-frame--short">
+    <div class="q-overlay q-overlay--center">
+      <div class="q-dialog" role="alertdialog" aria-modal="true">
+        <span class="q-dialog__title">למחוק את התבנית Push?</span>
+        <span class="q-dialog__text">ההיסטוריה של האימונים נשמרת. התבנית עצמה תימחק.</span>
+        <div class="q-dialog__actions"><button class="q-btn q-btn--secondary">ביטול</button><button class="q-btn q-btn--danger">מחק</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Toast ============ -->
+  <h2>Toast</h2>
+  <div class="q-stack q-gap-3" id="toast-demo">
+    <div class="q-toast"><i data-lucide="check" class="q-toast__icon"></i><span class="q-toast__text">התבנית נשמרה</span></div>
+    <div class="q-toast q-toast--action"><i data-lucide="trash-2" class="q-toast__icon"></i><span class="q-toast__text">הסט נמחק</span><button class="q-toast__action">בטל</button></div>
+    <button class="q-btn q-btn--secondary" id="toast-replay">הצג שוב את האנימציה</button>
+  </div>
+
+  <!-- ============ EmptyState ============ -->
+  <h2>EmptyState</h2>
+  <div class="q-empty">
+    <span class="q-empty__title">עוד אין תבניות</span>
+    <span class="q-empty__text">תבנית היא רשימת תרגילים שחוזרת. צור אחת והיא תופיע כאן.</span>
+    <button class="q-btn q-btn--secondary q-empty__action">צור תבנית</button>
+  </div>
+
+  <!-- ============ Chart ============ -->
+  <h2>Chart</h2>
+  <div class="sg-surface q-stack q-gap-3">
+    <h3>קו · משקל גוף</h3>
+    <div class="q-chart">
+      <svg viewBox="0 0 326 96" role="img" aria-label="משקל גוף">
+        <line class="q-chart__grid" x1="0" y1="24" x2="326" y2="24"></line>
+        <line class="q-chart__grid" x1="0" y1="72" x2="326" y2="72"></line>
+        <polyline class="q-chart__line" points="0,60 40,56 80,62 120,48 160,50 200,40 240,44 280,32 326,28"></polyline>
+        <circle class="q-chart__dot" cx="326" cy="28" r="3"></circle>
+      </svg>
+    </div>
+    <h3>עמודות · קלוריות לשבוע (הנוכחי בכחול)</h3>
+    <div class="q-chart">
+      <svg viewBox="0 0 326 96" role="img" aria-label="קלוריות">
+        <rect class="q-chart__band" x="0" y="28" width="326" height="20"></rect>
+        <line class="q-chart__grid" x1="0" y1="88" x2="326" y2="88"></line>
+        <rect class="q-chart__bar" x="8" y="30" width="32" height="58" rx="4"></rect>
+        <rect class="q-chart__bar" x="54" y="22" width="32" height="66" rx="4"></rect>
+        <rect class="q-chart__bar" x="100" y="40" width="32" height="48" rx="4"></rect>
+        <rect class="q-chart__bar" x="146" y="26" width="32" height="62" rx="4"></rect>
+        <rect class="q-chart__bar" x="192" y="34" width="32" height="54" rx="4"></rect>
+        <rect class="q-chart__bar" x="238" y="18" width="32" height="70" rx="4"></rect>
+        <rect class="q-chart__bar q-chart__bar--current" x="284" y="36" width="32" height="52" rx="4"></rect>
+      </svg>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Theme toggle
+  const root = document.documentElement;
+  document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const t = b.getAttribute('data-theme-set');
+      if (t === 'light') root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
+      document.querySelectorAll('[data-theme-set]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); });
+    });
+  });
+  // SetRow demo: clicking the check toggles done (shows the motion)
+  document.querySelectorAll('#sets .q-set-row__check:not(:disabled)').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const row = btn.closest('.q-set-row');
+      const on = !row.classList.contains('is-done');
+      row.classList.toggle('is-done', on);
+      if (!on) row.classList.remove('is-pr');
+      btn.setAttribute('aria-pressed', String(on));
+    });
+  });
+  // Toast replay
+  document.getElementById('toast-replay').addEventListener('click', function () {
+    document.querySelectorAll('#toast-demo .q-toast').forEach(function (t) {
+      t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+    });
+  });
+  lucide.createIcons();
+</script>
+</body>
+</html>

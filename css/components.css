@@ -1,0 +1,474 @@
+/* ==========================================================================
+   BUILT DIFFERENT · QUIET — components v1
+   Source of values: css/tokens.css (var(--...) only). Closed component set from
+   design/DESIGN_RULES.md. All classes use the `q-` prefix (BEM-ish: block__part, block--modifier).
+   State: modifiers / ARIA attributes / .is-* classes. Icons: Lucide (<i data-lucide="x">).
+   Numbers: add .num (mono) or use mono-by-default parts below. English + "80 x 8" pairs: .ltr.
+
+   INDEX (class API + one-line markup)
+   --------------------------------------------------------------------------
+   Button      .q-btn + --primary(56) | --secondary(48) | --ghost(48) | --danger-ghost(48) | --danger(solid, dialogs)
+               extras: --block (full width), --compact (44 high); states: :active/.is-pressed, :disabled, .is-loading
+               <button class="q-btn q-btn--primary q-btn--block">התחל אימון</button>
+               loading: <button class="q-btn q-btn--primary is-loading"><i data-lucide="loader-circle" class="q-spin"></i>שומר</button>
+   IconButton  .q-icon-btn (44 round, text-2) + --outlined | --active ; <button class="q-icon-btn" aria-label="עוד"><i data-lucide="ellipsis-vertical"></i></button>
+   Card        .q-card (surface-1) + --nested (surface-2) | --pressable (button/a) ; parts __title __sub
+               <div class="q-card"><span class="q-card__title">Pull</span><span class="q-card__sub">שלושה תרגילים</span></div>
+   ListRow     .q-list > .q-list-row ; parts __thumb __text __title __sub __value (mono) __chevron __more ; states .is-selected, :active
+               <a class="q-list-row"><span class="q-thumb">..</span><span class="q-list-row__text"><span class="q-list-row__title ltr">Back Squat</span><span class="q-list-row__sub">סקוואט</span></span><i data-lucide="chevron-left" class="q-list-row__chevron"></i></a>
+   SectionHeader .q-section-header ; parts __title __count (mono) __action (accent link)
+               <div class="q-section-header"><span class="q-section-header__title">חזה</span><span class="q-section-header__count num">12</span></div>
+   SectionIndex  .q-section-index (absolute at left edge; parent needs position:relative) ; <button> children, [aria-current=true] = current
+               <nav class="q-section-index" aria-label="קפיצה"><button>A</button><button aria-current="true">B</button></nav>
+   SetRow      .q-set-head (column labels) + .q-set-row ; parts __num __prev __input(kg|reps) __check (+ two icons __icon--check/__icon--pr)
+               states: default(empty/filled), .is-done, .is-done.is-pr, .is-locked (disabled)
+               <div class="q-set-row is-done"><span class="q-set-row__num">1</span><button class="q-set-row__prev ltr">77.5 × 8</button><input class="q-set-row__input" inputmode="decimal" value="80"><input class="q-set-row__input" inputmode="numeric" value="8"><button class="q-set-row__check" aria-pressed="true"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button></div>
+   ExerciseThumb .q-thumb (48) + --lg (56) ; parts __letter __img ; states .is-loading (letter text-3), .is-loaded (img fades in, letter hides)
+               <span class="q-thumb is-loading"><span class="q-thumb__letter">B</span><img class="q-thumb__img" src="x.webp" alt=""></span>
+   ExerciseBoard .q-board + --poses (2 x 1:1 + captions) | --anim (2:1, play/pause) ; parts __pose __img __caption __media __toggle __status __placeholder
+               <div class="q-board q-board--poses"><figure class="q-board__pose"><img class="q-board__img" src=""><figcaption class="q-board__caption">התחלה</figcaption></figure>...</div>
+   Input       .q-field (label + control + error) > .q-field__label, .q-input > .q-input__icon + .q-input__control ; --number (mono) ; .is-error ; .is-disabled
+               <label class="q-field"><span class="q-field__label">משקל</span><span class="q-input q-input--number"><input class="q-input__control" inputmode="decimal"></span><span class="q-field__error">משקל חייב להיות מספר</span></label>
+   Dropdown    .q-dropdown (44, trigger button) + --field (48, form) | --inline (no bg) ; parts __label __chevron ; [aria-expanded=true]
+               menu: .q-menu > .q-menu__item (+ --danger, [aria-selected=true])
+               <button class="q-dropdown" aria-haspopup="listbox"><span class="q-dropdown__label">כל הציוד</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+   Stepper     .q-stepper ; parts __btn __value (mono lg) __unit
+               <div class="q-stepper"><button class="q-stepper__btn"><i data-lucide="minus"></i></button><span class="q-stepper__value"><span class="num">200</span><span class="q-stepper__unit">ג׳</span></span><button class="q-stepper__btn"><i data-lucide="plus"></i></button></div>
+   Segmented   .q-segmented > button.q-segmented__item[aria-selected=true]
+   Chip        .q-chip (button) ; [aria-pressed=true] = active ; --removable (+ __remove icon) ; :disabled
+   Badge       .q-badge (status, not clickable) + --done | --pr | --danger
+   MacroBar    .q-macro + --protein | --carbs | --fat ; parts __head __label __value (mono) __bar (<progress>) ; .is-over (number in danger)
+               <div class="q-macro q-macro--protein"><div class="q-macro__head"><span class="q-macro__label">חלבון</span><span class="q-macro__value">132 / 180</span></div><progress class="q-macro__bar" value="132" max="180"></progress></div>
+   StatCell    .q-stat-row (bordered group) > .q-stat ; parts __label __value (mono lg) --xl ; __dot (running) ; .is-empty (value text-3)
+               <div class="q-stat"><span class="q-stat__label">נפח · ק״ג</span><span class="q-stat__value">4,860</span></div>
+   BottomNav   .q-nav (80) > .q-nav__item[aria-current=page] ; + --fixed ; <a class="q-nav__item" aria-current="page"><i data-lucide="dumbbell"></i><span>אימון</span></a>
+   MiniWorkoutBar .q-mini-bar (+ --float) ; parts __dot __title __time (mono) __chevron
+   Sheet       .q-overlay > .q-sheet ; parts __grab __header __title __close __bar (full-sheet header: cancel | title | save) __body __footer ; --full
+               <div class="q-overlay"><div class="q-sheet" role="dialog" aria-modal="true">...</div></div>
+   Dialog      .q-overlay.q-overlay--center > .q-dialog ; parts __title __text __actions (secondary cancel + .q-btn--danger)
+   Toast       .q-toast-region > .q-toast (+ --action) ; parts __icon __text __action
+   EmptyState  .q-empty ; parts __title __text __action
+   Chart       .q-chart > svg ; classes for SVG children: __line __grid __bar (muted) __bar--current __band __label ; .q-chart svg width 100%
+   Layout      .q-screen (16 gutters) .q-stack .q-row .q-grow .q-between .q-wrap .q-gap-1..6 .q-section (gap 24)
+   Text        .q-text-xs|sm|md|lg|xl|2xl (size+leading+weight) .q-muted (text-2) .q-faint (text-3, placeholder/disabled only) .q-link (accent)
+   Icons       .q-icon-14 .q-icon-16 .q-icon-20 .q-icon-24 (size Lucide svg) ; .q-spin (loading spinner) ; .q-sr-only
+   Motion      set done (row bg base, check scale .92 -> 1 fast), PR crossfade (base), sheet slide (slow), toast in (base)
+   ========================================================================== */
+
+/* — base for q- components — */
+[class^="q-"], [class*=" q-"],
+[class^="q-"]::before, [class*=" q-"]::before,
+[class^="q-"]::after, [class*=" q-"]::after { box-sizing: border-box; }
+
+.q-btn, .q-icon-btn, .q-chip, .q-dropdown, .q-stepper__btn, .q-segmented__item, .q-nav__item,
+.q-set-row__check, .q-set-row__prev, .q-section-index button, .q-menu__item, .q-board__toggle,
+.q-toast__action, .q-sheet__close, .q-section-header__action {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0;
+  cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent;
+}
+.q-btn:focus-visible, .q-icon-btn:focus-visible, .q-chip:focus-visible, .q-dropdown:focus-visible,
+.q-stepper__btn:focus-visible, .q-segmented__item:focus-visible, .q-nav__item:focus-visible,
+.q-set-row__check:focus-visible, .q-set-row__prev:focus-visible, .q-list-row:focus-visible,
+.q-card--pressable:focus-visible, .q-menu__item:focus-visible, .q-board__toggle:focus-visible,
+.q-toast__action:focus-visible, .q-sheet__close:focus-visible, .q-section-header__action:focus-visible,
+.q-section-index button:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px;
+}
+.q-btn svg, .q-icon-btn svg, .q-chip svg, .q-badge svg, .q-dropdown svg, .q-stepper__btn svg,
+.q-list-row svg, .q-toast svg, .q-mini-bar svg, .q-input svg, .q-sheet__close svg, .q-menu svg {
+  width: 20px; height: 20px; flex: none; stroke-width: 2;
+}
+.q-nav__item svg { width: 24px; height: 24px; stroke-width: 2; }
+
+/* — Layout helpers — */
+.q-screen { padding-inline: var(--space-4); }
+.q-stack { display: flex; flex-direction: column; }
+.q-row { display: flex; align-items: center; }
+.q-grow { flex: 1; min-width: 0; }
+.q-between { justify-content: space-between; }
+.q-wrap { flex-wrap: wrap; }
+.q-section { display: flex; flex-direction: column; gap: var(--space-5); }
+.q-gap-1 { gap: var(--space-1); } .q-gap-2 { gap: var(--space-2); } .q-gap-3 { gap: var(--space-3); }
+.q-gap-4 { gap: var(--space-4); } .q-gap-5 { gap: var(--space-5); } .q-gap-6 { gap: var(--space-6); }
+
+/* — Text styles (6 sizes) — */
+.q-text-xs  { font-size: var(--text-xs);  line-height: var(--leading-xs);  font-weight: var(--weight-regular); }
+.q-text-sm  { font-size: var(--text-sm);  line-height: var(--leading-sm);  font-weight: var(--weight-regular); }
+.q-text-md  { font-size: var(--text-md);  line-height: var(--leading-md);  font-weight: var(--weight-medium); }
+.q-text-lg  { font-size: var(--text-lg);  line-height: var(--leading-lg);  font-weight: var(--weight-regular); }
+.q-text-xl  { font-size: var(--text-xl);  line-height: var(--leading-xl);  font-weight: var(--weight-regular); }
+.q-text-2xl { font-size: var(--text-2xl); line-height: var(--leading-2xl); font-weight: var(--weight-light); }
+.q-muted { color: var(--color-text-2); }
+.q-faint { color: var(--color-text-3); }
+.q-link { color: var(--color-accent); }
+
+.q-icon-14 svg, svg.q-icon-14 { width: 14px; height: 14px; }
+.q-icon-16 svg, svg.q-icon-16 { width: 16px; height: 16px; }
+.q-icon-20 svg, svg.q-icon-20 { width: 20px; height: 20px; }
+.q-icon-24 svg, svg.q-icon-24 { width: 24px; height: 24px; }
+.q-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.q-spin { animation: q-spin calc(var(--motion-slow) * 3) linear infinite; }
+@keyframes q-spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   Button
+   ========================================================================== */
+.q-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--size-control); padding-inline: var(--space-4);
+  border-radius: var(--radius-md); border: 1px solid transparent;
+  font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: var(--weight-medium);
+  white-space: nowrap; user-select: none;
+  transition: background var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
+}
+.q-btn--block { display: flex; width: 100%; }
+.q-btn--compact { min-height: var(--size-hit); padding-inline: 20px; }
+
+.q-btn--primary { min-height: var(--size-button-lg); background: var(--color-accent); color: var(--color-on-accent); font-weight: var(--weight-semibold); }
+.q-btn--primary:active, .q-btn--primary.is-pressed { background: var(--color-accent-pressed); }
+.q-btn--primary:disabled, .q-btn--primary[aria-disabled="true"] { background: var(--color-surface-2); color: var(--color-text-3); cursor: default; }
+
+.q-btn--secondary { background: transparent; color: var(--color-text); border-color: var(--color-border-strong); }
+.q-btn--secondary:active, .q-btn--secondary.is-pressed { background: var(--color-surface-2); }
+.q-btn--secondary:disabled, .q-btn--secondary[aria-disabled="true"] { color: var(--color-text-3); border-color: var(--color-border); cursor: default; }
+
+.q-btn--ghost { background: transparent; color: var(--color-accent); font-weight: var(--weight-regular); }
+.q-btn--ghost:active, .q-btn--ghost.is-pressed { background: var(--color-surface-2); }
+.q-btn--ghost:disabled, .q-btn--ghost[aria-disabled="true"] { color: var(--color-text-3); cursor: default; }
+
+.q-btn--danger-ghost { background: transparent; color: var(--color-danger); font-weight: var(--weight-regular); }
+.q-btn--danger-ghost:active, .q-btn--danger-ghost.is-pressed { background: var(--color-danger-surface); }
+.q-btn--danger-ghost:disabled { color: var(--color-text-3); cursor: default; }
+
+.q-btn--danger { background: var(--color-danger); color: var(--color-on-accent); font-weight: var(--weight-semibold); }
+.q-btn--danger:active, .q-btn--danger.is-pressed { opacity: .85; }
+.q-btn--danger:disabled { background: var(--color-surface-2); color: var(--color-text-3); cursor: default; }
+
+.q-btn.is-loading { pointer-events: none; }
+
+/* IconButton */
+.q-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: var(--size-hit); height: var(--size-hit); border-radius: var(--radius-full);
+  color: var(--color-text-2); border: 1px solid transparent;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.q-icon-btn:active, .q-icon-btn.is-pressed { background: var(--color-surface-2); color: var(--color-text); }
+.q-icon-btn--outlined { border-color: var(--color-border-strong); color: var(--color-text); }
+.q-icon-btn--active { color: var(--color-accent); }
+.q-icon-btn:disabled { color: var(--color-text-3); cursor: default; }
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
+.q-card { display: flex; flex-direction: column; gap: 2px; padding: var(--space-4); background: var(--color-surface-1); border-radius: var(--radius-md); color: var(--color-text); }
+.q-card--nested { background: var(--color-surface-2); padding-block: var(--space-3); }
+.q-card--pressable { width: 100%; text-align: start; border: 0; font: inherit; cursor: pointer; text-decoration: none; transition: background var(--motion-fast) var(--ease-out); }
+.q-card--pressable:active, .q-card--pressable.is-pressed { background: var(--color-surface-2); }
+.q-card--nested.q-card--pressable:active, .q-card--nested.q-card--pressable.is-pressed { background: var(--color-border); }
+.q-card__title { font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); }
+.q-card__sub { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+
+/* ==========================================================================
+   ListRow
+   ========================================================================== */
+.q-list { display: flex; flex-direction: column; margin-inline: calc(var(--space-2) * -1); }
+.q-list-row {
+  display: flex; align-items: center; gap: var(--space-3); width: 100%;
+  min-height: 64px; padding: var(--space-2); text-align: start;
+  background: none; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0;
+  font: inherit; color: var(--color-text); text-decoration: none; cursor: pointer;
+  transition: background var(--motion-base) var(--ease-out);
+}
+.q-list-row:last-child { border-bottom-color: transparent; }
+.q-list-row:active { background: var(--color-surface-2); }
+.q-list-row.is-selected { background: var(--color-surface-2); border-radius: var(--radius-sm); }
+.q-list-row__thumb { flex: none; }
+.q-list-row__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.q-list-row__title { font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+.q-list-row__title.ltr { text-align: right; }
+.q-list-row__title--md { font-size: var(--text-md); line-height: var(--leading-md); }
+.q-list-row__sub { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-list-row__value { flex: none; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-sm); color: var(--color-text-2); }
+.q-list-row__chevron { flex: none; color: var(--color-text-2); }
+.q-list-row__more { flex: none; }
+
+/* ==========================================================================
+   SectionHeader / SectionIndex
+   ========================================================================== */
+.q-section-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding-block: var(--space-4) var(--space-2); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-section-header__title { flex: 1; font-weight: var(--weight-regular); }
+.q-section-header__count { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.q-section-header__action { color: var(--color-accent); font-size: var(--text-xs); min-height: var(--size-hit); padding-inline: var(--space-2); }
+
+.q-section-index {
+  position: absolute; inset-block: 0; left: 2px; width: 24px; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  direction: ltr; font-family: var(--font-mono); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2);
+}
+.q-section-index button { width: 24px; text-align: center; color: inherit; font-size: inherit; line-height: inherit; }
+.q-section-index button[aria-current="true"] { color: var(--color-accent); }
+
+/* ==========================================================================
+   SetRow
+   ========================================================================== */
+.q-set-head, .q-set-row { display: grid; grid-template-columns: 32px 1fr 72px 64px 44px; align-items: center; gap: var(--space-2); padding-inline: var(--space-2); }
+.q-set-head { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); text-align: center; }
+.q-set-head > :nth-child(2) { text-align: start; }
+.q-set-row {
+  min-height: 60px; border-radius: var(--radius-sm); background: transparent;
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  transition: background var(--motion-base) var(--ease-out);
+}
+.q-set-row__num { text-align: center; font-size: var(--text-sm); color: var(--color-text-2); }
+.q-set-row:focus-within .q-set-row__num { color: var(--color-text); }
+.q-set-row__prev { text-align: right; white-space: nowrap; font-family: inherit; font-size: var(--text-sm); color: var(--color-text-2); min-height: var(--size-hit); padding-inline: 0; }
+.q-set-row__input {
+  width: 100%; height: var(--size-control); padding: 0; text-align: center;
+  background: var(--color-surface-2); color: var(--color-text);
+  border: 1.5px solid transparent; border-radius: var(--radius-sm); outline: none;
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-lg); line-height: var(--leading-lg);
+  transition: background var(--motion-base) var(--ease-out), border-color var(--motion-fast) var(--ease-out);
+}
+.q-set-row__input::placeholder { color: var(--color-text-3); }
+.q-set-row__input:focus { border-color: var(--color-accent); }
+.q-set-row__check {
+  position: relative; display: grid; place-items: center; width: var(--size-hit); height: var(--size-hit); justify-self: center;
+  border-radius: var(--radius-sm); border: 1.5px solid var(--color-border-strong); color: var(--color-text-3); background: transparent;
+  transform: scale(.92);
+  transition: background var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out), transform var(--motion-fast) var(--ease-out);
+}
+.q-set-row__icon { grid-area: 1 / 1; width: 22px; height: 22px; stroke-width: 2; transition: opacity var(--motion-base) var(--ease-out); }
+.q-set-row__icon--pr { opacity: 0; }
+
+/* done: row -> done-surface, filled check */
+.q-set-row.is-done { background: var(--color-done-surface); }
+.q-set-row.is-done .q-set-row__input { background: transparent; }
+.q-set-row.is-done .q-set-row__check { background: var(--color-done); border-color: transparent; color: var(--color-on-done); transform: scale(1); }
+/* personal record: trophy replaces the check (crossfade) */
+.q-set-row.is-done.is-pr .q-set-row__icon--check { opacity: 0; }
+.q-set-row.is-done.is-pr .q-set-row__icon--pr { opacity: 1; }
+/* locked (saved workout) */
+.q-set-row.is-locked { pointer-events: none; }
+.q-set-row.is-locked .q-set-row__input { background: var(--color-surface-1); }
+.q-set-row.is-locked .q-set-row__check { border-color: var(--color-border); color: var(--color-border-strong); }
+
+/* ==========================================================================
+   ExerciseThumb
+   ========================================================================== */
+.q-thumb { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--size-thumb); height: var(--size-thumb); color: var(--color-text); background: none; border: 0; border-radius: 0; }
+.q-thumb--lg { width: var(--size-thumb-lg); height: var(--size-thumb-lg); }
+.q-thumb__letter { font-size: var(--text-xl); line-height: var(--leading-xl); font-weight: var(--weight-medium); transition: opacity var(--motion-base) var(--ease-out), color var(--motion-base) var(--ease-out); }
+.q-thumb__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity var(--motion-base) var(--ease-out); }
+.q-thumb.is-loading .q-thumb__letter { color: var(--color-text-3); }
+.q-thumb.is-loaded .q-thumb__img { opacity: 1; }
+.q-thumb.is-loaded .q-thumb__letter { opacity: 0; }
+
+/* ==========================================================================
+   ExerciseBoard (board color is the same in both themes, so ink is set per theme)
+   ========================================================================== */
+.q-board { --board-ink: var(--color-bg); --board-ink-2: var(--color-border-strong); --board-ink-3: var(--color-text-3); background: var(--color-board); border-radius: var(--radius-md); padding: var(--space-3); color: var(--board-ink); }
+[data-theme="light"] .q-board { --board-ink: var(--color-text); --board-ink-2: var(--color-text-2); }
+.q-board--poses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.q-board__pose { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); text-align: center; }
+.q-board__img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: contain; }
+.q-board__caption { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--board-ink-2); }
+.q-board--anim { position: relative; padding: 0; aspect-ratio: 2 / 1; overflow: hidden; }
+.q-board__media { display: block; width: 100%; height: 100%; object-fit: contain; }
+.q-board__toggle {
+  position: absolute; left: var(--space-2); bottom: var(--space-2); display: grid; place-items: center;
+  width: var(--size-hit); height: var(--size-hit); border-radius: var(--radius-full);
+  background: var(--color-bg); color: var(--color-text);
+}
+[data-theme="light"] .q-board__toggle { background: var(--color-text); color: var(--color-bg); }
+.q-board__toggle svg { width: 18px; height: 18px; stroke-width: 2; }
+.q-board__status { position: absolute; top: var(--space-2); inset-inline-start: var(--space-3); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--board-ink-2); }
+.q-board__placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); color: var(--board-ink-3); font-size: var(--text-xs); line-height: var(--leading-xs); }
+.q-board__placeholder .q-board__letter { font-size: var(--text-xl); line-height: var(--leading-xl); font-weight: var(--weight-medium); color: var(--board-ink); }
+.q-board__placeholder svg { width: 22px; height: 22px; }
+
+/* ==========================================================================
+   Input
+   ========================================================================== */
+.q-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.q-field__label { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-field__error { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-danger); }
+.q-input {
+  display: flex; align-items: center; gap: var(--space-2); height: var(--size-control); padding-inline: var(--space-3);
+  background: var(--color-surface-2); color: var(--color-text);
+  border: 1.5px solid transparent; border-radius: var(--radius-sm);
+  font-size: var(--text-sm); line-height: var(--leading-sm);
+  transition: border-color var(--motion-fast) var(--ease-out);
+}
+.q-input:focus-within { border-color: var(--color-accent); }
+.q-input__icon, .q-input > svg { color: var(--color-text-2); }
+.q-input__control { flex: 1; min-width: 0; height: 100%; padding: 0; background: none; border: 0; outline: none; color: inherit; font: inherit; }
+.q-input__control::placeholder { color: var(--color-text-3); }
+.q-input--number .q-input__control { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.q-input.is-error, .q-input.is-error:focus-within { border-color: var(--color-danger); }
+.q-input.is-disabled { opacity: .5; }
+.q-input.is-disabled .q-input__control { cursor: default; }
+
+/* ==========================================================================
+   Dropdown (+ menu)
+   ========================================================================== */
+.q-dropdown {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1);
+  min-height: var(--size-hit); padding-inline: var(--space-3);
+  background: var(--color-surface-1); border-radius: var(--radius-sm); color: var(--color-text);
+  font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: var(--weight-medium); white-space: nowrap;
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.q-dropdown__chevron, .q-dropdown svg { width: 16px; height: 16px; color: var(--color-text-2); }
+.q-dropdown[aria-expanded="true"], .q-dropdown:active { background: var(--color-surface-2); }
+.q-dropdown--field { display: flex; width: 100%; min-height: var(--size-control); justify-content: space-between; background: var(--color-surface-2); font-weight: var(--weight-regular); }
+.q-dropdown--inline { background: none; padding-inline: 0; }
+.q-dropdown:disabled { color: var(--color-text-3); cursor: default; }
+.q-menu { display: flex; flex-direction: column; padding: var(--space-1); background: var(--color-surface-2); border-radius: var(--radius-md); box-shadow: var(--shadow-float); min-width: 180px; }
+.q-menu__item { display: flex; align-items: center; gap: var(--space-3); min-height: var(--size-hit); padding-inline: var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text); text-align: start; width: 100%; }
+.q-menu__item:active, .q-menu__item[aria-selected="true"] { background: var(--color-border); }
+.q-menu__item--danger { color: var(--color-danger); }
+
+/* ==========================================================================
+   Stepper
+   ========================================================================== */
+.q-stepper { display: flex; align-items: center; gap: var(--space-2); }
+.q-stepper__btn { display: grid; place-items: center; flex: none; width: var(--size-control); height: var(--size-control); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); color: var(--color-text); transition: background var(--motion-fast) var(--ease-out); }
+.q-stepper__btn:active { background: var(--color-surface-2); }
+.q-stepper__btn:disabled { color: var(--color-text-3); border-color: var(--color-border); cursor: default; }
+.q-stepper__value { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: var(--space-1); height: var(--size-control); background: var(--color-bg); border-radius: var(--radius-sm); color: var(--color-text); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-lg); line-height: var(--leading-lg); }
+.q-stepper__value input { width: 100%; background: none; border: 0; outline: none; color: inherit; font: inherit; text-align: center; padding: 0; }
+.q-stepper__unit { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-text-2); }
+
+/* ==========================================================================
+   Segmented
+   ========================================================================== */
+.q-segmented { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0; height: var(--size-control); padding: var(--space-1); background: var(--color-bg); border-radius: var(--radius-md); }
+.q-segmented__item { display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out); }
+.q-segmented__item[aria-selected="true"] { background: var(--color-surface-2); color: var(--color-text); font-weight: var(--weight-medium); }
+
+/* ==========================================================================
+   Chip / Badge
+   ========================================================================== */
+.q-chip {
+  display: inline-flex; align-items: center; gap: var(--space-2); height: 36px; padding-inline: 14px; flex: none;
+  border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm); color: var(--color-text);
+  font-size: var(--text-sm); line-height: var(--leading-sm); white-space: nowrap;
+  transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out), border-color var(--motion-fast) var(--ease-out);
+}
+.q-chip[aria-pressed="true"] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); font-weight: var(--weight-medium); }
+.q-chip:disabled { border-color: var(--color-border); color: var(--color-text-3); cursor: default; }
+.q-chip--removable { background: var(--color-surface-2); border-color: transparent; padding-inline: var(--space-3); }
+.q-chip__remove { color: var(--color-text-2); }
+.q-chip svg { width: 14px; height: 14px; }
+
+.q-badge { display: inline-flex; align-items: center; gap: var(--space-1); height: 28px; padding-inline: 10px; border-radius: var(--radius-full); background: var(--color-surface-2); color: var(--color-text); font-size: var(--text-xs); line-height: var(--leading-xs); white-space: nowrap; }
+.q-badge svg { width: 14px; height: 14px; }
+.q-badge--done, .q-badge--pr { background: var(--color-done-surface); color: var(--color-done); }
+.q-badge--danger { background: var(--color-danger-surface); color: var(--color-danger); }
+
+/* ==========================================================================
+   MacroBar (progress element; value > max clamps to a full bar)
+   ========================================================================== */
+.q-macro { --macro: var(--color-text-2); display: flex; flex-direction: column; gap: var(--space-1); }
+.q-macro--protein { --macro: var(--color-protein); }
+.q-macro--carbs { --macro: var(--color-carbs); }
+.q-macro--fat { --macro: var(--color-fat); }
+.q-macro__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); font-size: var(--text-sm); line-height: var(--leading-sm); }
+.q-macro__value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-text); }
+.q-macro.is-over .q-macro__value { color: var(--color-danger); }
+.q-macro.is-empty .q-macro__value { color: var(--color-text-2); }
+.q-macro__bar { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 6px; border: 0; border-radius: var(--radius-full); overflow: hidden; background: var(--color-surface-2); color: var(--macro); }
+.q-macro__bar::-webkit-progress-bar { background: var(--color-surface-2); border-radius: var(--radius-full); }
+.q-macro__bar::-webkit-progress-value { background: var(--macro); border-radius: var(--radius-full); transition: width var(--motion-base) var(--ease-out); }
+.q-macro__bar::-moz-progress-bar { background: var(--macro); border-radius: var(--radius-full); }
+
+/* ==========================================================================
+   StatCell
+   ========================================================================== */
+.q-stat-row { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+.q-stat { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3) var(--space-4); min-width: 0; }
+.q-stat + .q-stat { border-inline-start: 1px solid var(--color-border); }
+.q-stat__label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-stat__value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-lg); line-height: var(--leading-lg); color: var(--color-text); }
+.q-stat__value--xl { font-size: var(--text-xl); line-height: var(--leading-xl); }
+.q-stat__unit { font-size: var(--text-sm); color: var(--color-text-2); }
+.q-stat.is-empty .q-stat__value { color: var(--color-text-3); }
+.q-stat__dot, .q-mini-bar__dot { flex: none; width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--color-accent); }
+
+/* ==========================================================================
+   BottomNav / MiniWorkoutBar
+   ========================================================================== */
+.q-nav { display: grid; grid-template-columns: repeat(4, 1fr); height: var(--size-nav); padding-bottom: var(--space-4); background: var(--color-bg); border-top: 1px solid var(--color-border); }
+.q-nav--fixed { position: fixed; inset-inline: 0; bottom: 0; z-index: 20; }
+.q-nav__item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); min-height: var(--size-hit); color: var(--color-text-2); font-size: var(--text-xs); line-height: var(--leading-xs); }
+.q-nav__item[aria-current="page"] { color: var(--color-accent); font-weight: var(--weight-medium); }
+.q-nav__item[aria-current="page"]::before { content: ""; position: absolute; top: -1px; width: 24px; height: 2px; border-radius: var(--radius-full); background: var(--color-accent); }
+
+.q-mini-bar { display: flex; align-items: center; gap: var(--space-3); height: 56px; margin-inline: var(--space-2); padding-inline: var(--space-4); background: var(--color-surface-2); border-radius: var(--radius-md); color: var(--color-text); font-size: var(--text-sm); line-height: var(--leading-sm); text-decoration: none; }
+.q-mini-bar--float { box-shadow: var(--shadow-float); }
+.q-mini-bar__title { flex: 1; min-width: 0; }
+.q-mini-bar__time { font-family: var(--font-mono); font-variant-numeric: tabular-nums; direction: ltr; }
+.q-mini-bar__chevron { color: var(--color-text-2); }
+
+/* ==========================================================================
+   Sheet / Dialog / Toast
+   ========================================================================== */
+.q-overlay { position: fixed; inset: 0; z-index: 50; background: var(--color-overlay); animation: q-fade-in var(--motion-base) var(--ease-out); }
+.q-overlay--center { display: flex; align-items: center; justify-content: center; padding: var(--space-4); }
+.q-sheet {
+  position: absolute; inset-inline: 0; bottom: 0; max-height: calc(100% - var(--space-6)); display: flex; flex-direction: column;
+  background: var(--color-surface-1); color: var(--color-text); border-radius: var(--radius-md) var(--radius-md) 0 0; box-shadow: var(--shadow-float);
+  animation: q-sheet-in var(--motion-slow) var(--ease-out);
+}
+.q-sheet--full { top: var(--space-6); max-height: none; }
+.q-sheet__grab { align-self: center; flex: none; width: 36px; height: 4px; margin-top: var(--space-2); border-radius: var(--radius-full); background: var(--color-border-strong); }
+.q-sheet__header { display: flex; align-items: center; flex: none; padding: var(--space-2) var(--space-2) 0 var(--space-4); }
+.q-sheet__title { flex: 1; font-size: var(--text-lg); line-height: var(--leading-lg); font-weight: var(--weight-regular); }
+.q-sheet__close { display: grid; place-items: center; width: var(--size-hit); height: var(--size-hit); color: var(--color-text-2); }
+.q-sheet__bar { display: flex; align-items: center; gap: var(--space-2); flex: none; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+.q-sheet__bar .q-sheet__title { text-align: center; font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); }
+.q-sheet__body { flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+.q-sheet__footer { flex: none; padding: var(--space-3) var(--space-4) var(--space-6); border-top: 1px solid var(--color-border); }
+
+.q-dialog { width: min(320px, 100%); display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-5); background: var(--color-surface-1); border-radius: var(--radius-md); box-shadow: var(--shadow-float); color: var(--color-text); animation: q-fade-in var(--motion-base) var(--ease-out); }
+.q-dialog__title { font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); }
+.q-dialog__text { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); }
+.q-dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); margin-top: var(--space-4); }
+
+.q-toast-region { position: fixed; inset-inline: var(--space-2); bottom: calc(var(--size-nav) + var(--space-4)); z-index: 60; display: flex; flex-direction: column; gap: var(--space-2); pointer-events: none; }
+.q-toast { pointer-events: auto; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--color-surface-2); color: var(--color-text); border-radius: var(--radius-md); box-shadow: var(--shadow-float); font-size: var(--text-sm); line-height: var(--leading-sm); animation: q-toast-in var(--motion-base) var(--ease-out); }
+.q-toast--action { padding-block: var(--space-1); padding-inline-end: var(--space-2); }
+.q-toast__icon { color: var(--color-text-2); }
+.q-toast__text { flex: 1; min-width: 0; }
+.q-toast__action { min-height: var(--size-hit); padding-inline: var(--space-2); font-weight: var(--weight-medium); color: var(--color-text); }
+
+@keyframes q-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes q-sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes q-toast-in { from { opacity: 0; transform: translateY(var(--space-2)); } to { opacity: 1; transform: translateY(0); } }
+
+/* ==========================================================================
+   EmptyState
+   ========================================================================== */
+.q-empty { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-4); border: 1px dashed var(--color-border-strong); border-radius: var(--radius-md); }
+.q-empty__title { font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); }
+.q-empty__text { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); }
+.q-empty__action { margin-top: var(--space-1); }
+
+/* ==========================================================================
+   Chart (SVG style hooks; series = chart color, history muted)
+   ========================================================================== */
+.q-chart { display: block; }
+.q-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.q-chart__grid { stroke: var(--color-chart-grid); stroke-width: 1; fill: none; }
+.q-chart__line { fill: none; stroke: var(--color-chart); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.q-chart__dot { fill: var(--color-chart); stroke: none; }
+.q-chart__bar { fill: var(--color-chart-muted); }
+.q-chart__bar--current { fill: var(--color-chart); }
+.q-chart__band { fill: var(--color-chart-muted); stroke: none; }
+.q-chart__label { fill: var(--color-text-2); font-family: var(--font-mono); font-size: var(--text-xs); }
+
+@media (prefers-reduced-motion: reduce) {
+  .q-spin { animation: none; }
+  .q-overlay, .q-sheet, .q-dialog, .q-toast { animation: none; }
+}
