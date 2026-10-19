@@ -1085,7 +1085,7 @@
       <span class="q-sheet__grab"></span>
       <div class="q-sheet__header"><span class="q-sheet__title ${opts.ltr ? 'ltr' : ''}">${title}</span>
         <button class="q-sheet__close" data-action="close-modal" aria-label="סגור"><i data-lucide="x"></i></button></div>
-      <div class="q-sheet__body">${body}</div></div></div>`;
+      <div class="q-sheet__body">${body}</div>${opts.footer ? `<div class="q-sheet__footer">${opts.footer}</div>` : ''}</div></div>`;
   }
 
   const exLetter = e => ((e.name || e.en || '?').trim().charAt(0) || '?').toUpperCase();
@@ -1208,14 +1208,14 @@
   }
 
   /* ---- Nutrition Tab ---- */
-  function macroBar(label, val, goal, gradient, unit) {
-    const pct = Math.min(100, goal ? val / goal * 100 : 0);
-    return `<div class="mb-2.5">
-      <div class="flex justify-between text-xs mb-1 font-bold">
-        <span>${label}</span>
-        <span class="muted">${fmtN(val)} / ${goal} ${unit}</span>
-      </div>
-      <div class="bar"><div style="width:${pct}%;background:${gradient}"></div></div>
+  function macroBar(kind, label, val, goal, empty) {
+    const over = goal > 0 && val > goal;
+    const value = empty
+      ? `<span><span class="q-macro__unit">יעד</span> <bdi class="q-macro__value" dir="ltr">${fmtN(goal)}</bdi> <span class="q-macro__unit">ג׳</span></span>`
+      : `<span><bdi class="q-macro__value" dir="ltr">${fmtN(val)} / ${fmtN(goal)}</bdi> <span class="q-macro__unit">ג׳</span></span>`;
+    return `<div class="q-macro q-macro--${kind} ${over ? 'is-over' : ''} ${empty ? 'is-empty' : ''}">
+      <div class="q-macro__head"><span class="q-macro__label">${label}</span>${value}</div>
+      <progress class="q-macro__bar" value="${empty ? 0 : Math.min(val, goal || 0)}" max="${goal || 1}" aria-label="${label}"></progress>
     </div>`;
   }
 
@@ -1293,97 +1293,97 @@
     if (!ui.nutriDate) ui.nutriDate = todayKey();
     const t = dayTotals(ui.nutriDate), g = getGoals(ui.nutriDate), log = dayLog(ui.nutriDate);
     const dates = getDatesOfWeek(new Date(ui.nutriDate));
-    
-    const weekSelector = `<div class="flex gap-1 justify-between mb-3" dir="rtl">
+
+    const weekSelector = `<div class="q-days">
       ${dates.map((d, i) => {
-        const active = d === ui.nutriDate ? 'day-pill active' : 'day-pill';
-        const isToday = d === todayKey();
-        return `<button class="flex-1 py-1.5 rounded-xl flex flex-col items-center ${active} ${isToday ? 'today' : ''}" data-action="set-nutri-date" data-d="${d}">
-          <div class="text-[10px] font-bold">${WEEK_HE[i]}</div>
-          <div class="text-xs font-black">${new Date(d).getDate()}</div>
+        const sel = d === ui.nutriDate;
+        return `<button class="q-day ${d === todayKey() ? 'is-today' : ''} ${dayLog(d).length ? 'has-data' : ''}" aria-pressed="${sel}" data-action="set-nutri-date" data-d="${d}">
+          <span>${WEEK_HE[i]}</span><span class="q-day__num">${new Date(d).getDate()}</span><span class="q-day__dot"></span>
         </button>`;
       }).join('')}
     </div>`;
 
     const dayType = getDayType(ui.nutriDate);
-    const typeLabel = dayType === 'workout' ? 'יום אימון' : dayType === 'rest' ? 'יום מנוחה' : 'מותאם אישית';
+    const typeName = k => k === 'workout' ? 'יום אימון' : k === 'rest' ? 'יום מנוחה' : 'מותאם אישית';
+    const typeIcon = dayType === 'workout' ? 'dumbbell' : dayType === 'rest' ? 'moon' : 'sliders-horizontal';
+    const nextType = dayType === 'workout' ? 'rest' : dayType === 'rest' ? 'custom' : 'workout';
+    const menuOpen = !!(ui.menu && ui.menu.nm === 'type');
+    const typeBadge = `<div class="q-nutri-type">
+      <button class="q-dropdown" data-action="nutri-menu" aria-haspopup="menu" aria-expanded="${menuOpen}"><i data-lucide="${typeIcon}"></i><span class="q-dropdown__label">${typeName(dayType)}</span><i data-lucide="chevron-down" class="q-dropdown__chevron"></i></button>
+      ${menuOpen ? `<div class="q-menu q-nutri-type__menu">
+        <button class="q-menu__item" data-action="toggle-day-type" data-d="${ui.nutriDate}"><i data-lucide="repeat"></i>החלף ל${typeName(nextType)}</button>
+        <button class="q-menu__item" data-action="auto-macro-open"><i data-lucide="wand-sparkles"></i>הגדרת יעדים אוטומטית</button>
+        <button class="q-menu__item" data-action="edit-goals"><i data-lucide="pencil"></i>ערוך יעדים ידנית</button>
+      </div>` : ''}
+    </div>`;
 
-    return `${weekSelector}
-    <div class="card">
-      <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-        <div class="card-title">סיכום יומי</div>
-        <div class="flex gap-1.5 items-center flex-wrap">
-          <button class="btn btn-ghost !py-1 !px-2 text-[11px] text-cyan-400 bg-cyan-500/10 border border-cyan-500/25 font-bold flex items-center gap-1" data-action="auto-macro-open" title="חישוב אוטומטי מותאם אישית לפי משקל ויעד">
-            <span>⚙️</span> הגדרת יעדים אוטומטית
-          </button>
-          <button class="btn btn-ghost !p-1 text-[11px] text-blue-400" data-action="toggle-day-type" data-d="${ui.nutriDate}">${typeLabel}</button>
-          <button class="btn btn-ghost !p-1 text-[11px]" data-action="edit-goals">ערוך ידנית</button>
-        </div>
-      </div>
-      <div class="text-center mb-4">
-        <span class="text-4xl font-black text-white">${Math.round(t.kcal)}</span>
-        <span class="muted text-sm font-bold"> / ${g.kcal} קק"ל</span>
-      </div>
-      ${macroBar('קלוריות', t.kcal, g.kcal, 'linear-gradient(90deg, #3b82f6, #60a5fa)', 'קק"ל')}
-      ${macroBar('חלבון', t.p, g.protein, 'linear-gradient(90deg, #06b6d4, #22d3ee)', 'ג\'')}
-      ${macroBar('פחמימות', t.c, g.carbs, 'linear-gradient(90deg, #6366f1, #818cf8)', 'ג\'')}
-      ${macroBar('שומן', t.f, g.fat, 'linear-gradient(90deg, #8b5cf6, #a78bfa)', 'ג\'')}
-    </div>
-    <button class="btn btn-primary btn-block mb-3" data-action="food-open">+ הוסף מאכל (או בחר מהמאגר)</button>
-    ${MEALS.map(meal => {
+    const empty = log.length === 0;
+    const kcal = Math.round(t.kcal), goalKcal = g.kcal;
+    const over = goalKcal > 0 && kcal > goalKcal;
+    const macros = [['protein', 'חלבון', t.p, g.protein], ['carbs', 'פחמימות', t.c, g.carbs], ['fat', 'שומן', t.f, g.fat]].map(([k, label, v, goal]) => macroBar(k, label, v, goal, empty)).join('');
+    const summary = empty
+      ? `<div class="q-card q-sum">
+          <div class="q-sum__top"><div class="q-sum__main"><span class="q-sum__label">יעד להיום</span><span class="q-sum__big">${fmtN(goalKcal)}</span></div>
+            <button class="q-btn q-btn--ghost q-btn--compact q-sum__link" data-action="edit-goals">ערוך יעדים</button></div>
+          ${macros}</div>`
+      : `<div class="q-card q-sum">
+          <div class="q-sum__top"><div class="q-sum__main"><span class="q-sum__label">קלוריות</span><span class="q-sum__big ${over ? 'is-over' : ''}">${fmtN(kcal)}</span></div>
+            <div class="q-sum__side"><span>מתוך <span class="num">${fmtN(goalKcal)}</span></span>
+              ${over ? `<span class="is-over">חריגה <span class="num">${fmtN(kcal - goalKcal)}</span></span>` : `<span>נותרו <span class="num">${fmtN(goalKcal - kcal)}</span></span>`}</div></div>
+          ${macros}</div>`;
+
+    const meals = MEALS.map(meal => {
       const items = log.map((it, idx) => Object.assign({ idx }, it)).filter(it => (it.meal || 'snack') === meal.k);
+      if (!items.length) {
+        return `<button class="q-add-row" data-action="food-open-meal" data-meal="${meal.k}"><i data-lucide="plus"></i>הוסף ${meal.he}</button>`;
+      }
       const kc = items.reduce((a, i) => a + i.kcal, 0);
-      return `<div class="card meal-card">
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <div class="card-title text-base">${meal.he}</div>
-            <span class="text-xs text-blue-400 font-bold">${Math.round(kc)} קק"ל</span>
-          </div>
-          <button class="btn btn-primary !py-1 !px-2.5 text-xs flex items-center gap-1 font-bold" data-action="food-open-meal" data-meal="${meal.k}">
-            + הוסף
-          </button>
-        </div>
-        <div class="flex gap-2 mb-2 pb-2 border-b border-slate-800/80">
-          <button class="btn btn-ghost !py-1 !px-2 text-xs flex-1 text-amber-400 bg-amber-500/10 border border-amber-500/20 font-bold" data-action="copy-yesterday" data-meal="${meal.k}" title="העתק את המאכלים מאתמול">
-            ⚡ העתק מאתמול
-          </button>
-          <button class="btn btn-ghost !py-1 !px-2 text-xs flex-1 text-blue-400 bg-blue-500/10 border border-blue-500/20 font-bold" data-action="saved-meals" data-meal="${meal.k}" title="ארוחות שמורות">
-            ⭐ ארוחות שמורות
-          </button>
-        </div>
-        ${items.length ? items.map(i => `<div class="list-item">
-          <div>
-            <div class="font-bold text-sm">${i.name}</div>
-            <div class="text-[11px] muted">${i.label} · ח ${fmtN(i.p)} · פ ${fmtN(i.c)} · ש ${fmtN(i.f)}</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <b class="text-sm">${Math.round(i.kcal)}</b>
-            <button class="btn btn-danger !p-1.5" data-action="food-del" data-i="${i.idx}" aria-label="מחק">🗑️</button>
-          </div>
-        </div>`).join('') : '<div class="muted text-xs py-3 text-center">אין פריטים עדיין</div>'}
-      </div>`;
-    }).join('')}`;
+      return `<section class="q-meal">
+        <div class="q-meal__head"><span class="q-meal__title">${meal.he}</span><span class="q-meal__kcal">${Math.round(kc)}</span>
+          <button class="q-icon-btn q-meal__add" data-action="food-open-meal" data-meal="${meal.k}" aria-label="הוסף ל${meal.he}"><i data-lucide="plus"></i></button></div>
+        <div class="q-list">${items.map(i => {
+          const open = !!(ui.menu && ui.menu.mid === 'nf-' + i.idx);
+          return `<div class="q-list-row q-list-row--static q-meal__row">
+            <span class="q-list-row__text"><span class="q-list-row__title">${i.name}</span><span class="q-list-row__sub">${i.label}</span></span>
+            <span class="q-list-row__value">${Math.round(i.kcal)}</span>
+            <button class="q-icon-btn q-list-row__more" data-action="item-menu" data-id="nf-${i.idx}" aria-label="עוד" aria-expanded="${open}"><i data-lucide="ellipsis-vertical"></i></button>
+            ${open ? `<div class="q-menu q-meal__menu"><button class="q-menu__item q-menu__item--danger" data-action="food-del" data-i="${i.idx}"><i data-lucide="trash-2"></i>מחק</button></div>` : ''}
+          </div>`;
+        }).join('')}</div>
+      </section>`;
+    }).join('');
+
+    return `<div class="q-stack q-gap-4">
+      <div class="q-row q-between q-gap-3"><h1 class="q-screen-title__text">תזונה</h1>${typeBadge}</div>
+      ${weekSelector}
+      ${summary}
+      <div class="q-stack ${empty ? 'q-gap-2' : 'q-gap-4'}">${meals}</div>
+    </div>`;
   }
 
   /* ---- Weight & Progress Views ---- */
   function nutritionChart(w = 320, h = 120) {
-    const dates = getDatesOfWeek(new Date(ui.nutriDate || todayKey()));
+    const cur = ui.nutriDate || todayKey();
+    const dates = getDatesOfWeek(new Date(cur));
     const items = dates.map(d => {
       const t = dayTotals(d), g = getGoals(d);
-      return { p: t.p, pg: g.protein, c: t.kcal, cg: g.kcal };
+      return { d, p: t.p, pg: g.protein, c: t.kcal, cg: g.kcal };
     });
-    const bw = (w - 10) / 7;
-    return `<svg viewBox="0 0 ${w} ${h}" class="w-full" style="direction:ltr">${items.map((it, i) => {
-      const hp = Math.max(2, Math.min(100, it.p / (it.pg || 1) * 100));
-      const hc = Math.max(2, Math.min(100, it.c / (it.cg || 1) * 100));
-      return `<rect x="${5 + i * bw + 2}" y="${h - 24 - hp/100*(h-30)}" width="${(bw-4)/2 - 1}" height="${hp/100*(h-30)}" rx="2" fill="#06b6d4"/>
-              <rect x="${5 + i * bw + 2 + (bw-4)/2}" y="${h - 24 - hc/100*(h-30)}" width="${(bw-4)/2 - 1}" height="${hc/100*(h-30)}" rx="2" fill="#3b82f6"/>
-              <text x="${5 + i * bw + bw/2}" y="${h - 10}" fill="#94a3b8" font-size="10" text-anchor="middle">${WEEK_HE[i]}</text>`;
-    }).join('')}</svg>
-    <div class="flex items-center justify-center gap-4 text-[10px] muted mt-1 font-bold">
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-cyan-400"></span> יעד חלבון</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-blue-500"></span> יעד קלוריות</span>
-    </div>`;
+    const bw = (w - 10) / 7, ch = h - 30, base = h - 24;
+    const bar = (cls, x, bwid, pct) => {
+      const hh = Math.max(2, Math.min(100, pct)) / 100 * ch;
+      return `<rect class="${cls}" x="${x}" y="${base - hh}" width="${bwid}" height="${hh}" rx="2"/>`;
+    };
+    return `<div class="q-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="התמדה שבועית בתזונה">
+      <line class="q-chart__target" x1="5" x2="${w - 5}" y1="${base - ch}" y2="${base - ch}"/>
+      ${items.map((it, i) => {
+        const x0 = 5 + i * bw + 2, half = (bw - 4) / 2 - 1;
+        return bar('q-chart__bar--protein', x0, half, it.p / (it.pg || 1) * 100) +
+               bar('q-chart__bar q-chart__bar--current', x0 + (bw - 4) / 2, half, it.c / (it.cg || 1) * 100) +
+               `<text class="q-chart__label ${it.d === cur ? 'is-current' : ''}" x="${5 + i * bw + bw / 2}" y="${h - 8}" text-anchor="middle">${WEEK_HE[i]}</text>`;
+      }).join('')}
+    </svg>
+    <div class="q-legend"><span class="q-legend__item q-legend__item--protein">יעד חלבון</span><span class="q-legend__item">יעד קלוריות</span></div></div>`;
   }
 
   function lineChartWeights(points, w = 320, h = 140) {
@@ -1771,17 +1771,19 @@
 
   function foodRow(f) {
     const fav = S.favorites.includes(f.id);
-    return `<div class="list-item"><button class="flex-1 text-right" style="background:none;border:0;color:inherit" data-action="food-pick" data-id="${f.id}">
-        <div class="font-bold text-sm">${f.he}${f.custom ? ' <span class="pr-badge">מותאם</span>' : ''}</div>
-        <div class="text-[11px] muted">ל-100 גרם: ${f.kcal} קק"ל · ח ${f.p} · פ ${f.c} · ש ${f.f}</div></button>
-      <button class="btn btn-ghost !p-1" data-action="food-fav" data-id="${f.id}" style="color:${fav ? '#3b82f6' : '#64748b'}" aria-label="מועדף">${fav ? '★' : '☆'}</button>
-      <button class="btn btn-success !px-3" data-action="food-quick" data-id="${f.id}" aria-label="הוסף מהר">+</button></div>`;
+    return `<div class="q-list-row q-list-row--split">
+      <button class="q-list-row__main" data-action="food-pick" data-id="${f.id}">
+        <span class="q-list-row__text"><span class="q-list-row__title">${f.he}${f.custom ? ' <span class="q-badge">מותאם</span>' : ''}</span>
+          <span class="q-list-row__sub">ל-100 ג׳: <span class="num">${f.kcal}</span> קק״ל · <span class="num">${f.p}</span> ג׳ חלבון</span></span>
+      </button>
+      <button class="q-icon-btn q-fav ${fav ? 'is-fav' : ''}" data-action="food-fav" data-id="${f.id}" aria-label="מועדף" aria-pressed="${fav}"><i data-lucide="star"></i></button>
+      <button class="q-icon-btn q-list-row__act" data-action="food-quick" data-id="${f.id}" aria-label="הוסף מהר: ${f.he}"><i data-lucide="plus"></i></button></div>`;
   }
 
   function foodListHTML() {
     const m = ui.modal, q = (m.q || '').trim();
     const list = allFoods().filter(f => (m.cat === 'all' || f.cat === m.cat) && (!q || f.he.includes(q)));
-    return list.length ? list.map(foodRow).join('') : '<div class="muted text-center py-6">לא נמצא. ניתן ליצור מאכל מותאם אישית למעלה ↑</div>';
+    return list.length ? list.map(foodRow).join('') : '<div class="q-empty"><span class="q-empty__title">לא נמצא מאכל</span><span class="q-empty__text">אפשר ליצור מאכל מותאם אישית.</span></div>';
   }
 
   function frequentFoods() {
@@ -1806,80 +1808,96 @@
     const m = ui.modal, f = foodById(m.foodId);
     const grams = getFoodGrams(m, f);
     const c = calcFood(f, grams);
-    return `<div class="text-xs muted mb-1 font-bold">${Math.round(grams)} גרם</div>
-      <div class="grid grid-cols-4 gap-1"><div><b class="text-lg text-blue-400">${Math.round(c.kcal)}</b><div class="text-[10px] muted">קלוריות</div></div>
-      <div><b class="text-lg text-cyan-400">${fmtN(c.p)}</b><div class="text-[10px] muted">חלבון</div></div>
-      <div><b class="text-lg text-indigo-400">${fmtN(c.c)}</b><div class="text-[10px] muted">פחמימות</div></div>
-      <div><b class="text-lg text-purple-400">${fmtN(c.f)}</b><div class="text-[10px] muted">שומן</div></div></div>`;
+    const cell = (v, l) => `<span class="q-nutrient"><span class="q-nutrient__v">${v}</span>${l}</span>`;
+    return `<div class="q-nutrients"><span class="q-nutrients__grams"><span class="num">${Math.round(grams)}</span> גרם</span>
+      ${cell(Math.round(c.kcal), 'קק״ל')}${cell(fmtN(c.p), 'חלבון')}${cell(fmtN(c.c), 'פחמימות')}${cell(fmtN(c.f), 'שומן')}</div>`;
   }
+  function syncFoodCta() {
+    const el = $('#food-cta-kcal'); if (!el || !ui.modal || !ui.modal.foodId) return;
+    const f = foodById(ui.modal.foodId);
+    el.textContent = Math.round(calcFood(f, getFoodGrams(ui.modal, f)).kcal);
+  }
+
+  const mealHe = k => (MEALS.find(x => x.k === k) || { he: '' }).he;
+  function foodTabsHTML(mealKey, cur) {
+    const tab = (id, label, attrs) => `<button class="q-segmented__item" role="tab" aria-selected="${cur === id}" ${attrs}>${label}</button>`;
+    return `<div class="q-segmented" role="tablist">${tab('search', 'חיפוש', `data-action="food-open-meal" data-meal="${mealKey}"`)}${tab('saved', 'שמורות', `data-action="saved-meals" data-meal="${mealKey}"`)}${tab('yesterday', 'מאתמול', `data-action="food-yesterday" data-meal="${mealKey}"`)}</div>`;
+  }
+  const foodMealChips = m => `<div class="q-chips">${MEALS.map(x => `<button class="q-chip" aria-pressed="${m.meal === x.k}" data-action="food-meal" data-v="${x.k}">${x.he}</button>`).join('')}</div>`;
+  const foodBackBtn = `<button class="q-btn q-btn--ghost q-btn--compact " data-action="food-back"><i data-lucide="chevron-right"></i>חזרה</button>`;
 
   function foodModalHTML() {
     const m = ui.modal;
-    const mealChips = `<div class="scroll-x mb-2">${MEALS.map(x => `<button class="chip ${m.meal === x.k ? 'active' : ''}" data-action="food-meal" data-v="${x.k}">${x.he}</button>`).join('')}</div>`;
-    
+    const title = `הוסף ל${mealHe(m.meal)}`;
+
     if (m.view === 'custom') {
-      const c = m.cf, fld = (k, label, ph, type) => `<label class="block text-xs muted mb-2 font-bold">${label}<input class="input mt-1" data-cf="${k}" type="${type || 'number'}" step="0.1" min="0" placeholder="${ph || ''}" value="${c[k]}" /></label>`;
-      return sheet('מאכל מותאם אישית', `${fld('name', 'שם המאכל', 'למשל: שייק חלבון ביתי', 'text')}
-        <label class="block text-xs muted mb-2 font-bold">קטגוריה<select class="input mt-1" data-cf="cat">${Object.keys(FOOD_CATS).map(k => `<option value="${k}" ${c.cat === k ? 'selected' : ''}>${FOOD_CATS[k]}</option>`).join('')}</select></label>
-        <div class="text-xs font-bold mb-1 text-blue-400">ערכים ל-100 גרם</div>
-        <div class="grid grid-cols-2 gap-x-2">${fld('kcal', 'קלוריות')}${fld('p', 'חלבון (ג\')')}${fld('c', 'פחמימות (ג\')')}${fld('f', 'שומן (ג\')')}</div>
-        <div class="text-xs font-bold mb-1 text-cyan-400">יחידת מידה (אופציונלי)</div>
-        <div class="grid grid-cols-2 gap-x-2">${fld('unitName', 'שם היחידה', 'יחידה / כף / כוס', 'text')}${fld('unitG', 'משקל היחידה בגרם', '')}</div>
-        <div class="flex gap-2 mt-3"><button class="btn flex-1" data-action="food-back">חזרה</button><button class="btn btn-success flex-1" data-action="custom-save">שמור מאכל</button></div>`);
+      const c = m.cf, fld = (k, label, ph, type) => `<label class="q-field"><span class="q-field__label">${label}</span><span class="q-input ${type === 'text' ? '' : 'q-input--number'}"><input class="q-input__control" data-cf="${k}" type="${type || 'number'}" ${type === 'text' ? '' : 'inputmode="decimal" step="0.1" min="0"'} placeholder="${ph || ''}" value="${escQ(c[k])}" /></span></label>`;
+      return qSheet('מאכל מותאם אישית', `${foodBackBtn}
+        ${fld('name', 'שם המאכל', 'למשל: שייק חלבון ביתי', 'text')}
+        <label class="q-field"><span class="q-field__label">קטגוריה</span><span class="q-input"><select class="q-input__control" data-cf="cat">${Object.keys(FOOD_CATS).map(k => `<option value="${k}" ${c.cat === k ? 'selected' : ''}>${FOOD_CATS[k]}</option>`).join('')}</select><i data-lucide="chevron-down" class="q-input__icon"></i></span></label>
+        <span class="q-section-sub">ערכים ל-100 גרם</span>
+        <div class="q-row-split">${fld('kcal', 'קלוריות')}${fld('p', 'חלבון (ג׳)')}${fld('c', 'פחמימות (ג׳)')}${fld('f', 'שומן (ג׳)')}</div>
+        <span class="q-section-sub">יחידת מידה (אופציונלי)</span>
+        <div class="q-row-split">${fld('unitName', 'שם היחידה', 'יחידה / כף / כוס', 'text')}${fld('unitG', 'משקל היחידה בגרם', '')}</div>`,
+        { full: true, footer: `<button class="q-btn q-btn--primary q-btn--block" data-action="custom-save">שמור מאכל</button>` });
     }
 
     if (m.view === 'detail') {
       const f = foodById(m.foodId);
       const naturalUnits = (f.units || []).filter(u => u.name !== '100 גרם');
-      
-      const modeTabs = `<div class="flex gap-1 mb-3">
-        <button class="btn ${m.mode === '100g' ? 'btn-primary' : ''} flex-1 !p-1 text-xs" data-action="set-food-mode" data-v="100g">לפי 100 גרם</button>
-        <button class="btn ${m.mode === 'grams' ? 'btn-primary' : ''} flex-1 !p-1 text-xs" data-action="set-food-mode" data-v="grams">משקל (חופשי)</button>
-        ${naturalUnits.length ? `<button class="btn ${m.mode === 'unit' ? 'btn-primary' : ''} flex-1 !p-1 text-xs" data-action="set-food-mode" data-v="unit">לפי יחידה</button>` : ''}
-      </div>`;
+      const modeTab = (v, label) => `<button class="q-segmented__item" role="tab" aria-selected="${m.mode === v}" data-action="set-food-mode" data-v="${v}">${label}</button>`;
+      const modeTabs = `<div class="q-segmented" role="tablist">${modeTab('100g', 'לפי 100 גרם')}${modeTab('grams', 'משקל חופשי')}${naturalUnits.length ? modeTab('unit', 'לפי יחידה') : ''}</div>`;
 
       let inputSection = '';
       if (m.mode === '100g') {
-        inputSection = `<div class="mb-3">
-          <input id="food-amount" class="input mb-2 text-center text-lg font-bold" type="number" step="0.5" min="0" dir="ltr" value="${m.amount}" placeholder="כמות (למשל 1.5)" />
-          <div class="flex flex-wrap gap-2">
-            ${[0.5, 1, 1.5, 2, 2.5, 3].map(v => `<button class="btn !p-1.5 text-xs flex-1" data-action="set-amount" data-v="${v}">${v * 100} ג'</button>`).join('')}
-          </div>
-        </div>`;
+        inputSection = `<label class="q-field"><span class="q-field__label">כמות (מנות של 100 גרם)</span><span class="q-input q-input--number"><input id="food-amount" class="q-input__control" type="number" inputmode="decimal" step="0.5" min="0" dir="ltr" value="${m.amount}" placeholder="למשל 1.5" /></span></label>
+          <div class="q-quick-amounts">${[0.5, 1, 1.5, 2, 2.5, 3].map(v => `<button class="q-chip" data-action="set-amount" data-v="${v}"><span class="num">${v * 100}</span> ג׳</button>`).join('')}</div>`;
       } else if (m.mode === 'grams') {
-        inputSection = `<div class="mb-3">
-          <input id="food-amount" class="input text-center text-lg font-bold" type="number" step="1" min="0" dir="ltr" value="${m.amount}" placeholder="הזן משקל בגרמים" />
-        </div>`;
+        inputSection = `<label class="q-field"><span class="q-field__label">משקל בגרמים</span><span class="q-input q-input--number"><input id="food-amount" class="q-input__control" type="number" inputmode="decimal" step="1" min="0" dir="ltr" value="${m.amount}" placeholder="הזן משקל בגרמים" /><span class="q-macro__unit">ג׳</span></span></label>`;
       } else if (m.mode === 'unit') {
-        inputSection = `<div class="flex gap-2 mb-3">
-          <input id="food-amount" class="input flex-1 text-center text-lg font-bold" type="number" step="0.5" min="0" dir="ltr" value="${m.amount}" />
-          <select id="food-unit-idx" class="input flex-2">
-            ${naturalUnits.map((u, i) => `<option value="${i}" ${String(m.unitIdx) === String(i) ? 'selected' : ''}>${u.name} (${u.g} ג')</option>`).join('')}
-          </select>
-        </div>`;
+        inputSection = `<div class="q-row-split q-row-split--auto">
+          <label class="q-field"><span class="q-field__label">כמות</span><span class="q-input q-input--number"><input id="food-amount" class="q-input__control" type="number" inputmode="decimal" step="0.5" min="0" dir="ltr" value="${m.amount}" /></span></label>
+          <label class="q-field"><span class="q-field__label">יחידה</span><span class="q-input"><select id="food-unit-idx" class="q-input__control">
+            ${naturalUnits.map((u, i) => `<option value="${i}" ${String(m.unitIdx) === String(i) ? 'selected' : ''}>${u.name} (${u.g} ג׳)</option>`).join('')}
+          </select><i data-lucide="chevron-down" class="q-input__icon"></i></span></label></div>`;
       }
 
-      return sheet(f.he, `${mealChips}
-        <div class="text-xs muted my-2">ל-100 גרם: ${f.kcal} קק"ל · ח ${f.p} · פ ${f.c} · ש ${f.f}</div>
-        ${modeTabs}
-        ${inputSection}
-        <div id="food-preview" class="card text-center">${foodPreview()}</div>
-        <div class="flex gap-2">
-          <button class="btn flex-1" data-action="food-back">חזרה</button>
-          <button class="btn btn-success flex-1" data-action="food-confirm">הוסף ל${(MEALS.find(x => x.k === m.meal) || { he: '' }).he}</button>
+      const cta = Math.round(calcFood(f, getFoodGrams(m, f)).kcal);
+      return qSheet(title, `${foodBackBtn}
+        ${foodMealChips(m)}
+        <div class="q-food-sel">
+          <div class="q-stack"><span class="q-food-sel__title">${escQ(f.he)}${f.custom ? ' <span class="q-badge">מותאם</span>' : ''}</span>
+            <span class="q-section-sub">ל-100 גרם: <span class="num">${f.kcal}</span> קק״ל · ח <span class="num">${f.p}</span> · פ <span class="num">${f.c}</span> · ש <span class="num">${f.f}</span></span></div>
+          ${modeTabs}
+          ${inputSection}
+          <div id="food-preview">${foodPreview()}</div>
         </div>
-        ${f.custom ? `<button class="btn btn-danger btn-block mt-2" data-action="custom-del" data-id="${f.id}">מחק מאכל מותאם</button>` : ''}`);
+        ${f.custom ? `<button class="q-btn q-btn--danger-ghost q-btn--block" data-action="custom-del" data-id="${f.id}"><i data-lucide="trash-2"></i>מחק מאכל מותאם</button>` : ''}`,
+        { full: true, footer: `<button class="q-btn q-btn--primary q-btn--block" data-action="food-confirm">הוסף · <span class="num" id="food-cta-kcal">${cta}</span> קק״ל</button>` });
+    }
+
+    if (m.tab === 'yesterday') {
+      const prev = getPrevDay(ui.nutriDate || todayKey());
+      const list = dayLog(prev).filter(it => (it.meal || 'snack') === m.meal);
+      const body = `${foodTabsHTML(m.meal, 'yesterday')}
+        ${list.length ? `<div class="q-section-header"><span class="q-section-header__title">${mealHe(m.meal)} מאתמול</span><span class="q-section-header__count num">${list.length}</span></div>
+          <div class="q-list">${list.map(i => `<div class="q-list-row q-list-row--static">
+            <span class="q-list-row__text"><span class="q-list-row__title">${escQ(i.name)}</span><span class="q-list-row__sub">${escQ(i.label)}</span></span>
+            <span class="q-list-row__value">${Math.round(i.kcal)}</span></div>`).join('')}</div>`
+          : `<div class="q-empty"><span class="q-empty__title">אין מאכלים מאתמול</span><span class="q-empty__text">כשיהיו מאכלים בארוחה הזו אתמול, אפשר להעתיק אותם מכאן.</span></div>`}`;
+      return qSheet(title, body, { full: true, footer: list.length ? `<button class="q-btn q-btn--primary q-btn--block" data-action="copy-yesterday" data-meal="${m.meal}">העתק <span class="num">${list.length}</span> מאכלים</button>` : '' });
     }
 
     const fr = frequentFoods();
-    return sheet('מאגר המזונות', `${mealChips}
-      <input class="input my-2" placeholder="חיפוש מאכל..." data-search="food" value="${m.q || ''}" />
-      <div class="scroll-x mb-2"><button class="chip ${m.cat === 'all' ? 'active' : ''}" data-action="food-cat" data-v="all">הכל</button>
-        ${Object.keys(FOOD_CATS).map(k => `<button class="chip ${m.cat === k ? 'active' : ''}" data-action="food-cat" data-v="${k}">${FOOD_CATS[k]}</button>`).join('')}</div>
-      <button class="btn btn-ghost btn-block mb-2" data-action="food-custom">+ מאכל מותאם אישית</button>
-      ${fr.length ? `<div class="text-xs font-bold text-blue-400 mb-1">★ המאכלים הקבועים שלי (לחיצה = הוספה מהירה)</div>
-        <div class="scroll-x mb-2">${fr.map(f => `<button class="chip" style="color:#fff" data-action="food-quick" data-id="${f.id}">+ ${f.he}</button>`).join('')}</div>` : ''}
-      <div id="food-list">${foodListHTML()}</div>`);
+    return qSheet(title, `${foodTabsHTML(m.meal, 'search')}
+      ${foodMealChips(m)}
+      <label class="q-input"><i data-lucide="search" class="q-input__icon"></i><input class="q-input__control" autocomplete="off" placeholder="חיפוש מאכל" data-search="food" value="${escQ(m.q || '')}" /></label>
+      <div class="q-chips"><button class="q-chip" aria-pressed="${m.cat === 'all'}" data-action="food-cat" data-v="all">הכל</button>
+        ${Object.keys(FOOD_CATS).map(k => `<button class="q-chip" aria-pressed="${m.cat === k}" data-action="food-cat" data-v="${k}">${FOOD_CATS[k]}</button>`).join('')}</div>
+      <button class="q-btn q-btn--secondary q-btn--block" data-action="food-custom"><i data-lucide="plus"></i>מאכל מותאם אישית</button>
+      ${fr.length ? `<span class="q-section-sub">המאכלים הקבועים שלי · לחיצה מוסיפה מיד</span>
+        <div class="q-chips">${fr.map(f => `<button class="q-chip" data-action="food-quick" data-id="${f.id}"><i data-lucide="plus"></i>${f.he}</button>`).join('')}</div>` : ''}
+      <div class="q-list" id="food-list">${foodListHTML()}</div>`, { full: true });
   }
 
   function openRoutineEditor(routineId) {
@@ -2053,145 +2071,50 @@
       const curDate = ui.nutriDate || todayKey();
       const currentItems = dayLog(curDate).filter(it => (it.meal || 'snack') === m.meal);
       const presets = (S.savedMeals || []).filter(p => !p.meal || p.meal === m.meal);
-      
-      const body = `
-        <div class="mb-3">
-          <button class="btn btn-primary btn-block text-xs font-bold !py-2.5 flex items-center justify-center gap-1.5 ${currentItems.length ? '' : 'opacity-50'}" data-action="save-meal-preset">
-            💾 שמור את ארוחת היום (${mealObj.he}) כשבלונה
-          </button>
-          ${!currentItems.length ? '<div class="text-[10px] muted text-center mt-1">הוסף תחילה מאכלים לארוחה זו היום כדי לשמור אותה כשבלונה</div>' : ''}
-        </div>
-        <div class="text-xs font-bold text-slate-300 mb-2">שבלונות שמורות (${presets.length}):</div>
+
+      const body = `${foodTabsHTML(m.meal, 'saved')}
+        <button class="q-btn q-btn--secondary q-btn--block" data-action="save-meal-preset" ${currentItems.length ? '' : 'aria-disabled="true"'}><i data-lucide="bookmark-plus"></i>שמור את ${mealObj.he} של היום</button>
+        ${!currentItems.length ? '<span class="q-section-sub">הוסף תחילה מאכלים לארוחה הזו כדי לשמור אותה.</span>' : ''}
+        <div class="q-section-header"><span class="q-section-header__title">ארוחות שמורות</span><span class="q-section-header__count num">${presets.length}</span></div>
         ${presets.length ? presets.map(p => {
           const totKc = (p.items || []).reduce((a, b) => a + (b.kcal || 0), 0);
           const totP = (p.items || []).reduce((a, b) => a + (b.p || 0), 0);
-          return `<div class="card !p-3 mb-2 bg-slate-900/60 border border-slate-800">
-            <div class="flex items-center justify-between mb-1.5">
-              <div class="font-bold text-sm text-white">${p.name}</div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-blue-400 font-bold">${Math.round(totKc)} קק"ל · ${fmtN(totP)}ג' חלבון</span>
-                <button class="btn btn-ghost !p-1 text-red-400" data-action="delete-saved-meal" data-id="${p.id}" title="מחק שבלונה">🗑️</button>
-              </div>
+          const pm = !!(ui.menu && ui.menu.mid === 'sm-' + p.id);
+          return `<div class="q-card q-card--nested q-preset">
+            <div class="q-preset__head">
+              <div class="q-stack q-grow"><span class="q-preset__name">${escQ(p.name)}</span>
+                <span class="q-card__sub"><span class="num">${Math.round(totKc)}</span> קק״ל · <span class="num">${fmtN(totP)}</span> ג׳ חלבון</span></div>
+              <button class="q-icon-btn" data-action="item-menu" data-id="sm-${p.id}" aria-label="עוד" aria-expanded="${pm}"><i data-lucide="ellipsis-vertical"></i></button>
             </div>
-            <div class="text-xs text-slate-400 mb-2">
-              ${(p.items || []).map(it => `${it.name} (${it.label || `${Math.round(it.grams)}ג'`})`).join(' · ')}
-            </div>
-            <button class="btn btn-success btn-block text-xs font-bold !py-1.5" data-action="apply-saved-meal" data-id="${p.id}">
-              + הוסף ארוחה זו ל${mealObj.he}
-            </button>
+            ${pm ? `<div class="q-menu q-preset__menu"><button class="q-menu__item q-menu__item--danger" data-action="delete-saved-meal" data-id="${p.id}"><i data-lucide="trash-2"></i>מחק</button></div>` : ''}
+            <span class="q-card__sub">${(p.items || []).map(it => `${escQ(it.name)} (${escQ(it.label || `${Math.round(it.grams)} ג׳`)})`).join(' · ')}</span>
+            <button class="q-btn q-btn--secondary q-btn--block" data-action="apply-saved-meal" data-id="${p.id}"><i data-lucide="plus"></i>הוסף ל${mealObj.he}</button>
           </div>`;
-        }).join('') : '<div class="card muted text-xs text-center py-6">אין ארוחות שמורות עדיין. שמור את ארוחת היום בלחיצה למעלה!</div>'}
+        }).join('') : `<div class="q-empty"><span class="q-empty__title">עוד אין ארוחות שמורות</span><span class="q-empty__text">שמור ארוחה שחוזרת הרבה, והיא תופיע כאן להוספה בלחיצה.</span></div>`}
       `;
-      el.innerHTML = sheet(`ארוחות שמורות · ${mealObj.he}`, body);
+      el.innerHTML = qSheet(`הוסף ל${mealObj.he}`, body, { full: true });
     } else if (m.type === 'autoMacro') {
       const calc = calcSmartMacros(m.weight, m.goal);
+      const goalBtn = (g, label) => `<button class="q-segmented__item" role="tab" aria-selected="${m.goal === g}" data-action="set-macro-goal" data-g="${g}">${label}</button>`;
+      const gField = (id, label, val, unit, step) => `<label class="q-field"><span class="q-field__label">${label}</span><span class="q-input q-input--number"><input id="${id}" class="q-input__control" type="number" inputmode="decimal" step="${step}" value="${val}" dir="ltr" /><span class="q-macro__unit">${unit}</span></span></label>`;
+      const goalsCard = (p, title, icon, c) => `<div class="q-card q-card--nested q-goals">
+          <span class="q-goals__title"><i data-lucide="${icon}"></i>${title}</span>
+          <div class="q-goals__grid">
+            ${gField(`macro-${p}-kcal`, 'קלוריות', c.kcal, 'קק״ל', 10)}
+            ${gField(`macro-${p}-p`, 'חלבון', c.protein, 'ג׳', 1)}
+            ${gField(`macro-${p}-c`, 'פחמימות', c.carbs, 'ג׳', 1)}
+            ${gField(`macro-${p}-f`, 'שומן', c.fat, 'ג׳', 1)}
+          </div></div>`;
       const body = `
-        <div class="mb-3">
-          <label class="block text-xs muted font-bold mb-1">משקל גוף נוכחי (ק"ג):</label>
-          <input id="auto-macro-weight" type="number" step="0.1" min="30" max="300" class="input font-bold text-center text-lg text-white" value="${m.weight}" dir="ltr" placeholder="משקל בק״ג" />
-        </div>
-        <div class="mb-3">
-          <label class="block text-xs muted font-bold mb-1.5">בחר יעד תזונתי:</label>
-          <div class="flex gap-2">
-            <button class="goal-choice-btn ${m.goal === 'cut' ? 'active' : ''}" data-action="set-macro-goal" data-g="cut">
-              <span class="text-base mb-1">🔥</span>
-              <span>חיטוב</span>
-              <span class="text-[10px] opacity-70">גרעון (2.2ג' חלבון)</span>
-            </button>
-            <button class="goal-choice-btn ${m.goal === 'maintain' ? 'active' : ''}" data-action="set-macro-goal" data-g="maintain">
-              <span class="text-base mb-1">⚖️</span>
-              <span>ניטרלי</span>
-              <span class="text-[10px] opacity-70">תחזוקה (2.0ג' חלבון)</span>
-            </button>
-            <button class="goal-choice-btn ${m.goal === 'bulk' ? 'active' : ''}" data-action="set-macro-goal" data-g="bulk">
-              <span class="text-base mb-1">💪</span>
-              <span>מסה נקייה</span>
-              <span class="text-[10px] opacity-70">עודף (2.0ג' חלבון)</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="text-xs font-bold text-slate-300 mb-2">יעדי קלוריות ומקרואים (ניתן לערוך ידנית):</div>
-        <div class="grid grid-cols-2 gap-2 mb-2">
-          <div class="p-3 rounded-xl bg-blue-950/40 border border-blue-900/60 shadow-lg">
-            <div class="text-xs font-black text-blue-400 mb-2 flex items-center gap-1">
-              <span>🏋️</span> יום אימון
-            </div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs text-slate-300 font-bold">קלוריות:</span>
-              <div class="flex items-center gap-1">
-                <input id="macro-w-kcal" type="number" step="10" class="macro-kcal-val" value="${calc.workout.kcal}" dir="ltr" />
-                <span class="text-[11px] muted font-bold">קק"ל</span>
-              </div>
-            </div>
-            <div class="space-y-1.5 text-xs">
-              <div class="flex items-center justify-between">
-                <span class="text-cyan-400 font-bold">חלבון:</span>
-                <div class="flex items-center gap-1">
-                  <input id="macro-w-p" type="number" step="1" class="macro-input-val" value="${calc.workout.protein}" dir="ltr" />
-                  <span class="text-[11px] muted">ג'</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-indigo-400 font-bold">פחמימות:</span>
-                <div class="flex items-center gap-1">
-                  <input id="macro-w-c" type="number" step="1" class="macro-input-val" value="${calc.workout.carbs}" dir="ltr" />
-                  <span class="text-[11px] muted">ג'</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-purple-400 font-bold">שומן:</span>
-                <div class="flex items-center gap-1">
-                  <input id="macro-w-f" type="number" step="1" class="macro-input-val" value="${calc.workout.fat}" dir="ltr" />
-                  <span class="text-[11px] muted">ג'</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-3 rounded-xl bg-slate-900/70 border border-slate-800 shadow-lg">
-            <div class="text-xs font-black text-slate-300 mb-2 flex items-center gap-1">
-              <span>🛋️</span> יום מנוחה
-            </div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs text-slate-300 font-bold">קלוריות:</span>
-              <div class="flex items-center gap-1">
-                <input id="macro-r-kcal" type="number" step="10" class="macro-kcal-val" value="${calc.rest.kcal}" dir="ltr" />
-                <span class="text-[11px] muted font-bold">קק"ל</span>
-              </div>
-            </div>
-            <div class="space-y-1.5 text-xs">
-              <div class="flex items-center justify-between">
-                <span class="text-cyan-400 font-bold">חלבון:</span>
-                <div class="flex items-center gap-1">
-                  <input id="macro-r-p" type="number" step="1" class="macro-input-val" value="${calc.rest.protein}" dir="ltr" />
-                  <span class="text-[11px] muted">ג'</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-indigo-400 font-bold">פחמימות:</span>
-                <div class="flex items-center gap-1">
-                  <input id="macro-r-c" type="number" step="1" class="macro-input-val" value="${calc.rest.carbs}" dir="ltr" />
-                  <span class="text-[11px] muted">ג'</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-purple-400 font-bold">שומן:</span>
-                <div class="flex items-center gap-1">
-                  <input id="macro-r-f" type="number" step="1" class="macro-input-val" value="${calc.rest.fat}" dir="ltr" />
-                  <span class="text-[11px] muted">ג'</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="text-[10px] muted text-center mt-1 mb-3">ניתן לערוך ידנית כל אחד מהערכים שלמעלה לפי תוכנית התזונה שלך</div>
-
-        <button class="btn btn-success btn-block font-bold text-sm !py-2.5 shadow-lg" data-action="apply-smart-macros">
-          החל ושמור יעדים 🎯
-        </button>
+        <label class="q-field"><span class="q-field__label">משקל גוף נוכחי (ק״ג)</span><span class="q-input q-input--number"><input id="auto-macro-weight" class="q-input__control" type="number" step="0.1" min="30" max="300" inputmode="decimal" value="${m.weight}" dir="ltr" placeholder="משקל בק״ג" /></span></label>
+        <div class="q-field"><span class="q-field__label">יעד תזונתי</span>
+          <div class="q-segmented" role="tablist">${goalBtn('cut', 'חיטוב')}${goalBtn('maintain', 'ניטרלי')}${goalBtn('bulk', 'מסה נקייה')}</div>
+          <span class="q-section-sub">חלבון לכל ק״ג: חיטוב <span class="num">2.2</span> · ניטרלי <span class="num">2.0</span> · מסה <span class="num">2.0</span></span></div>
+        <span class="q-section-sub">אפשר לערוך כל ערך ידנית לפי תוכנית התזונה שלך.</span>
+        ${goalsCard('w', 'יום אימון', 'dumbbell', calc.workout)}
+        ${goalsCard('r', 'יום מנוחה', 'moon', calc.rest)}
       `;
-      el.innerHTML = sheet('הגדרת יעדים אוטומטית', body);
+      el.innerHTML = qSheet('הגדרת יעדים אוטומטית', body, { full: true, footer: `<button class="q-btn q-btn--primary q-btn--block" data-action="apply-smart-macros">החל ושמור יעדים</button>` });
     }
     icons();
   }
@@ -2201,7 +2124,7 @@
     const t = ev.target.closest('[data-action],[data-nav]'); if (!t) { if (ui.menu) { ui.menu = null; render(); } return; }
     if (t.dataset.nav) { if (t.dataset.nav === 'workout' && ui.tab !== 'workout') ui.prevTab = ui.tab; ui.tab = t.dataset.nav; ui.menu = null; render(); window.scrollTo(0, 0); return; }
     const d = t.dataset, ei = +d.ei, si = +d.si;
-    if (ui.menu && !['item-menu', 'type-menu', 'ex-menu', 'wk-menu', 'lib-dd'].includes(d.action)) { ui.menu = null; render(); }
+    if (ui.menu && !['item-menu', 'type-menu', 'ex-menu', 'wk-menu', 'lib-dd', 'nutri-menu'].includes(d.action)) { ui.menu = null; render(); }
     switch (d.action) {
       case 'item-menu': ui.menu = ui.menu && ui.menu.mid === d.id ? null : { mid: d.id }; render(); ev.stopPropagation(); break;
       case 'ex-menu': ui.menu = ui.menu && ui.menu.exm === ei ? null : { exm: ei }; render(); ev.stopPropagation(); break;
@@ -2489,6 +2412,7 @@
       case 'lib-eq': ui.libEq = d.v; render(); break;
       case 'lib-add': addExercise(d.id); toast('התרגיל נוסף לאימון הפעיל', true); renderHeader(); break;
       
+      case 'nutri-menu': ui.menu = ui.menu && ui.menu.nm ? null : { nm: 'type' }; render(); ev.stopPropagation(); break;
       case 'set-nutri-date': ui.nutriDate = d.d; render(); break;
       case 'toggle-day-type': {
         const cur = getDayType(ui.nutriDate);
@@ -2505,6 +2429,7 @@
       
       case 'food-open': ui.modal = { type: 'food', view: 'list', q: '', cat: 'all', meal: currentMeal() }; renderModal(); break;
       case 'food-open-meal': ui.modal = { type: 'food', view: 'list', q: '', cat: 'all', meal: d.meal || currentMeal() }; renderModal(); break;
+      case 'food-yesterday': ui.modal = { type: 'food', view: 'list', q: '', cat: 'all', meal: d.meal || currentMeal(), tab: 'yesterday' }; renderModal(); break;
       case 'food-cat': ui.modal.cat = d.v; renderModal(); break;
       case 'food-meal': ui.modal.meal = d.v; renderModal(); break;
       case 'food-pick': { 
@@ -2535,6 +2460,7 @@
         ui.modal.amount = num(d.v);
         const fa = $('#food-amount'); if (fa) fa.value = ui.modal.amount;
         const fp = $('#food-preview'); if (fp) fp.innerHTML = foodPreview();
+        syncFoodCta();
         break;
       }
       case 'food-back': ui.modal.view = 'list'; ui.modal.foodId = null; renderModal(); break;
@@ -2618,7 +2544,7 @@
         const prevDate = getPrevDay(ui.nutriDate || todayKey());
         const prevList = dayLog(prevDate).filter(it => (it.meal || 'snack') === mealKey);
         if (!prevList.length) {
-          toast('לא נמצאו מאכלים בארוחה זו מאתמול ⚠️');
+          toast('לא נמצאו מאכלים בארוחה זו מאתמול');
           break;
         }
         const curDate = ui.nutriDate || todayKey();
@@ -2627,8 +2553,9 @@
           S.nutrition[curDate].push(Object.assign({}, item));
         });
         save();
+        ui.modal = null;
         render();
-        toast(`הועתקו ${prevList.length} מאכלים מאתמול! ⚡`, true);
+        toast(`הועתקו ${prevList.length} מאכלים מאתמול`, true);
         break;
       }
       case 'saved-meals': {
@@ -2658,7 +2585,7 @@
         });
         save();
         renderModal();
-        toast(`הארוחה "${finalName}" נשמרה בהצלחה! ⭐`, true);
+        toast(`הארוחה "${finalName}" נשמרה בהצלחה`, true);
         break;
       }
       case 'apply-saved-meal': {
@@ -2675,7 +2602,7 @@
         });
         save();
         closeModal();
-        toast(`ארוחת "${preset.name}" נוספה לתפריט! 🍽️`, true);
+        toast(`ארוחת "${preset.name}" נוספה לתפריט`, true);
         break;
       }
       case 'delete-saved-meal': {
@@ -2718,8 +2645,9 @@
       }
       case 'set-macro-goal': {
         ui.modal.goal = d.g;
-        document.querySelectorAll('.goal-choice-btn').forEach(btn => {
+        document.querySelectorAll('.q-segmented__item[data-g]').forEach(btn => {
           btn.classList.toggle('active', btn.dataset.g === d.g);
+          btn.setAttribute('aria-selected', String(btn.dataset.g === d.g));
         });
         updateMacroCalcDisplay();
         break;
@@ -2744,7 +2672,7 @@
         S.goals.rest = { kcal: rKcal, protein: rP, carbs: rC, fat: rF };
         save();
         closeModal();
-        toast('יעדי התזונה נשמרו בהצלחה! 🎯', true);
+        toast('יעדי התזונה נשמרו בהצלחה', true);
         render();
         break;
       }
@@ -2788,10 +2716,10 @@
       const rpl = $('#redit-pick-list'); if (rpl) { rpl.innerHTML = exerciseListHTML(filteredExercises(ui.modal.q, ui.modal.mus || 'all', 'all'), 'routine-editor-add-ex', '+ הוסף לתבנית'); icons(); } 
     } else if (d.search === 'food') { 
       ui.modal.q = t.value; 
-      const fl = $('#food-list'); if (fl) fl.innerHTML = foodListHTML(); 
+      const fl = $('#food-list'); if (fl) { fl.innerHTML = foodListHTML(); icons(); } 
     } else if (t.id === 'food-amount') { 
       ui.modal.amount = t.value; 
-      const fp = $('#food-preview'); if (fp) fp.innerHTML = foodPreview(); 
+      const fp = $('#food-preview'); if (fp) fp.innerHTML = foodPreview(); syncFoodCta();
     } else if (t.id === 'auto-macro-weight') {
       updateMacroCalcDisplay();
     } else if (d.cf) { 
@@ -2831,7 +2759,7 @@
       render();
     } else if (ev.target.id === 'food-unit-idx') { 
       ui.modal.unitIdx = ev.target.value; 
-      const fp = $('#food-preview'); if (fp) fp.innerHTML = foodPreview(); 
+      const fp = $('#food-preview'); if (fp) fp.innerHTML = foodPreview(); syncFoodCta();
     } else if (ev.target.id === 'auto-macro-weight') {
       updateMacroCalcDisplay();
     } else if (ev.target.dataset.cf) {

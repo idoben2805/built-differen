@@ -67,6 +67,11 @@
                ListRow extras: .q-list-row--split > .q-list-row__main (tap = open) + .q-list-row__act (icon button) ; .q-list-row__add (accent + icon inside a whole-row button) ; .q-list-row--static (not tappable) ; .q-list-row__value--lg
                <div class="q-list-row q-list-row--split"><button class="q-list-row__main">thumb + text</button><button class="q-icon-btn q-list-row__act" aria-label="הוסף"><i data-lucide="plus"></i></button></div>
    ExercisePage .q-sheet(.q-sheet--full) with .q-segmented tabs ; .q-board__frame (1:1 box for a pose or a letter placeholder, holds .q-board__placeholder) ; .q-badges (wrapping badge row) ; .q-exp__name / __sub (title block) ; .q-chart svg is always ltr
+   Nutrition   .q-days > button.q-day (+ .is-today .has-data, [aria-pressed=true] = selected; parts __num __dot) ; .q-nutri-type (relative wrapper: .q-dropdown + .q-menu.q-nutri-type__menu) = day-type badge/menu
+               .q-sum (card) parts __top __main __label __big (2xl mono, .is-over) __side __link ; MacroBar extras __label (macro dot) __unit
+               .q-meal parts __head __title __kcal __add ; .q-meal__row (.q-list-row--static + __more) + __menu ; .q-add-row (dashed add button for an empty meal)
+               Food sheet  .q-food-sel (selected food card) __title ; .q-nutrients > .q-nutrient(__v) + __grams ; .q-quick-amounts ; .q-row-split ; .q-fav.is-fav ; .q-preset (saved meal card: __head __name __menu) ; .q-goals (goal editor card: __title __grid) ; .q-section-sub
+               Chart extras .q-chart__bar--protein .q-chart__target .q-chart__label.is-current ; .q-legend > .q-legend__item(--protein)
    Layout      .q-screen (16 gutters) .q-stack .q-row .q-grow .q-between .q-wrap .q-gap-1..6 .q-section (gap 24)
    Text        .q-text-xs|sm|md|lg|xl|2xl (size+leading+weight) .q-muted (text-2) .q-faint (text-3, placeholder/disabled only) .q-link (accent)
    Icons       .q-icon-14 .q-icon-16 .q-icon-20 .q-icon-24 (size Lucide svg) ; .q-spin (loading spinner) ; .q-sr-only
@@ -636,3 +641,90 @@ button.q-ex__name:focus-visible { outline: 2px solid var(--color-accent); outlin
 .q-section-header__title.ltr { text-align: right; }
 .q-filter--wide { flex: 1.5; }
 .q-sheet__body > * { flex-shrink: 0; }
+
+/* ==========================================================================
+   Nutrition (day strip, summary, meals, food sheet, goals)
+   ========================================================================== */
+.q-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-1); }
+.q-day {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 64px; border-radius: var(--radius-md); border: 1px solid transparent;
+  color: var(--color-text); font-size: var(--text-xs); line-height: var(--leading-xs);
+  transition: background var(--motion-fast) var(--ease-out);
+}
+.q-day__num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.q-day__dot { width: 4px; height: 4px; border-radius: var(--radius-full); background: transparent; }
+.q-day.has-data .q-day__dot { background: var(--color-text-2); }
+.q-day.is-today:not([aria-pressed="true"]) { border-color: var(--color-border-strong); }
+.q-day[aria-pressed="true"] { background: var(--color-accent); color: var(--color-on-accent); }
+.q-day[aria-pressed="true"].has-data .q-day__dot { background: var(--color-on-accent); }
+.q-day:active:not([aria-pressed="true"]) { background: var(--color-surface-2); }
+
+.q-nutri-type { position: relative; flex: none; }
+.q-nutri-type .q-dropdown { border: 1px solid var(--color-border-strong); background: none; border-radius: var(--radius-full); }
+.q-nutri-type__menu { position: absolute; top: calc(100% + var(--space-1)); inset-inline-end: 0; z-index: 15; min-width: 0; width: max-content; }
+
+.q-sum { gap: var(--space-4); }
+.q-sum__top { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-3); }
+.q-sum__main { display: flex; flex-direction: column; }
+.q-sum__label { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-sum__big { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-2xl); line-height: var(--leading-2xl); }
+.q-sum__big.is-over { color: var(--color-danger); }
+.q-sum__side { display: flex; flex-direction: column; align-items: flex-end; flex: none; white-space: nowrap; color: var(--color-text-2); }
+.q-sum__side .num { color: var(--color-text); }
+.q-sum__side .is-over, .q-sum__side .is-over .num { color: var(--color-danger); }
+.q-sum__link { flex: none; }
+.q-macro__label { display: flex; align-items: center; gap: var(--space-2); }
+.q-macro__label::before { content: ""; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--macro); }
+.q-macro__unit { color: var(--color-text-2); }
+
+.q-meal { display: flex; flex-direction: column; }
+.q-meal__head { display: flex; align-items: center; gap: var(--space-2); min-height: var(--size-hit); }
+.q-meal__title { flex: 1; font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); }
+.q-meal__kcal { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-text-2); }
+.q-meal__add { color: var(--color-accent); margin-inline-end: calc(var(--space-3) * -1); }
+.q-meal__row { position: relative; min-height: 52px; padding-block: var(--space-1); }
+.q-meal__row .q-list-row__more { margin-inline-end: calc(var(--space-2) * -1); }
+.q-meal__menu { position: absolute; top: calc(100% - var(--space-2)); inset-inline-end: var(--space-2); z-index: 15; min-width: 0; width: max-content; }
+.q-add-row {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 52px; padding-inline: var(--space-4);
+  border: 1px dashed var(--color-border-strong); border-radius: var(--radius-md); color: var(--color-text-2);
+  background: none; font: inherit; text-align: start;
+}
+.q-add-row svg { color: var(--color-accent); width: 18px; height: 18px; }
+.q-add-row:active { background: var(--color-surface-1); }
+
+.q-food-sel { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-3); background: var(--color-surface-2); border-radius: var(--radius-sm); }
+.q-food-sel__title { font-weight: var(--weight-medium); }
+.q-food-sel .q-input, .q-food-sel .q-stepper__value { background: var(--color-bg); }
+.q-nutrients { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-nutrient { display: flex; flex-direction: column; }
+.q-nutrient__v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text); }
+.q-nutrients__grams { grid-column: 1 / -1; padding-bottom: var(--space-1); }
+.q-quick-amounts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.q-quick-amounts .q-chip { flex: 1; justify-content: center; }
+.q-input select.q-input__control { appearance: none; -webkit-appearance: none; color: inherit; cursor: pointer; }
+.q-input select.q-input__control option { background: var(--color-surface-2); color: var(--color-text); }
+.q-row-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.q-row-split--auto { grid-template-columns: 1fr 1.4fr; }
+.q-fav.is-fav svg { fill: currentColor; }
+.q-section-sub { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-preset { gap: var(--space-2); position: relative; }
+.q-preset__head { display: flex; align-items: center; gap: var(--space-2); }
+.q-preset__name { flex: 1; font-weight: var(--weight-medium); }
+.q-preset__menu { position: absolute; top: calc(var(--size-hit) + var(--space-1)); inset-inline-end: var(--space-2); z-index: 15; min-width: 0; width: max-content; }
+.q-goals { display: flex; flex-direction: column; gap: var(--space-2); }
+.q-goals__title { display: flex; align-items: center; gap: var(--space-2); font-weight: var(--weight-medium); }
+.q-goals__title svg { width: 20px; height: 20px; color: var(--color-text-2); }
+.q-goals__grid > *, .q-row-split > * { min-width: 0; }
+.q-goals__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2) var(--space-3); margin-top: var(--space-1); }
+.q-goals .q-input { background: var(--color-bg); }
+.q-goals .q-input__control { text-align: center; }
+.q-chart__bar--protein { fill: var(--color-protein); }
+.q-chart__target { stroke: var(--color-border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+.q-chart__label.is-current { fill: var(--color-text); }
+.q-legend { display: flex; justify-content: center; gap: var(--space-4); margin-top: var(--space-2); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-legend__item { display: inline-flex; align-items: center; gap: var(--space-1); }
+.q-legend__item::before { content: ""; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-chart); }
+.q-legend__item--protein::before { background: var(--color-protein); }
+.q-sheet__body > .q-btn--compact { align-self: flex-start; }

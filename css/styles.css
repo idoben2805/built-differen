@@ -75,10 +75,6 @@ button { font-family: inherit; cursor: pointer; }
 .muted { color: var(--text-muted) !important; }
 
 /* Meal Card Styling with Electric Blue Accent Border */
-.meal-card {
-  border-right: 4px solid var(--primary);
-  background: linear-gradient(145deg, #101726 0%, #0b0f19 100%);
-}
 
 /* Buttons */
 .btn { 
@@ -164,60 +160,10 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); 
 }
 
-.pr-badge { 
-  background: var(--primary-gradient); 
-  color: #ffffff !important; 
-  font-size: 10px; 
-  font-weight: 900; 
-  padding: 3px 8px; 
-  border-radius: 6px; 
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
-}
 
 /* Chips */
-.chip { 
-  background: var(--bg-elevated); 
-  border: 1px solid var(--border-subtle); 
-  color: var(--text-muted); 
-  border-radius: 10px; 
-  padding: 7px 16px; 
-  font-size: 13px; 
-  font-weight: 700; 
-  white-space: nowrap; 
-  transition: all 0.2s ease; 
-  cursor: pointer; 
-}
-.chip.active { 
-  background: var(--primary-gradient); 
-  border-color: transparent; 
-  color: #ffffff !important; 
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-}
-.chip:hover { border-color: var(--border-focus); color: #fff; }
-.chip:active { transform: scale(0.95); }
-.scroll-x { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
-.scroll-x::-webkit-scrollbar { display: none; }
 
 /* Calendar Day Strip */
-.day-pill {
-  border-radius: 12px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  transition: all 0.2s ease;
-}
-.day-pill:hover {
-  border-color: var(--border-focus);
-}
-.day-pill.active {
-  background: var(--primary-gradient);
-  border-color: transparent;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-}
-.day-pill.today {
-  border-color: rgba(59, 130, 246, 0.6);
-}
 
 /* Floating Rest Bar */
 .rest-bar {
@@ -238,17 +184,6 @@ button { font-family: inherit; cursor: pointer; }
 .list-item:last-child { border-bottom: 0; }
 
 /* Macro tracks & glowing progress bars */
-.bar { 
-  height: 8px; 
-  background: #161f33; 
-  border-radius: 99px; 
-  overflow: hidden; 
-}
-.bar > div { 
-  height: 100%; 
-  border-radius: 99px; 
-  transition: width 0.35s ease; 
-}
 
 .toast {
   position: fixed; top: 80px; left: 50%; transform: translate(-50%, -20px); 
@@ -346,74 +281,9 @@ select.input { appearance: auto; background-image: none; cursor: pointer; }
 }
 
 /* Smart Macro Calculator (Phase 9) */
-.goal-choice-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 8px;
-  border-radius: 12px;
-  background: #0d1424;
-  border: 1px solid #1e293b;
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex: 1;
-  text-align: center;
-}
 
-.goal-choice-btn:hover {
-  border-color: rgba(59, 130, 246, 0.5);
-  color: #fff;
-}
 
-.goal-choice-btn.active {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: #3b82f6;
-  color: #60a5fa;
-  box-shadow: 0 0 14px rgba(59, 130, 246, 0.25);
-}
 
-.macro-input-val {
-  background: rgba(14, 21, 37, 0.7);
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 700;
-  font-size: 13px;
-  text-align: center;
-  width: 4.2rem;
-  padding: 3px 4px;
-  font-family: inherit;
-  transition: all 0.15s ease;
-}
-.macro-input-val:focus {
-  border-color: #3b82f6;
-  background: rgba(14, 21, 37, 0.95);
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
-  outline: none;
-}
-.macro-kcal-val {
-  background: rgba(14, 21, 37, 0.8);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 900;
-  font-size: 1.15rem;
-  text-align: center;
-  width: 5.5rem;
-  padding: 4px 6px;
-  font-family: inherit;
-  transition: all 0.15s ease;
-}
-.macro-kcal-val:focus {
-  border-color: #3b82f6;
-  background: rgba(14, 21, 37, 1);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.45);
-  outline: none;
-}
 
 
 
