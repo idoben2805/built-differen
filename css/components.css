@@ -72,6 +72,11 @@
                .q-meal parts __head __title __kcal __add ; .q-meal__row (.q-list-row--static + __more) + __menu ; .q-add-row (dashed add button for an empty meal)
                Food sheet  .q-food-sel (selected food card) __title ; .q-nutrients > .q-nutrient(__v) + __grams ; .q-quick-amounts ; .q-row-split ; .q-fav.is-fav ; .q-preset (saved meal card: __head __name __menu) ; .q-goals (goal editor card: __title __grid) ; .q-section-sub
                Chart extras .q-chart__bar--protein .q-chart__target .q-chart__label.is-current ; .q-legend > .q-legend__item(--protein)
+   Progress    .q-card--panel (card with gap 12) > .q-card__head (.q-card__label + .q-card__meta) .q-card__title .q-card__text ; .q-input__unit (suffix inside .q-input)
+               .q-vol > .q-vol__row (grid: __name | __track[__band + progress.__bar value/max 25] | __val) ; band = 10-20 target, empty state renders the track + band only
+               Chart extras .q-chart__line--avg (dashed moving average) .q-chart__bar--pr (done) ; .q-legend__item--avg / --pr ; StatCell .q-stat--pr (done colour + trophy)
+   Sheets+     ListRow .q-list-row__lead (leading icon) .q-list-row--menu + __menu (row with a ⋮ menu) ; .q-menu__item:disabled ; .q-plates > .q-plate (plate calculator chips)
+               .q-redit (routine editor row: __head thumb+text+⋮, __menu, __sets label + .q-stepper) ; .q-overlay.is-static (re-render in place, no slide-in replay)
    Layout      .q-screen (16 gutters) .q-stack .q-row .q-grow .q-between .q-wrap .q-gap-1..6 .q-section (gap 24)
    Text        .q-text-xs|sm|md|lg|xl|2xl (size+leading+weight) .q-muted (text-2) .q-faint (text-3, placeholder/disabled only) .q-link (accent)
    Icons       .q-icon-14 .q-icon-16 .q-icon-20 .q-icon-24 (size Lucide svg) ; .q-spin (loading spinner) ; .q-sr-only
@@ -728,3 +733,55 @@ button.q-ex__name:focus-visible { outline: 2px solid var(--color-accent); outlin
 .q-legend__item::before { content: ""; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-chart); }
 .q-legend__item--protein::before { background: var(--color-protein); }
 .q-sheet__body > .q-btn--compact { align-self: flex-start; }
+
+/* ==========================================================================
+   Progress tab + remaining sheets (v1.1)
+   ========================================================================== */
+.q-card--panel { gap: var(--space-3); }
+.q-card__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); }
+.q-card__label, .q-card__meta { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-card__text { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); }
+.q-input__unit { flex: none; color: var(--color-text-2); font-size: var(--text-sm); }
+
+/* weekly muscle volume: label | track with 10-20 target band | value */
+.q-vol { display: flex; flex-direction: column; gap: var(--space-1); }
+.q-vol__row { display: grid; grid-template-columns: 72px 1fr 32px; gap: var(--space-3); align-items: center; min-height: 28px; }
+.q-vol__name { font-size: var(--text-sm); line-height: var(--leading-sm); }
+.q-vol__val { text-align: end; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.q-vol__track { position: relative; height: 8px; border-radius: var(--radius-full); background: var(--color-surface-2); overflow: hidden; }
+.q-vol__band { position: absolute; inset-block: 0; inset-inline-start: 40%; width: 40%; background: var(--color-chart-muted); }
+.q-vol__bar { -webkit-appearance: none; appearance: none; position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; color: var(--color-chart); }
+.q-vol__bar::-webkit-progress-bar { background: transparent; }
+.q-vol__bar::-webkit-progress-value { background: var(--color-chart); border-radius: var(--radius-full); transition: width var(--motion-base) var(--ease-out); }
+.q-vol__bar::-moz-progress-bar { background: var(--color-chart); border-radius: var(--radius-full); }
+
+/* chart extras: moving average, PR bars */
+.q-chart__line--avg { stroke: var(--color-text-2); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.q-chart__bar--pr { fill: var(--color-done); }
+.q-legend__item--avg::before { width: 12px; height: 0; border-radius: 0; background: none; border-top: 2px dashed var(--color-text-2); }
+.q-legend__item--pr::before { background: var(--color-done); }
+
+/* StatCell: personal-record value (done colour + trophy) */
+.q-stat--pr .q-stat__value { display: flex; align-items: center; gap: var(--space-1); color: var(--color-done); }
+.q-stat__value svg { width: 24px; height: 24px; flex: none; stroke-width: 2; }
+
+/* ListRow extras: leading icon, row with a ⋮ menu */
+.q-list-row__lead { flex: none; color: var(--color-text-2); }
+.q-list-row--menu { position: relative; min-height: 52px; padding-block: var(--space-1); }
+.q-list-row--menu .q-list-row__more { margin-inline-end: calc(var(--space-2) * -1); }
+.q-list-row__menu { position: absolute; top: calc(100% - var(--space-2)); inset-inline-end: var(--space-2); z-index: 15; min-width: 0; width: max-content; }
+.q-menu__item:disabled { color: var(--color-text-3); cursor: default; }
+
+/* plate calculator */
+.q-plates { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.q-plate { display: inline-grid; place-items: center; min-width: var(--size-control); height: var(--size-control); padding-inline: var(--space-3); background: var(--color-surface-2); border-radius: var(--radius-sm); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-md); line-height: var(--leading-md); }
+
+/* routine editor row: head (thumb, name, ⋮) + target-sets stepper */
+.q-redit { position: relative; gap: var(--space-3); }
+.q-redit__head { display: flex; align-items: center; gap: var(--space-3); }
+.q-redit__menu { position: absolute; top: calc(var(--size-hit) + var(--space-2)); inset-inline-end: var(--space-2); z-index: 15; min-width: 0; width: max-content; }
+.q-redit__sets { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.q-redit__sets .q-stepper { flex: none; width: 168px; }
+
+/* a sheet that is re-rendered in place (same type) must not replay its slide-in */
+.q-overlay.is-static, .q-overlay.is-static .q-sheet { animation: none; }

@@ -11,10 +11,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BUILT DIFFERENT" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800;900&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/components.css" />
@@ -29,9 +27,6 @@
 
     <main id="screen" class="q-main"></main>
 
-    <!-- Floating rest timer -->
-    <div id="rest-bar" class="rest-bar hidden"></div>
-
     <!-- Mini workout bar: shown only when a workout is active and the tab is not "workout" -->
     <button id="mini-bar" class="q-mini-bar q-mini-bar--float q-mini-bar--fixed" data-nav="workout" hidden></button>
 
@@ -44,7 +39,7 @@
     </nav>
 
     <div id="modal"></div>
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="q-toast-region" aria-live="polite"></div>
   </div>
 
   <script src="js/data-exercises.js"></script>

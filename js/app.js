@@ -218,9 +218,13 @@
   const icons = () => { if (window.lucide) try { lucide.createIcons(); } catch (e) {} };
 
   function toast(msg, ok) {
+    /* QUIET toast: one line, no emoji, gone after 3s. #toast is the .q-toast-region; the .q-toast inside is rebuilt per message. */
     const t = $('#toast'); if (!t) return;
-    t.textContent = msg; t.className = 'toast show' + (ok ? ' ok' : '');
-    clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+    const clean = String(msg).trim();
+    t.innerHTML = '<div class="q-toast" role="status">' + (ok ? '<i data-lucide="check" class="q-toast__icon"></i>' : '') + '<span class="q-toast__text"></span></div>';
+    t.querySelector('.q-toast__text').textContent = clean;
+    icons();
+    clearTimeout(toast._t); toast._t = setTimeout(() => { t.innerHTML = ''; }, 3000);
   }
 
   function beep() {
@@ -233,6 +237,8 @@
   }
 
   /* ==================== SVG THUMBNAIL GENERATOR ==================== */
+  /* Legacy generator, no longer called by any screen (QUIET uses letter thumbnails). Safe to delete. */
+  /* design-check:off */
   function getExerciseSvg(ex) {
     const pose = (ex && ex.pose) || 'bench-press';
     let svgContent = '';
@@ -608,6 +614,7 @@
 
     return `<div class="ex-thumb" aria-hidden="true"><svg viewBox="0 0 48 48">${svgContent}</svg></div>`;
   }
+  /* design-check:on */
 
   /* ============================ WORKOUT ENGINE ============================ */
   const newSet = () => ({ type: 'N', kg: '', reps: '', done: false, pr: false, touched: false });
@@ -832,13 +839,14 @@
     if (!REST_TIMER_ENABLED || !ui.rest) { el.classList.add('hidden'); el.innerHTML = ''; return; }
     el.classList.remove('hidden');
     if (full || !el.innerHTML) {
-      el.innerHTML = `<div class="flex items-center justify-between gap-2">
-        <div><div class="text-[11px] muted font-bold">זמן מנוחה</div><div id="rest-time" class="rest-time">0:00</div></div>
-        <div class="flex gap-2">
-          <button class="btn" data-action="rest-sub">-15</button>
-          <button class="btn" data-action="rest-add">+15</button>
-          <button class="btn btn-primary" data-action="rest-skip">דלג</button>
-        </div></div><div id="rest-prog" class="rest-progress"></div>`;
+      /* Inert: the rest timer is switched off (REST_TIMER_ENABLED) and index.html has no #rest-bar. Re-enabling needs a design decision first. */
+      el.innerHTML = `<div class="q-row q-between q-gap-2">
+        <div class="q-stack"><span class="q-section-sub">זמן מנוחה</span><span id="rest-time" class="num">0:00</span></div>
+        <div class="q-row q-gap-2">
+          <button class="q-btn q-btn--secondary q-btn--compact" data-action="rest-sub">-15</button>
+          <button class="q-btn q-btn--secondary q-btn--compact" data-action="rest-add">+15</button>
+          <button class="q-btn q-btn--primary q-btn--compact" data-action="rest-skip">דלג</button>
+        </div></div><div id="rest-prog"></div>`;
     }
     const left = (ui.rest.end - Date.now()) / 1000;
     if (left <= 0) {
@@ -980,7 +988,6 @@
     const menuOpen = !!(ui.menu && ui.menu.exm === ei);
     const showNote = !!e.note || ui.noteEi === ei;
     const meta = (MUSCLES[ex.muscle] ? MUSCLES[ex.muscle].he : ex.muscle) + (ex.equipment && EQUIP[ex.equipment] ? ' · ' + EQUIP[ex.equipment].he : '');
-    const TYPE_NAME = { N: 'סט רגיל', W: 'חימום', D: 'דרופ-סט', F: 'כשל' };
 
     const rows = e.sets.map((s, si) => {
       const p = prevSet(e.exId, si);
@@ -993,7 +1000,6 @@
         <input class="q-set-row__input" type="number" inputmode="numeric" min="0" placeholder="${p ? p.reps : '0'}" value="${s.reps}" data-field="reps" data-ei="${ei}" data-si="${si}" aria-label="חזרות" />
         <button class="q-set-row__check" data-action="toggle-done" data-ei="${ei}" data-si="${si}" aria-pressed="${!!s.done}" aria-label="סמן סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
         ${setMenuOpen ? `<div class="q-menu q-set-row__menu">
-          ${['N', 'W', 'D', 'F'].map(t => `<button class="q-menu__item" data-action="set-type" data-t="${t}" data-ei="${ei}" data-si="${si}" aria-selected="${type === t}">${TYPE_NAME[t]}</button>`).join('')}
           <button class="q-menu__item" data-action="open-calc" data-ei="${ei}" data-si="${si}"><i data-lucide="calculator"></i>מחשבון פלטות</button>
           ${e.sets.length > 1 ? `<button class="q-menu__item q-menu__item--danger" data-action="del-set" data-ei="${ei}" data-si="${si}"><i data-lucide="trash-2"></i>מחק סט</button>` : ''}
         </div>` : ''}
@@ -1387,7 +1393,7 @@
   }
 
   function lineChartWeights(points, w = 320, h = 140) {
-    if (points.length < 2) return '<div class="muted text-sm text-center py-8">הוסף לפחות 2 שקילות להצגת גרף</div>';
+    if (points.length < 2) return '';
     const vals = points.map(p => p.kg), min = Math.min(...vals) - 0.5, max = Math.max(...vals) + 0.5, px = 14;
     const X = i => px + i * (w - 2 * px) / (points.length - 1), Y = v => h - 18 - (v - min) / (max - min) * (h - 36);
     const path = points.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.kg).toFixed(1)).join(' ');
@@ -1398,26 +1404,26 @@
       ma.push(sum / count);
     }
     const pathMa = ma.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join(' ');
-    return `<svg viewBox="0 0 ${w} ${h}" class="w-full" style="direction:ltr">
-      <path d="${pathMa}" fill="none" stroke="#6366f1" stroke-width="2" stroke-dasharray="4" stroke-linejoin="round"/>
-      <path d="${path}" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round"/>
-      ${points.map((p, i) => `<circle cx="${X(i)}" cy="${Y(p.kg)}" r="3.5" fill="#10b981"/>`).join('')}
-      <text x="${px}" y="12" fill="#94a3b8" font-size="10">${max.toFixed(1)}</text>
-      <text x="${px}" y="${h - 3}" fill="#94a3b8" font-size="10">${min.toFixed(1)}</text>
-    </svg>
-    <div class="flex items-center justify-center gap-4 text-[10px] muted mt-2 font-bold">
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> משקל יומי</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-0.5 bg-indigo-500"></span> ממוצע נע (7)</span>
-    </div>`;
+    return `<div class="q-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="גרף משקל גוף">
+      <line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="18" y2="18"/><line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="${h - 18}" y2="${h - 18}"/>
+      <path class="q-chart__line q-chart__line--avg" d="${pathMa}"/>
+      <path class="q-chart__line" d="${path}"/>
+      ${points.map((p, i) => `<circle class="q-chart__dot" cx="${X(i).toFixed(1)}" cy="${Y(p.kg).toFixed(1)}" r="3"/>`).join('')}
+      <text class="q-chart__label" x="${px}" y="12">${max.toFixed(1)}</text>
+      <text class="q-chart__label" x="${px}" y="${h - 3}">${min.toFixed(1)}</text>
+    </svg><div class="q-chart__axis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points[points.length - 1].date)}</span></div>
+    <div class="q-legend"><span class="q-legend__item">משקל יומי</span><span class="q-legend__item q-legend__item--avg">ממוצע נע (7)</span></div></div>`;
   }
 
-  function barChart(items, w = 320, h = 120) {
-    if (!items.length) return '<div class="muted text-sm text-center py-8">שמור אימון כדי לראות התקדמות</div>';
+  /* bars: past workouts muted, latest = chart colour, workouts with a PR = done colour */
+  function barChart(items, w = 320, h = 96) {
+    if (!items.length) return '';
     const max = Math.max(...items.map(i => i.v), 1), bw = (w - 10) / items.length;
-    return `<svg viewBox="0 0 ${w} ${h}" class="w-full" style="direction:ltr">${items.map((it, i) => {
-      const bh = it.v / max * (h - 24);
-      return `<rect x="${5 + i * bw + 2}" y="${h - 14 - bh}" width="${bw - 4}" height="${bh}" rx="3" fill="${it.pr ? '#06b6d4' : '#3b82f6'}"/>`;
-    }).join('')}</svg>`;
+    return `<div class="q-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="נפח ב-12 האימונים האחרונים">${items.map((it, i) => {
+      const bh = Math.max(2, it.v / max * (h - 8));
+      const cls = 'q-chart__bar' + (it.pr ? ' q-chart__bar--pr' : i === items.length - 1 ? ' q-chart__bar--current' : '');
+      return `<rect class="${cls}" x="${(5 + i * bw + 2).toFixed(1)}" y="${(h - bh).toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${bh.toFixed(1)}" rx="2"/>`;
+    }).join('')}</svg></div>`;
   }
 
   function weeklyMuscleVolumeHTML() {
@@ -1452,64 +1458,44 @@
     });
 
     const targetMuscles = [
-      { key: 'chest', he: 'חזה', color: '#3b82f6' },
-      { key: 'back', he: 'גב', color: '#06b6d4' },
-      { key: 'legs', he: 'רגליים', color: '#10b981' },
-      { key: 'shoulders', he: 'כתפיים', color: '#f59e0b' },
-      { key: 'biceps', he: 'יד קדמית', color: '#ec4899' },
-      { key: 'triceps', he: 'יד אחורית', color: '#8b5cf6' },
-      { key: 'core', he: 'בטן', color: '#6366f1' }
+      { key: 'chest', he: 'חזה' },
+      { key: 'back', he: 'גב' },
+      { key: 'legs', he: 'רגליים' },
+      { key: 'shoulders', he: 'כתפיים' },
+      { key: 'biceps', he: 'יד קדמית' },
+      { key: 'triceps', he: 'יד אחורית' },
+      { key: 'core', he: 'בטן' }
     ];
 
-    const maxVal = Math.max(15, ...Object.values(muscleSets));
+    /* display scale: 0-25 sets; the 10-20 target band sits at 40%-80% of the track */
+    const SCALE = 25, empty = totalSets === 0;
+    const rows = targetMuscles.map(m => {
+      const c = muscleSets[m.key];
+      return `<div class="q-vol__row"><span class="q-vol__name">${m.he}</span>
+        <span class="q-vol__track"><span class="q-vol__band"></span>${empty ? '' : `<progress class="q-vol__bar" value="${Math.min(c, SCALE)}" max="${SCALE}"></progress>`}</span>
+        <span class="q-vol__val num">${empty ? '' : c}</span></div>`;
+    }).join('');
 
-    return `<div class="card">
-      <div class="flex items-center justify-between mb-3">
-        <div class="card-title">נפח שרירי שבועי (7 ימים אחרונים)</div>
-        <span class="text-xs text-blue-400 font-bold">${totalSets} סטים סה״כ</span>
-      </div>
-      <div class="space-y-2.5">
-        ${targetMuscles.map(m => {
-          const c = muscleSets[m.key];
-          const pct = Math.min(100, Math.round((c / maxVal) * 100));
-          return `<div>
-            <div class="flex justify-between text-xs mb-1 font-semibold">
-              <span>${m.he}</span>
-              <span class="${c > 0 ? 'text-white font-bold' : 'muted'}">${c} סטים</span>
-            </div>
-            <div class="h-2 rounded-full bg-slate-800/80 overflow-hidden">
-              <div class="h-full rounded-full transition-all duration-300" style="width:${pct}%;background:${m.color}"></div>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-      <div class="text-[11px] muted mt-3 text-center">יעד מומלץ: 10–20 סטים שבועיים לכל קבוצת שריר להיפרטרופיה אופטימלית</div>
-    </div>`;
+    return `<section class="q-card q-card--panel">
+      <div class="q-card__head"><span class="q-card__label">סטים השבוע לשריר</span><span class="q-card__meta">יעד <span class="num ltr">10–20</span></span></div>
+      ${empty ? '<span class="q-card__text">אחרי האימון הראשון תראה כאן כמה סטים עשית לכל שריר. האזור המסומן הוא היעד.</span>' : ''}
+      <div class="q-vol">${rows}</div>
+      ${empty ? '' : `<span class="q-section-sub">סה״כ <span class="num">${totalSets}</span> סטים ב-7 הימים האחרונים</span>`}
+    </section>`;
   }
 
-  function lineChartExercise(points, w = 320, h = 130, quiet = false) {
+  function lineChartExercise(points, w = 320, h = 130) {
     if (points.length < 2) return '';
     const vals = points.map(p => p.kg), min = Math.max(0, Math.min(...vals) - 2), max = Math.max(...vals) + 2, px = 14;
     const X = i => px + i * (w - 2 * px) / (points.length - 1), Y = v => h - 18 - (v - min) / (max - min) * (h - 36);
     const path = points.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.kg).toFixed(1)).join(' ');
-    if (quiet) {
-      return `<div class="q-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="גרף התקדמות משקל">
-        <line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="18" y2="18"/><line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="${h - 18}" y2="${h - 18}"/>
-        <path class="q-chart__line" d="${path}"/>
-        ${points.map((p, i) => `<circle class="q-chart__dot" cx="${X(i).toFixed(1)}" cy="${Y(p.kg).toFixed(1)}" r="3.5"/>`).join('')}
-        <text class="q-chart__label" x="${px}" y="12">${max.toFixed(1)}</text>
-        <text class="q-chart__label" x="${px}" y="${h - 3}">${min.toFixed(1)}</text>
-      </svg><div class="q-chart__axis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points[points.length - 1].date)}</span></div></div>`;
-    }
-    return `<svg viewBox="0 0 ${w} ${h}" class="w-full" style="direction:ltr">
-      <path d="${path}" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round"/>
-      ${points.map((p, i) => `<circle cx="${X(i)}" cy="${Y(p.kg)}" r="3.5" fill="#f59e0b"/>`).join('')}
-      <text x="${px}" y="12" fill="#94a3b8" font-size="10">${max.toFixed(1)} ק״ג</text>
-      <text x="${px}" y="${h - 3}" fill="#94a3b8" font-size="10">${min.toFixed(1)} ק״ג</text>
-    </svg>
-    <div class="flex items-center justify-center gap-4 text-[10px] muted mt-1 font-bold">
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> משקל עבודה מקסימלי (ק״ג)</span>
-    </div>`;
+    return `<div class="q-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="גרף התקדמות משקל">
+      <line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="18" y2="18"/><line class="q-chart__grid" x1="${px}" x2="${w - px}" y1="${h - 18}" y2="${h - 18}"/>
+      <path class="q-chart__line" d="${path}"/>
+      ${points.map((p, i) => `<circle class="q-chart__dot" cx="${X(i).toFixed(1)}" cy="${Y(p.kg).toFixed(1)}" r="3.5"/>`).join('')}
+      <text class="q-chart__label" x="${px}" y="12">${max.toFixed(1)}</text>
+      <text class="q-chart__label" x="${px}" y="${h - 3}">${min.toFixed(1)}</text>
+    </svg><div class="q-chart__axis"><span>${fmtDate(points[0].date)}</span><span>${fmtDate(points[points.length - 1].date)}</span></div></div>`;
   }
 
   /* read-only per-exercise stats from S.history (shared by the progress explorer and the exercise page) */
@@ -1565,56 +1551,31 @@
     const curEx = exById(curId);
     if (!curEx) return '';
 
+    if (!S.history.length) {
+      return `<section class="q-card q-card--panel"><span class="q-card__label">התקדמות לפי תרגיל</span>
+        <span class="q-card__text">שיאים ו-1RM משוער יופיעו לכל תרגיל אחרי הסט הראשון שתסמן.</span></section>`;
+    }
+
     const { exHistory, bestKg, bestReps, best1RM } = exerciseStats(curId);
 
-    return `<div class="card">
-      <div class="card-title mb-2">חקר תרגילים ושיאים (PR Explorer)</div>
-      <label class="block text-xs muted font-bold mb-1">בחר תרגיל מהספרייה:</label>
-      <select id="select-explorer-ex" class="input mb-3">
-        ${EX.map(e => `<option value="${e.id}" ${e.id === curId ? 'selected' : ''}>${e.name || e.en} (${e.heName || e.he})</option>`).join('')}
-      </select>
-
-      <div class="flex items-center gap-3 p-2 bg-slate-900/60 border border-slate-800 rounded-xl mb-3">
-        ${getExerciseSvg(curEx)}
-        <div class="min-w-0 flex-1">
-          <div class="font-bold text-sm text-white truncate" dir="ltr" style="text-align: right;">${curEx.name || curEx.en}</div>
-          <div class="text-xs text-blue-400 font-semibold">${curEx.heName || curEx.he}</div>
-          <div class="text-[11px] muted">${MUSCLES[curEx.muscle] ? MUSCLES[curEx.muscle].he : curEx.muscle} · ${EQUIP[curEx.equipment] ? EQUIP[curEx.equipment].he : ''}</div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2 text-center mb-3">
-        <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
-          <div class="text-[11px] muted mb-0.5">שיא עבודה</div>
-          <div class="text-sm font-bold text-amber-400">${bestKg > 0 ? `${bestKg} ק״ג × ${bestReps}` : '—'}</div>
-        </div>
-        <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
-          <div class="text-[11px] muted mb-0.5">1RM משוער</div>
-          <div class="text-sm font-bold text-cyan-400">${best1RM > 0 ? `${Math.round(best1RM)} ק״ג` : '—'}</div>
-        </div>
-        <div class="p-2 rounded-lg bg-slate-900/60 border border-slate-800">
-          <div class="text-[11px] muted mb-0.5">אימונים שבוצעו</div>
-          <div class="text-sm font-bold text-blue-400">${exHistory.length}</div>
-        </div>
-      </div>
-
-      ${exHistory.length >= 2 ? `
-        <div class="text-xs font-bold text-slate-300 mb-1">גרף התקדמות משקל (ק״ג):</div>
-        ${lineChartExercise(exHistory.map(h => ({ date: h.date, kg: h.kg })))}
-      ` : ''}
-
+    return `<section class="q-card q-card--panel">
+      <div class="q-card__head"><span class="q-card__label">התקדמות לפי תרגיל</span></div>
+      <label class="q-field"><span class="q-sr-only">בחר תרגיל מהספרייה</span>
+        <span class="q-input"><select id="select-explorer-ex" class="q-input__control">
+          ${EX.map(e => `<option value="${e.id}" ${e.id === curId ? 'selected' : ''}>${e.name || e.en} · ${e.heName || e.he}</option>`).join('')}
+        </select><i data-lucide="chevron-down" class="q-input__icon"></i></span></label>
+      <span class="q-section-sub">${curEx.heName || curEx.he || ''} · ${muscleHe(curEx)} · ${equipHe(curEx)}</span>
       ${exHistory.length ? `
-        <div class="mt-3">
-          <div class="text-xs font-bold text-slate-300 mb-1">היסטוריית סטים אחרונה:</div>
-          ${exHistory.slice(-5).reverse().map(h => `
-            <div class="list-item !py-1.5 text-xs">
-              <span class="muted">${fmtDate(h.date)}</span>
-              <span class="font-bold text-slate-200" dir="ltr">${h.sets.map(s => `${s.kg}×${s.reps}`).join(' · ')}</span>
-            </div>
-          `).join('')}
+        <div class="q-stat-row">
+          <div class="q-stat"><span class="q-stat__label">שיא עבודה · ק״ג × חזרות</span><span class="q-stat__value" dir="ltr">${fmtN(bestKg)}×${bestReps}</span></div>
+          <div class="q-stat"><span class="q-stat__label">1RM משוער · ק״ג</span><span class="q-stat__value">${Math.round(best1RM)}</span></div>
+          <div class="q-stat"><span class="q-stat__label">אימונים</span><span class="q-stat__value">${exHistory.length}</span></div>
         </div>
-      ` : '<div class="muted text-xs text-center py-4 bg-slate-900/30 rounded-lg">תרגיל זה טרם נרשם באימונים שבוצעו.</div>'}
-    </div>`;
+        ${exHistory.length >= 2 ? `<span class="q-card__label">משקל עבודה מקסימלי · ק״ג</span>${lineChartExercise(exHistory.map(h => ({ date: h.date, kg: h.kg })))}` : ''}
+        <span class="q-card__label">הסטים האחרונים</span>
+        <div class="q-list">${exHistory.slice(-5).reverse().map(h => `<div class="q-list-row q-list-row--static"><span class="q-list-row__text"><span class="q-list-row__title">${fmtDate(h.date)}</span><span class="q-list-row__sub ltr">${h.sets.map(setLabel).join(' · ')}</span></span></div>`).join('')}</div>
+      ` : '<span class="q-card__text">עוד לא ביצעת את התרגיל הזה. שיאים ו-1RM משוער יופיעו אחרי הסט הראשון.</span>'}
+    </section>`;
   }
 
   /* ---- Exercise page (presentation only: reads S.history, writes nothing) ---- */
@@ -1675,25 +1636,22 @@
   }
 
   function backupCardHTML() {
-    return `<div class="card">
-      <div class="card-title mb-1">גיבוי ושחזור נתונים</div>
-      <div class="text-xs muted mb-3">שמור עותק מלא של כל האימונים, התפריטים, המשקלים והתבניות שלך במכשיר, או שחזר מגיבוי קודם.</div>
-      <div class="flex gap-2">
-        <button class="btn btn-primary flex-1 font-bold text-xs !py-2.5 flex items-center justify-center gap-1.5" data-action="export-backup">
-          📥 ייצא גיבוי מלא
-        </button>
-        <button class="btn btn-ghost flex-1 font-bold text-xs !py-2.5 border border-slate-700 hover:border-slate-500 flex items-center justify-center gap-1.5" data-action="import-backup-click">
-          📤 שחזר מגיבוי
-        </button>
-      </div>
-      <input type="file" id="backup-file-input" accept=".json,application/json" style="display:none" />
-    </div>`;
+    const hasData = S.history.length || S.weights.length || Object.keys(S.nutrition || {}).some(k => (S.nutrition[k] || []).length);
+    const importBtn = `<button class="q-btn q-btn--secondary q-btn--block" data-action="import-backup-click"><i data-lucide="upload"></i>שחזר מגיבוי</button>`;
+    return `<section class="q-card q-card--panel">
+      <span class="q-card__title">${hasData ? 'גיבוי ושחזור' : 'שחזור מגיבוי'}</span>
+      <span class="q-card__text">${hasData ? 'שמור עותק של האימונים, התפריטים, המשקלים והתבניות שלך על המכשיר, או שחזר מגיבוי קודם.' : 'עברת מכשיר? טען קובץ גיבוי.'}</span>
+      ${hasData ? `<div class="q-row-split">
+        <button class="q-btn q-btn--secondary q-btn--block" data-action="export-backup"><i data-lucide="download"></i>ייצא גיבוי</button>
+        ${importBtn}</div>` : importBtn}
+      <input type="file" id="backup-file-input" accept=".json,application/json" hidden />
+    </section>`;
   }
 
   function viewProgress() {
     const ws = S.weights, last = ws[ws.length - 1], first = ws[0];
     const deltaAll = last && first && ws.length > 1 ? r1(last.kg - first.kg) : 0;
-    
+
     // 7-day rolling average & delta vs previous 7 days
     const recent7 = ws.slice(-7);
     const avg7 = recent7.length ? r1(recent7.reduce((a, b) => a + b.kg, 0) / recent7.length) : null;
@@ -1703,57 +1661,72 @@
 
     const hist = S.history.slice(0, 12).reverse();
     const totalPR = S.history.reduce((a, w) => a + (w.prs || 0), 0);
-    return `<div class="card">
-      <div class="card-title mb-2">משקל גוף</div>
-      <div class="flex gap-2 mb-3">
-        <input id="weight-input" type="number" step="0.1" inputmode="decimal" class="input" dir="ltr" placeholder='ק"ג' value="${last ? last.kg : ''}" />
-        <button class="btn btn-primary" data-action="weight-add">שמור</button>
-      </div>
+    const signed = n => (n > 0 ? '+' : '') + n;
 
-      <div class="grid grid-cols-3 gap-2 text-center mb-3">
-        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div class="text-[10px] muted mb-0.5 font-bold">משקל אחרון</div>
-          <div class="text-sm font-black text-white">${last ? last.kg + ' ק״ג' : '—'}</div>
-        </div>
-        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div class="text-[10px] muted mb-0.5 font-bold">ממוצע 7 ימים אחרונים</div>
-          <div class="text-sm font-black text-blue-400">${avg7 !== null ? avg7 + ' ק״ג' : '—'}</div>
-        </div>
-        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div class="text-[10px] muted mb-0.5 font-bold">שינוי מול שבוע שעבר</div>
-          <div class="text-sm font-black ${deltaWeekly !== null && deltaWeekly <= 0 ? 'text-emerald-400' : 'text-blue-400'}" dir="ltr">
-            ${deltaWeekly !== null ? (deltaWeekly > 0 ? '+' : '') + deltaWeekly + ' ק״ג' : '—'}
+    const weightEntry = (label) => `<div class="q-row q-gap-2">
+        <label class="q-input q-input--number q-grow"><input id="weight-input" type="number" step="0.1" inputmode="decimal" class="q-input__control" dir="ltr" placeholder='ק"ג' value="${last ? last.kg : ''}" aria-label="משקל גוף בק״ג" /><span class="q-input__unit">ק״ג</span></label>
+        <button class="q-btn q-btn--primary" data-action="weight-add">${label}</button>
+      </div>`;
+
+    const weightCard = !ws.length
+      ? `<section class="q-card q-card--panel">
+          <span class="q-card__title">רשום משקל, תראה מגמה</span>
+          <span class="q-card__text">שקילה אחת בשבוע, באותה שעה, מספיקה כדי לראות לאן זה הולך.</span>
+          ${weightEntry('רשום משקל')}
+        </section>`
+      : `<section class="q-card q-card--panel">
+          <div class="q-card__head"><span class="q-card__label">משקל גוף · ק״ג</span><span class="q-card__meta"><span class="num">${ws.length}</span> שקילות</span></div>
+          <div class="q-stat-row">
+            <div class="q-stat"><span class="q-stat__label">אחרון</span><span class="q-stat__value">${last.kg}</span></div>
+            <div class="q-stat"><span class="q-stat__label">ממוצע 7 ימים</span><span class="q-stat__value">${avg7}</span></div>
+            ${deltaWeekly !== null ? `<div class="q-stat"><span class="q-stat__label">מול שבוע שעבר</span><span class="q-stat__value" dir="ltr">${signed(deltaWeekly)}</span></div>` : ''}
           </div>
-        </div>
-      </div>
+          ${ws.length >= 2 ? lineChartWeights(ws.slice(-30)) : '<span class="q-section-sub">הוסף עוד שקילה אחת כדי לראות גרף.</span>'}
+          ${ws.length >= 2 ? `<span class="q-section-sub">שינוי כולל <span class="num ltr">${signed(deltaAll)}</span> ק״ג</span>` : ''}
+          ${weightEntry('שמור')}
+        </section>`;
 
-      <div class="flex justify-between text-xs mb-2 font-bold px-1">
-        <span class="muted">שינוי כולל: <b class="${deltaAll <= 0 ? 'text-emerald-400' : 'text-blue-400'}" dir="ltr">${deltaAll > 0 ? '+' : ''}${deltaAll} ק״ג</b></span>
-        <span class="muted">${ws.length} שקילות רשומות</span>
+    const volumeCard = hist.length ? `<section class="q-card q-card--panel">
+        <div class="q-card__head"><span class="q-card__label">נפח · 12 אימונים אחרונים</span><span class="q-card__meta">ממוצע <span class="num">${fmtN(hist.reduce((a, w) => a + w.volume, 0) / hist.length)}</span> ק״ג</span></div>
+        ${barChart(hist.map(w => ({ v: w.volume, pr: w.prs > 0 })))}
+        ${hist.some(w => w.prs > 0) ? '<div class="q-legend"><span class="q-legend__item">האימון האחרון</span><span class="q-legend__item q-legend__item--pr">אימון עם שיא</span></div>' : ''}
+        <span class="q-section-sub">סה״כ אימונים <span class="num">${S.history.length}</span> · שיאים <span class="num">${totalPR}</span></span>
+      </section>` : '';
+
+    const hasNutrition = Object.keys(S.nutrition || {}).some(k => (S.nutrition[k] || []).length);
+    const nutriCard = hasNutrition ? `<section class="q-card q-card--panel">
+        <div class="q-card__head"><span class="q-card__label">התמדה שבועית בתזונה</span><span class="q-card__meta">קו = יעד</span></div>
+        ${nutritionChart()}
+      </section>` : '';
+
+    const weightLog = ws.length ? `<section class="q-card q-card--panel">
+        <span class="q-card__label">שקילות אחרונות</span>
+        <div class="q-list">${ws.slice(-6).reverse().map(w => {
+          const open = !!(ui.menu && ui.menu.mid === 'wt-' + w.date);
+          return `<div class="q-list-row q-list-row--static q-list-row--menu">
+            <span class="q-list-row__text"><span class="q-list-row__title">${fmtDate(w.date)}</span></span>
+            <span class="q-list-row__value q-list-row__value--lg"><span class="num">${w.kg}</span> ק״ג</span>
+            <button class="q-icon-btn q-list-row__more" data-action="item-menu" data-id="wt-${w.date}" aria-label="עוד" aria-expanded="${open}"><i data-lucide="ellipsis-vertical"></i></button>
+            ${open ? `<div class="q-menu q-list-row__menu"><button class="q-menu__item q-menu__item--danger" data-action="weight-del" data-d="${w.date}"><i data-lucide="trash-2"></i>מחק שקילה</button></div>` : ''}
+          </div>`;
+        }).join('')}</div>
+      </section>` : '';
+
+    return `<div class="q-stack q-gap-4">
+      <h1 class="q-screen-title__text">מעקב</h1>
+      <div class="q-stack q-gap-2">
+        ${weightCard}
+        ${weeklyMuscleVolumeHTML()}
+        ${exerciseExplorerHTML()}
+        ${volumeCard}
+        ${nutriCard}
+        ${weightLog}
+        ${backupCardHTML()}
       </div>
-      ${lineChartWeights(ws.slice(-30))}
-    </div>
-    ${weeklyMuscleVolumeHTML()}
-    ${exerciseExplorerHTML()}
-    <div class="card"><div class="card-title mb-1">התמדה שבועית (תזונה)</div>${nutritionChart()}</div>
-    <div class="card"><div class="card-title mb-1">נפח אימונים (12 אחרונים)</div>${barChart(hist.map(w => ({ v: w.volume, pr: w.prs > 0 })))}
-      <div class="text-xs muted mt-2">עמודה כחולה-בהירה = אימון עם שיא אישי · סה"כ אימונים: ${S.history.length} · שיאים: ${totalPR}</div></div>
-    ${S.history.length ? `<div class="card"><div class="card-title mb-1">היסטוריית אימונים</div>${S.history.slice(0, 10).map(w => `
-      <div class="list-item"><div><div class="font-bold text-sm">${w.name ? w.name + ' · ' : ''}${fmtDate(w.date)} · ${w.exercises.length} תרגילים</div>
-      <div class="text-[11px] muted">${fmtClock(w.duration)}${w.prs ? ` · 🏆 ${w.prs}` : ''}</div></div><b>${fmtN(w.volume)} ק"ג</b></div>`).join('')}</div>` : ''}
-    ${ws.length ? `<div class="card"><div class="card-title mb-1">שקילות אחרונות</div>${ws.slice(-6).reverse().map(w => `
-      <div class="list-item"><span>${fmtDate(w.date)}</span><span class="flex items-center gap-2"><b>${w.kg} ק"ג</b>
-      <button class="btn btn-ghost !p-1" data-action="weight-del" data-d="${w.date}"><i data-lucide="x" class="w-4 h-4"></i></button></span></div>`).join('')}</div>` : ''}
-    ${backupCardHTML()}`;
+    </div>`;
   }
 
   /* ---- Modals ---- */
-  function sheet(title, body) {
-    return `<div class="modal-back" data-action="close-modal-bg"><div class="modal-sheet">
-      <div class="flex items-center justify-between modal-header"><div class="text-xl font-black">${title}</div>
-      <button class="btn btn-ghost !p-1" data-action="close-modal" aria-label="סגור"><i data-lucide="x"></i></button></div>
-      <div class="modal-body">${body}</div></div></div>`;
-  }
   function closeModal() { ui.modal = null; render(); }
 
   function routinePickHTML() {
@@ -1920,7 +1893,22 @@
     renderModal();
   }
 
+  /* Re-rendering the same sheet (stepper tap, menu open, subview) must not replay the slide-in or lose the scroll position. */
   function renderModal() {
+    const el = $('#modal'), m = ui.modal;
+    const key = m ? m.type + '|' + (m.subview || '') + '|' + (m.view || '') : '';
+    const same = !!m && el.firstElementChild && renderModal._key === key;
+    const prev = el.querySelector('.q-sheet__body');
+    const top = same && prev ? prev.scrollTop : 0;
+    renderModalHTML();
+    renderModal._key = key;
+    if (same) {
+      const ov = el.querySelector('.q-overlay'); if (ov) ov.classList.add('is-static');
+      const nb = el.querySelector('.q-sheet__body'); if (nb) nb.scrollTop = top;
+    }
+  }
+
+  function renderModalHTML() {
     const el = $('#modal'), m = ui.modal;
     if (!m) { el.innerHTML = ''; return; }
     if (m.type === 'pickEx') {
@@ -1936,136 +1924,95 @@
       if (m.subview === 'addEx') {
         const filtered = filteredExercises(m.q, m.mus || 'all', 'all');
         el.innerHTML = qSheet('הוסף תרגיל לתבנית', `
-          <div class="flex items-center justify-between mb-3">
-            <button class="btn btn-ghost !p-1 text-xs flex items-center gap-1 text-blue-400 font-bold" data-action="routine-editor-add-back">
-              <span>←</span> חזרה לעריכה
-            </button>
-            <div class="text-xs muted font-bold">${filtered.length} תרגילים זמינים</div>
+          <div class="q-row q-between">
+            <button class="q-btn q-btn--ghost q-btn--compact" data-action="routine-editor-add-back"><i data-lucide="chevron-right"></i>חזרה לעריכה</button>
+            <span class="q-section-sub"><span class="num">${filtered.length}</span> תרגילים זמינים</span>
           </div>
           ${searchInputHTML('redit-pick', m.q || '')}
           ${chips(MUSCLES, m.mus || 'all', 'redit-muscle')}
           <div id="redit-pick-list">
-            ${exerciseListHTML(filtered, 'routine-editor-add-ex', '+ הוסף לתבנית')}
+            ${exerciseListHTML(filtered, 'routine-editor-add-ex', 'הוסף לתבנית')}
           </div>
         `, { full: true });
       } else {
         const rows = m.exercises.map((item, idx) => {
           const ex = exById(item.exId) || { name: 'Exercise', en: 'Exercise', heName: 'תרגיל', he: 'תרגיל', muscle: 'chest', equipment: 'barbell', pose: 'bench-press' };
-          return `
-            <div class="routine-ex-item mb-2.5">
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                  ${getExerciseSvg(ex)}
-                  <div class="min-w-0 flex-1">
-                    <div class="text-xs font-bold text-white truncate" dir="ltr" style="text-align: right;">${ex.name || ex.en}</div>
-                    <div class="text-[11px] text-blue-400 font-medium truncate">${ex.heName || ex.he}</div>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1 flex-shrink-0">
-                  <button class="btn btn-ghost !p-1 text-slate-400 hover:text-white" data-action="routine-ex-up" data-idx="${idx}" ${idx === 0 ? 'disabled style="opacity:0.25"' : ''} title="העלה מעלה">↑</button>
-                  <button class="btn btn-ghost !p-1 text-slate-400 hover:text-white" data-action="routine-ex-down" data-idx="${idx}" ${idx === m.exercises.length - 1 ? 'disabled style="opacity:0.25"' : ''} title="הורד מטה">↓</button>
-                  <button class="btn btn-ghost !p-1 text-red-400 hover:text-red-300" data-action="routine-ex-del" data-idx="${idx}" title="הסר תרגיל">✕</button>
+          const open = !!(ui.menu && ui.menu.mid === 're-' + idx);
+          return `<div class="q-card q-card--nested q-redit">
+              <div class="q-redit__head">
+                ${exThumbHTML(ex)}
+                <span class="q-list-row__text"><span class="q-list-row__title ltr">${ex.name || ex.en}</span><span class="q-list-row__sub">${ex.heName || ex.he}</span></span>
+                <button class="q-icon-btn" data-action="item-menu" data-id="re-${idx}" aria-label="עוד" aria-expanded="${open}"><i data-lucide="ellipsis-vertical"></i></button>
+              </div>
+              ${open ? `<div class="q-menu q-redit__menu">
+                <button class="q-menu__item" data-action="routine-ex-up" data-idx="${idx}" ${idx === 0 ? 'disabled' : ''}><i data-lucide="arrow-up"></i>העלה</button>
+                <button class="q-menu__item" data-action="routine-ex-down" data-idx="${idx}" ${idx === m.exercises.length - 1 ? 'disabled' : ''}><i data-lucide="arrow-down"></i>הורד</button>
+                <button class="q-menu__item q-menu__item--danger" data-action="routine-ex-del" data-idx="${idx}"><i data-lucide="trash-2"></i>הסר תרגיל</button>
+              </div>` : ''}
+              <div class="q-redit__sets">
+                <span class="q-section-sub">יעד סטים</span>
+                <div class="q-stepper">
+                  <button class="q-stepper__btn" data-action="routine-set-dec" data-idx="${idx}" aria-label="פחות סטים"><i data-lucide="minus"></i></button>
+                  <span class="q-stepper__value"><span class="num">${item.targetSets || 3}</span></span>
+                  <button class="q-stepper__btn" data-action="routine-set-inc" data-idx="${idx}" aria-label="עוד סט"><i data-lucide="plus"></i></button>
                 </div>
               </div>
-              <div class="flex items-center justify-between pt-1.5 border-t border-slate-800 text-xs">
-                <span class="text-slate-400 font-medium">יעד סטים (סטים באימון):</span>
-                <div class="flex items-center gap-2">
-                  <button class="set-stepper-btn" data-action="routine-set-dec" data-idx="${idx}">-</button>
-                  <span class="font-bold text-white text-sm tabular-nums w-6 text-center">${item.targetSets || 3}</span>
-                  <button class="set-stepper-btn" data-action="routine-set-inc" data-idx="${idx}">+</button>
-                </div>
-              </div>
-            </div>
-          `;
+            </div>`;
         }).join('');
 
-        el.innerHTML = sheet('עריכת תבנית', `
-          <div class="mb-3">
-            <label class="block text-xs text-blue-400 font-bold mb-1.5">שם התבנית</label>
-            <input id="routine-edit-name" class="input text-base font-bold" value="${m.name}" placeholder="שם התבנית..." />
-          </div>
-
-          <div class="flex items-center justify-between mb-2">
-            <div class="text-xs font-bold text-slate-300">תרגילי התבנית (${m.exercises.length})</div>
-            <button class="btn btn-primary !py-1 !px-2.5 text-xs flex items-center gap-1 font-bold" data-action="routine-editor-add-open">
-              <span>+</span> הוסף תרגיל לתבנית
-            </button>
-          </div>
-
-          <div class="mb-4" style="max-height: 44vh; overflow-y: auto; padding-right: 2px;">
-            ${m.exercises.length ? rows : '<div class="card muted text-center py-6 text-xs">אין תרגילים בתבנית עדיין.<br>לחץ על "+ הוסף תרגיל לתבנית" כדי לבחור תרגילים.</div>'}
-          </div>
-
-          <div class="flex gap-2 pt-2 border-t border-slate-800">
-            <button class="btn btn-ghost flex-1 text-xs font-bold" data-action="close-modal">ביטול</button>
-            <button class="btn btn-success flex-2 text-sm font-bold !py-2.5" data-action="routine-editor-save">שמור שינויים בתבנית 💾</button>
-          </div>
-        `);
+        el.innerHTML = qSheet('עריכת תבנית', `
+          <label class="q-field"><span class="q-field__label">שם התבנית</span>
+            <span class="q-input"><input id="routine-edit-name" class="q-input__control" value="${escQ(m.name)}" placeholder="שם התבנית" /></span></label>
+          <div class="q-section-header"><span class="q-section-header__title">תרגילי התבנית · <span class="num">${m.exercises.length}</span></span>
+            <button class="q-section-header__action q-row q-gap-1" data-action="routine-editor-add-open"><i data-lucide="plus"></i>הוסף תרגיל</button></div>
+          ${m.exercises.length ? rows : '<div class="q-empty"><span class="q-empty__title">אין תרגילים בתבנית</span><span class="q-empty__text">הוסף תרגילים כדי שהתבנית תתחיל אימון.</span></div>'}
+        `, { full: true, footer: '<button class="q-btn q-btn--primary q-btn--block" data-action="routine-editor-save">שמור שינויים</button>' });
       }
     } else if (m.type === 'smartRoutineSync') {
-      el.innerHTML = sheet('סנכרון תבנית אימון', `
-        <div class="text-center mb-4">
-          <div class="text-3xl mb-1">⚡</div>
-          <div class="text-base font-black text-white">עדכון התבנית "${m.routineName}"</div>
-          <div class="text-xs text-slate-400 mt-1.5 leading-relaxed">
-            האימון נשמר בהיסטוריה! ביצעת שינויים בתרגילים או במספר הסטים במהלך האימון.<br>כיצד תרצה לעדכן את התבנית הקבועה?
-          </div>
+      const opt = (action, icon, title, sub) => `<button class="q-list-row" data-action="${action}"><i data-lucide="${icon}" class="q-list-row__lead"></i><span class="q-list-row__text"><span class="q-list-row__title">${title}</span><span class="q-list-row__sub">${sub}</span></span><i data-lucide="chevron-left" class="q-list-row__chevron"></i></button>`;
+      el.innerHTML = qSheet('סנכרון תבנית אימון', `
+        <div class="q-stack q-gap-1">
+          <span class="q-exp__name">עדכון התבנית "${escQ(m.routineName)}"</span>
+          <span class="q-card__text">האימון נשמר בהיסטוריה. ביצעת שינויים בתרגילים או במספר הסטים במהלך האימון. כיצד לעדכן את התבנית הקבועה?</span>
         </div>
-
-        <div class="space-y-2.5">
-          <button class="sync-card-btn primary" data-action="sync-routine-full">
-            <span class="text-2xl mt-0.5">🔄</span>
-            <div>
-              <div class="font-black text-white text-sm">עדכן תבנית במלואה</div>
-              <div class="text-[11px] text-blue-200 mt-0.5">עדכן תרגילים, כמויות סטים ומשקלי עבודה</div>
-            </div>
-          </button>
-
-          <button class="sync-card-btn" data-action="sync-routine-weights">
-            <span class="text-2xl mt-0.5">⚖️</span>
-            <div>
-              <div class="font-black text-white text-sm">עדכן רק משקלי עבודה וחזרות</div>
-              <div class="text-[11px] text-slate-400 mt-0.5">שמור על רשימת התרגילים המקורית של התבנית</div>
-            </div>
-          </button>
-
-          <button class="sync-card-btn" data-action="sync-routine-none" style="background:transparent;border-color:rgba(255,255,255,0.08)">
-            <span class="text-xl mt-0.5">📁</span>
-            <div>
-              <div class="font-bold text-slate-300 text-sm">שמור אימון להיסטוריה בלבד</div>
-              <div class="text-[11px] text-slate-500 mt-0.5">השאר את התבנית ללא שינוי</div>
-            </div>
-          </button>
-        </div>
-      `);
+        <div class="q-list">
+          ${opt('sync-routine-full', 'refresh-cw', 'עדכן תבנית במלואה', 'עדכן תרגילים, כמויות סטים ומשקלי עבודה')}
+          ${opt('sync-routine-weights', 'scale', 'עדכן רק משקלי עבודה וחזרות', 'שמור על רשימת התרגילים המקורית של התבנית')}
+          ${opt('sync-routine-none', 'archive', 'שמור אימון להיסטוריה בלבד', 'השאר את התבנית ללא שינוי')}
+        </div>`);
     } else if (m.type === 'summary') {
       const w = m.w;
-      el.innerHTML = sheet('האימון נשמר! 🔥', `<div class="grid grid-cols-3 gap-2 text-center mb-3">
-        <div class="card !mb-0"><div class="text-[11px] muted">משך</div><b>${fmtClock(w.duration)}</b></div>
-        <div class="card !mb-0"><div class="text-[11px] muted">נפח</div><b>${fmtN(w.volume)} ק"ג</b></div>
-        <div class="card !mb-0"><div class="text-[11px] muted">שיאים</div><b>🏆 ${w.prs}</b></div></div>
-        <button class="btn btn-primary btn-block mb-2 !py-2.5" data-action="share-workout">שתף סיכום אימון (תמונה)</button>
-        <button class="btn btn-ghost btn-block" data-action="close-modal">סגור</button>`);
+      el.innerHTML = qSheet('האימון נשמר', `
+        ${w.name ? `<span class="q-exp__name">${escQ(w.name)}</span>` : ''}
+        <div class="q-stat-row">
+          <div class="q-stat"><span class="q-stat__label">משך</span><span class="q-stat__value" dir="ltr">${fmtClock(w.duration)}</span></div>
+          <div class="q-stat"><span class="q-stat__label">נפח · ק״ג</span><span class="q-stat__value">${fmtN(w.volume)}</span></div>
+          <div class="q-stat ${w.prs ? 'q-stat--pr' : 'is-empty'}"><span class="q-stat__label">שיאים</span><span class="q-stat__value">${w.prs ? '<i data-lucide="trophy"></i>' : ''}${w.prs}</span></div>
+        </div>`, { footer: `<div class="q-stack q-gap-2">
+          <button class="q-btn q-btn--secondary q-btn--block" data-action="share-workout"><i data-lucide="share-2"></i>שתף סיכום אימון (תמונה)</button>
+          <button class="q-btn q-btn--ghost q-btn--block" data-action="close-modal">סגור</button></div>` });
     } else if (m.type === 'plateCalc') {
       const weight = num(m.weight) || 20, bar = num(m.bar) || 20;
       const plates = [25, 20, 15, 10, 5, 2.5, 1.25];
       let left = (weight - bar) / 2;
       const used = [];
       if (left > 0) plates.forEach(p => { while (left >= p) { used.push(p); left -= p; } });
-      el.innerHTML = sheet('מחשבון פלטות', `<div class="flex gap-2 mb-4">
-        <label class="flex-1 text-xs muted font-bold">משקל רצוי (ק"ג)<input class="input mt-1" type="number" step="2.5" data-cf="weight" value="${weight}" /></label>
-        <label class="flex-1 text-xs muted font-bold">משקל מוט (ק"ג)<input class="input mt-1" type="number" step="5" data-cf="bar" value="${bar}" /></label></div>
-        <div class="text-center mb-4"><div class="text-xs muted font-bold mb-2">פלטות לכל צד</div>
-        ${used.length ? `<div class="flex flex-wrap justify-center gap-1.5">${used.map(p => `<span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-lg font-black shadow">${p}</span>`).join('')}</div>` : '<div class="text-sm font-bold">רק מוט ריק</div>'}
-        </div><button class="btn btn-primary btn-block" data-action="close-modal">סגור</button>`);
+      el.innerHTML = qSheet('מחשבון פלטות', `<div class="q-row-split">
+        <label class="q-field"><span class="q-field__label">משקל רצוי · ק״ג</span><span class="q-input q-input--number"><input class="q-input__control" type="number" inputmode="decimal" step="2.5" data-cf="weight" value="${weight}" dir="ltr" /></span></label>
+        <label class="q-field"><span class="q-field__label">משקל מוט · ק״ג</span><span class="q-input q-input--number"><input class="q-input__control" type="number" inputmode="decimal" step="5" data-cf="bar" value="${bar}" dir="ltr" /></span></label></div>
+        <span class="q-section-sub">פלטות לכל צד</span>
+        ${used.length ? `<div class="q-plates ltr">${used.map(p => `<span class="q-plate">${p}</span>`).join('')}</div>` : '<span class="q-card__text">רק מוט ריק</span>'}`,
+        { footer: '<button class="q-btn q-btn--secondary q-btn--block" data-action="close-modal">סגור</button>' });
     } else if (m.type === 'routine') {
-      el.innerHTML = sheet('שמירת תבנית', `<input id="routine-name" class="input mb-3" placeholder="שם התבנית (למשל: דחיפה A)" value="${m.name || ''}" />
-        <button class="btn btn-primary btn-block" data-action="routine-confirm">שמור תבנית</button>`);
+      el.innerHTML = qSheet('שמירת תבנית', `<label class="q-field"><span class="q-field__label">שם התבנית</span>
+        <span class="q-input"><input id="routine-name" class="q-input__control" placeholder="למשל: דחיפה A" value="${escQ(m.name || '')}" /></span></label>`,
+        { footer: '<button class="q-btn q-btn--primary q-btn--block" data-action="routine-confirm">שמור תבנית</button>' });
     } else if (m.type === 'newRoutine') {
-      el.innerHTML = qSheet('תבנית חדשה', `<input id="routine-name" class="input mb-2" placeholder="שם התבנית (למשל: רגליים כבד)" value="${m.name || ''}" />
+      el.innerHTML = qSheet('תבנית חדשה', `<label class="q-field"><span class="q-field__label">שם התבנית</span>
+        <span class="q-input"><input id="routine-name" class="q-input__control" placeholder="למשל: רגליים כבד" value="${escQ(m.name || '')}" /></span></label>
         ${searchInputHTML('rpick', m.q || '')}
-        <div id="rpick-list">${routinePickHTML()}</div>
-        <button class="btn btn-success btn-block mt-3" data-action="routine-create">צור תבנית (<span id="rcount">${m.ids.length}</span> תרגילים)</button>`, { full: true });
+        <div id="rpick-list">${routinePickHTML()}</div>`,
+        { full: true, footer: `<button class="q-btn q-btn--primary q-btn--block" data-action="routine-create">צור תבנית (<span class="num" id="rcount">${m.ids.length}</span> תרגילים)</button>` });
     } else if (m.type === 'savedMeals') {
       const mealObj = MEALS.find(x => x.k === m.meal) || { he: 'ארוחה' };
       const curDate = ui.nutriDate || todayKey();
@@ -2300,7 +2247,7 @@
           save();
           ui.modal = null;
           render();
-          toast('התבנית עודכנה בהצלחה! 💾', true);
+          toast('התבנית עודכנה', true);
         }
         break;
       }
@@ -2319,7 +2266,7 @@
             sets: e.sets
           }));
           save();
-          toast(`התבנית "${r.name}" עודכנה במלואה! 🔄`, true);
+          toast(`התבנית "${r.name}" עודכנה`, true);
         }
         ui.modal = { type: 'summary', w: m.workout };
         render();
@@ -2342,7 +2289,7 @@
             return re;
           });
           save();
-          toast(`משקלי העבודה עודכנו בתבנית "${r.name}"! ⚖️`, true);
+          toast(`משקלי העבודה עודכנו בתבנית "${r.name}"`, true);
         }
         ui.modal = { type: 'summary', w: m.workout };
         render();
@@ -2350,7 +2297,7 @@
       }
       case 'sync-routine-none': {
         const m = ui.modal;
-        toast('האימון נשמר בהיסטוריה 📁', true);
+        toast('האימון נשמר בהיסטוריה', true);
         ui.modal = { type: 'summary', w: m.workout };
         render();
         break;
@@ -2626,7 +2573,7 @@
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-          toast('קובץ הגיבוי הורד בהצלחה! 📥', true);
+          toast('קובץ הגיבוי הורד', true);
         } catch (err) {
           toast('שגיאה בייצוא הגיבוי');
         }
@@ -2744,7 +2691,7 @@
             S = Object.assign(defaults(), parsed);
             save();
             render();
-            toast('הנתונים שוחזרו בהצלחה מהגיבוי! 🔄', true);
+            toast('הנתונים שוחזרו מהגיבוי', true);
           } else {
             toast('קובץ הגיבוי אינו תקין');
           }
@@ -2779,25 +2726,26 @@
     canvas.height = 1080 + w.exercises.length * 100;
     const ctx = canvas.getContext('2d');
     
-    // Deep obsidian background
-    ctx.fillStyle = '#060911';
+    /* QUIET share card: colours and fonts are read from the design tokens (a canvas cannot use var()) */
+    const css = getComputedStyle(document.documentElement);
+    const tok = n => css.getPropertyValue(n).trim();
+    const sans = tok('--font-sans') || 'sans-serif', mono = tok('--font-mono') || 'monospace';
+
+    ctx.fillStyle = tok('--color-bg');
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Header brand in electric blue
-    ctx.fillStyle = '#3b82f6';
-    ctx.font = 'italic 900 80px "Roboto Mono", sans-serif';
+
+    ctx.fillStyle = tok('--color-text');
+    ctx.font = '600 64px ' + mono;
     ctx.textAlign = 'center';
     ctx.fillText('BUILT DIFFERENT', canvas.width / 2, 140);
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '700 48px "Heebo", system-ui, sans-serif';
+
+    ctx.fillStyle = tok('--color-text');
+    ctx.font = '500 48px ' + sans;
     ctx.fillText('זמן אימון: ' + fmtClock(w.duration), canvas.width / 2, 250);
-    
-    ctx.fillStyle = '#10b981';
     ctx.fillText('נפח כולל: ' + fmtN(w.volume) + ' ק"ג', canvas.width / 2, 330);
-    
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '600 38px "Heebo", system-ui, sans-serif';
+
+    ctx.fillStyle = tok('--color-text-2');
+    ctx.font = '400 38px ' + sans;
     ctx.textAlign = 'right';
     let y = 470;
     w.exercises.forEach(e => {
