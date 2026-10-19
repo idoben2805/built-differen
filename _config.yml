@@ -1,0 +1,8 @@
+# GitHub Pages (Jekyll) build settings.
+# Dev-only files stay in the repo but are not published to the live site.
+exclude:
+  - styleguide.html
+  - design/
+  - scripts/
+  - AGENTS.md
+  - CLAUDE.md
