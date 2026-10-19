@@ -56,6 +56,11 @@
    Grid        .q-grid-2 (two equal columns, gap 8)
    TemplateCard .q-tpl (card, whole body = start) ; parts __main (button) __title __sub __meta __more (icon btn, top inline-end) __menu (.q-menu, absolute)
    WorkoutLog  .q-log (history card) ; parts __head __title __date __stats __stat __table-head __row __name __best ; modifiers .q-log__stat--pr (done colour)
+   ActiveWorkout .q-aw-top (sticky: .q-aw-bar [icon btn, __title, icon btn, finish btn, __menu] + .q-stat-row.q-stat-row--bleed) ; .q-aw-empty (+ __title __text, primary add) ; .q-aw-foot (add exercise + danger-ghost cancel)
+               hides header + bottom nav: .q-app.is-workout-active (class set in render(); nav DOM stays)
+   Exercise    .q-ex (+ --linked superset) ; parts __head (thumb + __text[__name .ltr, __sub, __meta (+ .q-badge)] + __more) __menu (.q-menu) __note (+ __note-input) __sets __add
+               <section class="q-ex"><div class="q-ex__head"><span class="q-thumb">..</span><div class="q-ex__text"><span class="q-ex__name ltr">Bench Press</span><span class="q-ex__sub">לחיצת חזה</span></div><button class="q-icon-btn q-ex__more">..</button></div><div class="q-set-head">..</div><div class="q-ex__sets">.q-set-row..</div><button class="q-btn q-btn--ghost q-btn--block q-ex__add">הוסף סט</button></section>
+               SetRow extras: .q-set-row__num is a button (set-type menu), .q-set-row__menu (.q-menu, absolute) ; StatCell extra: .q-stat-row--bleed (full width, borders top/bottom only)
    Layout      .q-screen (16 gutters) .q-stack .q-row .q-grow .q-between .q-wrap .q-gap-1..6 .q-section (gap 24)
    Text        .q-text-xs|sm|md|lg|xl|2xl (size+leading+weight) .q-muted (text-2) .q-faint (text-3, placeholder/disabled only) .q-link (accent)
    Icons       .q-icon-14 .q-icon-16 .q-icon-20 .q-icon-24 (size Lucide svg) ; .q-spin (loading spinner) ; .q-sr-only
@@ -68,7 +73,7 @@
 [class^="q-"]::after, [class*=" q-"]::after { box-sizing: border-box; }
 
 .q-btn, .q-icon-btn, .q-chip, .q-dropdown, .q-stepper__btn, .q-segmented__item, .q-nav__item,
-.q-set-row__check, .q-set-row__prev, .q-section-index button, .q-menu__item, .q-board__toggle,
+.q-set-row__check, .q-set-row__prev, .q-set-row__num, .q-section-index button, .q-menu__item, .q-board__toggle,
 .q-toast__action, .q-sheet__close, .q-section-header__action {
   font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0;
   cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent;
@@ -219,7 +224,7 @@
 /* ==========================================================================
    SetRow
    ========================================================================== */
-.q-set-head, .q-set-row { display: grid; grid-template-columns: 32px 1fr 72px 64px 44px; align-items: center; gap: var(--space-2); padding-inline: var(--space-2); }
+.q-set-head, .q-set-row { display: grid; grid-template-columns: 44px 1fr 72px 64px 44px; align-items: center; gap: var(--space-2); padding-inline: var(--space-2); }
 .q-set-head { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); text-align: center; }
 .q-set-head > :nth-child(2) { text-align: start; }
 .q-set-row {
@@ -227,7 +232,9 @@
   font-family: var(--font-mono); font-variant-numeric: tabular-nums;
   transition: background var(--motion-base) var(--ease-out);
 }
-.q-set-row__num { text-align: center; font-size: var(--text-sm); color: var(--color-text-2); }
+.q-set-row { position: relative; }
+.q-set-row__num { display: flex; align-items: center; justify-content: center; align-self: stretch; width: 100%; font: inherit; font-size: var(--text-sm); color: var(--color-text-2); }
+.q-set-row__menu { position: absolute; top: calc(100% - var(--space-2)); inset-inline-start: var(--space-2); z-index: 15; min-width: 0; width: max-content; font-family: var(--font-sans); }
 .q-set-row:focus-within .q-set-row__num { color: var(--color-text); }
 .q-set-row__prev { text-align: right; white-space: nowrap; font-family: inherit; font-size: var(--text-sm); color: var(--color-text-2); min-height: var(--size-hit); padding-inline: 0; }
 .q-set-row__input {
@@ -237,6 +244,8 @@
   font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-lg); line-height: var(--leading-lg);
   transition: background var(--motion-base) var(--ease-out), border-color var(--motion-fast) var(--ease-out);
 }
+.q-set-row__input { -moz-appearance: textfield; appearance: textfield; }
+.q-set-row__input::-webkit-outer-spin-button, .q-set-row__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .q-set-row__input::placeholder { color: var(--color-text-3); }
 .q-set-row__input:focus { border-color: var(--color-accent); }
 .q-set-row__check {
@@ -401,6 +410,7 @@
 .q-stat__value--xl { font-size: var(--text-xl); line-height: var(--leading-xl); }
 .q-stat__unit { font-size: var(--text-sm); color: var(--color-text-2); }
 .q-stat.is-empty .q-stat__value { color: var(--color-text-3); }
+.q-stat-row--bleed { grid-template-columns: 1.1fr 1fr 1fr; border-width: 1px 0; border-radius: 0; }
 .q-stat__dot, .q-mini-bar__dot { flex: none; width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--color-accent); }
 
 /* ==========================================================================
@@ -532,3 +542,37 @@
 .q-log__best svg { width: 14px; height: 14px; stroke-width: 2; color: var(--color-done); }
 .q-log { position: relative; }
 .q-log__menu { position: absolute; top: var(--size-hit); inset-inline-end: var(--space-2); z-index: 15; min-width: 0; width: max-content; }
+
+/* ==========================================================================
+   Active workout: top bar + stats, exercise block, empty state, footer
+   ========================================================================== */
+.q-app.is-workout-active .q-app-header, .q-app.is-workout-active .q-nav { display: none; }
+.q-app.is-workout-active .q-main { padding: 0 0 var(--space-6); }
+.q-aw-top { position: sticky; top: 0; z-index: 30; background: var(--color-bg); }
+.q-aw-bar { position: relative; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4) var(--space-2) var(--space-2); }
+.q-aw-bar__title { flex: 1; min-width: 0; font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+.q-aw-bar__menu { position: absolute; top: calc(100% - var(--space-2)); inset-inline-end: var(--space-4); z-index: 40; min-width: 0; width: max-content; }
+.q-aw-empty { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); padding: 64px var(--space-5) 0; text-align: center; }
+.q-aw-empty__title { font-size: var(--text-lg); line-height: var(--leading-lg); font-weight: var(--weight-light); }
+.q-aw-empty__text { max-width: 280px; margin-bottom: var(--space-4); font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); text-wrap: pretty; }
+.q-aw-foot { display: flex; flex-direction: column; align-items: stretch; gap: var(--space-2); padding: var(--space-5) var(--space-4) 0; }
+.q-aw-foot .q-btn--danger-ghost { align-self: center; }
+
+.q-ex { position: relative; display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.q-ex + .q-ex { border-top: 1px solid var(--color-border); }
+.q-ex--linked { box-shadow: inset 2px 0 0 var(--color-border-strong); }
+.q-ex__head { display: flex; align-items: center; gap: var(--space-3); padding-inline: var(--space-4); padding-bottom: var(--space-2); }
+.q-ex__text { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.q-ex__name { font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); overflow-wrap: anywhere; text-align: right; }
+.q-ex__sub { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); }
+.q-ex__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-ex__more { margin-inline-end: calc(var(--space-2) * -1); }
+.q-ex__menu { position: absolute; top: calc(var(--space-4) + var(--size-hit)); inset-inline-end: var(--space-4); z-index: 15; min-width: 0; width: max-content; }
+.q-ex__note { display: flex; align-items: center; gap: var(--space-2); padding-inline: var(--space-4); color: var(--color-text-2); }
+.q-ex__note svg { width: 16px; height: 16px; stroke-width: 2; flex: none; }
+.q-ex__note-input { flex: 1; min-width: 0; min-height: var(--size-hit); padding: 0; background: none; border: 0; outline: none; color: var(--color-text-2); font: inherit; font-size: var(--text-sm); }
+.q-ex__note-input::placeholder { color: var(--color-text-3); }
+.q-ex > .q-set-head { margin-inline: var(--space-2); }
+.q-ex__sets { display: flex; flex-direction: column; gap: var(--space-1); padding-inline: var(--space-2); }
+.q-ex__add { margin: var(--space-1) var(--space-4) 0; width: auto; background: var(--color-surface-1); }
+.q-ex__add:active { background: var(--color-surface-2); }

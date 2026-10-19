@@ -703,10 +703,7 @@
       s.touched = true;
       const b = bestFor(ex.exId, s);
       s.pr = s.type !== 'W' && b.any && num(s.kg) > 0 && (num(s.kg) > b.kg || e1rm(num(s.kg), num(s.reps)) > b.rm + 0.01);
-      if (s.pr) { 
-        const eObj = exById(ex.exId);
-        toast('🏆 שיא אישי! ' + (eObj ? (eObj.name || eObj.en) : ''), true); 
-      }
+      /* PR is shown as a trophy on the set row (QUIET: no toast while logging) */
     } else { s.done = false; s.pr = false; }
     save(); render();
   }
@@ -813,7 +810,9 @@
   }
 
   /* ---- Rest Timer ---- */
-  function startRest(sec) { ui.rest = { end: Date.now() + sec * 1000, total: sec, beeped: false }; renderRest(true); }
+  /* Rest timer is switched off by product decision (no bar, no countdown, no beep). Code and `restSeconds` stay; flip to true to bring it back. */
+  const REST_TIMER_ENABLED = false;
+  function startRest(sec) { if (!REST_TIMER_ENABLED) return; ui.rest = { end: Date.now() + sec * 1000, total: sec, beeped: false }; renderRest(true); }
   function stopRest() { ui.rest = null; renderRest(); }
   function beepRest() {
     try {
@@ -830,7 +829,7 @@
   }
   function renderRest(full) {
     const el = $('#rest-bar'); if (!el) return;
-    if (!ui.rest) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+    if (!REST_TIMER_ENABLED || !ui.rest) { el.classList.add('hidden'); el.innerHTML = ''; return; }
     el.classList.remove('hidden');
     if (full || !el.innerHTML) {
       el.innerHTML = `<div class="flex items-center justify-between gap-2">
@@ -903,6 +902,7 @@
   function render() {
     document.querySelectorAll('#nav button').forEach(b => { if (b.dataset.nav === ui.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
     renderHeader(); renderMiniBar();
+    const appEl = $('#app'); if (appEl) appEl.classList.toggle('is-workout-active', ui.tab === 'workout' && !!S.active);
     const sc = $('#screen');
     if (sc) {
       sc.innerHTML = { workout: viewWorkout, library: viewLibrary, nutrition: viewNutrition, progress: viewProgress }[ui.tab]();
@@ -935,87 +935,93 @@
         ${historyCards()}`;
     }
     const a = S.active;
-    return `<div class="card flex items-center justify-between sticky top-[62px] z-20">
-        <div><div class="text-[11px] muted font-bold">משך אימון</div><div id="wk-timer" class="text-2xl font-black tabular-nums" dir="ltr">${fmtClock((Date.now() - a.startedAt) / 1000)}</div></div>
-        <div class="text-center"><div class="text-[11px] muted font-bold">נפח כולל</div><div class="text-lg font-black text-emerald-400"><span id="vol-total">${fmtN(activeVolume())}</span> ק"ג</div></div>
-        <button class="btn btn-success" data-action="finish">סיים ושמור אימון</button>
-      </div>
-      ${a.exercises.map(exCard).join('')}
-      <button class="btn btn-primary btn-block mb-3" data-action="add-ex-open">+ הוסף תרגיל</button>
-      <div class="flex gap-2">
-        <button class="btn btn-ghost flex-1" data-action="save-routine">שמור כתבנית</button>
-        <button class="btn btn-danger flex-1" data-action="cancel-workout">בטל אימון</button>
+    const rid = a.sourceRoutineId || a.routineId;
+    const rt = rid ? S.routines.find(x => x.id === rid) : null;
+    const allSets = a.exercises.reduce((n, e) => n + e.sets.length, 0);
+    const doneSets = a.exercises.reduce((n, e) => n + e.sets.filter(s => s.done).length, 0);
+    const vol = activeVolume();
+    const hasEx = a.exercises.length > 0;
+    const wkMenuOpen = !!(ui.menu && ui.menu.wk);
+    const top = `<div class="q-aw-top">
+        <div class="q-aw-bar">
+          <button class="q-icon-btn" data-nav="${ui.prevTab || 'library'}" aria-label="מזער אימון"><i data-lucide="chevron-down"></i></button>
+          <span class="q-aw-bar__title">${rt ? rt.name : 'אימון ריק'}</span>
+          <button class="q-icon-btn" data-action="wk-menu" aria-label="עוד" aria-expanded="${wkMenuOpen}"><i data-lucide="ellipsis-vertical"></i></button>
+          <button class="q-btn q-btn--primary q-btn--compact" data-action="finish">סיים</button>
+          ${wkMenuOpen ? `<div class="q-menu q-aw-bar__menu"><button class="q-menu__item" data-action="save-routine"><i data-lucide="bookmark-plus"></i>שמור כתבנית</button></div>` : ''}
+        </div>
+        <div class="q-stat-row q-stat-row--bleed">
+          <div class="q-stat"><span class="q-stat__label"><span class="q-stat__dot"></span>זמן</span><span id="wk-timer" class="q-stat__value" dir="ltr">${fmtClock((Date.now() - a.startedAt) / 1000)}</span></div>
+          <div class="q-stat ${vol > 0 ? '' : 'is-empty'}"><span class="q-stat__label">נפח · ק״ג</span><span class="q-stat__value"><span id="vol-total">${fmtN(vol)}</span></span></div>
+          <div class="q-stat ${doneSets > 0 ? '' : 'is-empty'}"><span class="q-stat__label">סטים</span><span class="q-stat__value" dir="ltr"><span>${doneSets}</span>${allSets ? `<span class="q-stat__unit">/${allSets}</span>` : ''}</span></div>
+        </div>
+      </div>`;
+    const cancelBtn = `<button class="q-btn q-btn--danger-ghost" data-action="cancel-workout"><i data-lucide="x"></i>בטל אימון</button>`;
+    if (!hasEx) {
+      return `${top}<div class="q-aw-empty">
+          <span class="q-aw-empty__title">התרגיל הראשון</span>
+          <span class="q-aw-empty__text">בחר מתוך <span class="num">${EX.length}</span> תרגילים. אפשר להוסיף, להחליף ולסדר תוך כדי האימון.</span>
+          <button class="q-btn q-btn--primary q-btn--block" data-action="add-ex-open"><i data-lucide="plus"></i>הוסף תרגיל</button>
+        </div>
+        <div class="q-aw-foot">${cancelBtn}</div>`;
+    }
+    return `${top}${a.exercises.map(exCard).join('')}
+      <div class="q-aw-foot">
+        <button class="q-btn q-btn--secondary q-btn--block" data-action="add-ex-open"><i data-lucide="plus"></i>הוסף תרגיל</button>
+        ${cancelBtn}
       </div>`;
   }
 
   function exCard(e, ei) {
     const ex = exById(e.exId) || { name: 'Exercise', heName: 'תרגיל', en: 'Exercise', he: 'תרגיל', equipment: 'barbell', muscle: 'chest', pose: 'bench-press' };
-    const lastWk = lastWorkoutForEx(e.exId);
-    const lastBenchHTML = lastWk ? `
-      <div class="inline-flex items-center gap-1.5 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/25 px-2.5 py-1 rounded-lg font-bold mb-2">
-        <span class="text-slate-400">אימון קודם:</span>
-        <span class="text-white font-mono">${fmtN(lastWk.topSet.kg)} ק"ג × ${lastWk.topSet.reps}</span>
-        <span class="text-[10px] text-slate-500 font-normal">(${fmtDate(lastWk.date)})</span>
-      </div>
-    ` : `
-      <div class="inline-flex items-center gap-1 text-xs text-slate-500 bg-slate-900/60 border border-slate-800 px-2 py-0.5 rounded-lg mb-2">
-        <span>אימון קודם: —</span>
-      </div>
-    `;
-
+    const name = ex.name || ex.en || '';
+    const isLast = ei === S.active.exercises.length - 1;
     const isSuperset = !!e.superset || (ei > 0 && !!S.active.exercises[ei - 1].superset);
-    const supersetBadge = isSuperset ? `<span class="superset-badge">🔗 SUPERSET</span>` : '';
+    const menuOpen = !!(ui.menu && ui.menu.exm === ei);
+    const showNote = !!e.note || ui.noteEi === ei;
+    const meta = (MUSCLES[ex.muscle] ? MUSCLES[ex.muscle].he : ex.muscle) + (ex.equipment && EQUIP[ex.equipment] ? ' · ' + EQUIP[ex.equipment].he : '');
+    const TYPE_NAME = { N: 'סט רגיל', W: 'חימום', D: 'דרופ-סט', F: 'כשל' };
 
     const rows = e.sets.map((s, si) => {
       const p = prevSet(e.exId, si);
-      return `<div class="set-row set-grid ${s.done ? 'done' : ''}">
-        <div class="set-num-badge font-mono">${si + 1}</div>
-        <button class="prev-cell" data-action="use-prev" data-ei="${ei}" data-si="${si}">${prevLabel(p)}</button>
-        <div style="position:relative"><input type="number" inputmode="decimal" step="0.5" min="0" placeholder="${p ? p.kg : '0'}" value="${s.kg}" data-field="kg" data-ei="${ei}" data-si="${si}" /><button class="calc-btn" data-action="open-calc" data-ei="${ei}" data-si="${si}">🏋️</button></div>
-        <input type="number" inputmode="numeric" min="0" placeholder="${p ? p.reps : '0'}" value="${s.reps}" data-field="reps" data-ei="${ei}" data-si="${si}" />
-        <button class="check-btn" data-action="toggle-done" data-ei="${ei}" data-si="${si}"><i data-lucide="check"></i></button>
-        ${s.done && s.pr ? `<span class="live-pr">🏆 שיא אישי!</span>` : ''}
+      const type = s.type || 'N';
+      const setMenuOpen = !!(ui.menu && ui.menu.ei === ei && ui.menu.si === si);
+      return `<div class="q-set-row ${s.done ? 'is-done' : ''} ${s.done && s.pr ? 'is-pr' : ''}">
+        <button class="q-set-row__num" data-action="type-menu" data-ei="${ei}" data-si="${si}" aria-label="אפשרויות סט" aria-expanded="${setMenuOpen}">${type === 'N' ? si + 1 : type}</button>
+        <button class="q-set-row__prev ltr" data-action="use-prev" data-ei="${ei}" data-si="${si}">${prevLabel(p)}</button>
+        <input class="q-set-row__input" type="number" inputmode="decimal" step="0.5" min="0" placeholder="${p ? p.kg : '0'}" value="${s.kg}" data-field="kg" data-ei="${ei}" data-si="${si}" aria-label="ק״ג" />
+        <input class="q-set-row__input" type="number" inputmode="numeric" min="0" placeholder="${p ? p.reps : '0'}" value="${s.reps}" data-field="reps" data-ei="${ei}" data-si="${si}" aria-label="חזרות" />
+        <button class="q-set-row__check" data-action="toggle-done" data-ei="${ei}" data-si="${si}" aria-pressed="${!!s.done}" aria-label="סמן סט"><i data-lucide="check" class="q-set-row__icon q-set-row__icon--check"></i><i data-lucide="trophy" class="q-set-row__icon q-set-row__icon--pr"></i></button>
+        ${setMenuOpen ? `<div class="q-menu q-set-row__menu">
+          ${['N', 'W', 'D', 'F'].map(t => `<button class="q-menu__item" data-action="set-type" data-t="${t}" data-ei="${ei}" data-si="${si}" aria-selected="${type === t}">${TYPE_NAME[t]}</button>`).join('')}
+          <button class="q-menu__item" data-action="open-calc" data-ei="${ei}" data-si="${si}"><i data-lucide="calculator"></i>מחשבון פלטות</button>
+          ${e.sets.length > 1 ? `<button class="q-menu__item q-menu__item--danger" data-action="del-set" data-ei="${ei}" data-si="${si}"><i data-lucide="trash-2"></i>מחק סט</button>` : ''}
+        </div>` : ''}
       </div>`;
     }).join('');
 
-    const connectorHTML = (e.superset && ei < S.active.exercises.length - 1) ? '<div class="superset-connector"></div>' : '';
-
-    return `<div class="card ${isSuperset ? 'superset-card' : ''}">
-      <div class="flex items-start justify-between mb-2">
-        <div class="flex items-center gap-3 min-w-0 flex-1">
-          ${getExerciseSvg(ex)}
-          <div class="min-w-0 flex-1">
-            <div class="card-title text-base text-white truncate" dir="ltr" style="text-align: right;">${ex.name || ex.en}</div>
-            <div class="text-xs text-blue-400 font-semibold">${ex.heName || ex.he}</div>
-            <div class="text-[11px] muted">${MUSCLES[ex.muscle] ? MUSCLES[ex.muscle].he : ex.muscle}${ex.equipment && EQUIP[ex.equipment] ? ' · ' + EQUIP[ex.equipment].he : ''}</div>
-          </div>
+    return `<section class="q-ex ${isSuperset ? 'q-ex--linked' : ''}">
+      <div class="q-ex__head">
+        <span class="q-thumb"><span class="q-thumb__letter">${name.trim().charAt(0).toUpperCase()}</span></span>
+        <div class="q-ex__text">
+          <span class="q-ex__name ltr">${name}</span>
+          <span class="q-ex__sub">${ex.heName || ex.he || ''}</span>
+          <span class="q-ex__meta">${meta}${isSuperset ? `<span class="q-badge"><i data-lucide="link-2"></i>סופר-סט</span>` : ''}</span>
         </div>
-        <div class="flex gap-1.5 flex-shrink-0 items-center">
-          ${ei < S.active.exercises.length - 1 ? `
-            <button class="btn btn-ghost !py-1 !px-2 text-xs flex items-center gap-1 ${e.superset ? 'text-cyan-300 bg-cyan-500/20 border border-cyan-400 font-bold' : 'text-slate-400 border border-slate-800'}" data-action="toggle-superset" data-ei="${ei}" title="קשר לתרגיל הבא כסופר-סט">
-              <span>🔗</span> סופר-סט
-            </button>
-          ` : ''}
-          <button class="btn btn-ghost !py-1 !px-2 text-xs flex items-center gap-1 text-blue-400 border border-blue-500/20 font-bold" data-action="replace-ex-open" data-ei="${ei}" title="החלף תרגיל באותו שריר">
-            <span>🔄</span> החלף
-          </button>
-          <button class="btn btn-ghost !p-1.5 text-slate-400 hover:text-red-400" data-action="remove-ex" data-ei="${ei}" aria-label="מחק תרגיל">
-            <i data-lucide="trash-2" class="w-4 h-4 text-red-400"></i>
-          </button>
-        </div>
+        <button class="q-icon-btn q-ex__more" data-action="ex-menu" data-ei="${ei}" aria-label="עוד" aria-expanded="${menuOpen}"><i data-lucide="ellipsis-vertical"></i></button>
+        ${menuOpen ? `<div class="q-menu q-ex__menu">
+          ${!isLast ? `<button class="q-menu__item" data-action="toggle-superset" data-ei="${ei}"><i data-lucide="link-2"></i>${e.superset ? 'בטל סופר-סט' : 'סופר-סט עם התרגיל הבא'}</button>` : ''}
+          <button class="q-menu__item" data-action="replace-ex-open" data-ei="${ei}"><i data-lucide="repeat"></i>החלף תרגיל</button>
+          <button class="q-menu__item" data-action="ex-note" data-ei="${ei}"><i data-lucide="pin"></i>הערה קבועה</button>
+          ${e.sets.length > 1 ? `<button class="q-menu__item" data-action="del-last-set" data-ei="${ei}"><i data-lucide="minus"></i>מחק סט אחרון</button>` : ''}
+          <button class="q-menu__item q-menu__item--danger" data-action="remove-ex" data-ei="${ei}"><i data-lucide="trash-2"></i>הסר תרגיל</button>
+        </div>` : ''}
       </div>
-      <div class="flex items-center gap-2 mb-1">
-        ${lastBenchHTML}
-        ${supersetBadge}
-      </div>
-      <div class="mb-2"><input class="input text-xs !py-1 !px-2" placeholder="הערה קבועה לתרגיל..." data-field="note" data-ei="${ei}" value="${e.note || ''}" /></div>
-      <div class="set-grid set-head"><div>סט</div><div>אימון קודם</div><div>ק"ג</div><div>חזרות</div><div>✓</div></div>
-      ${rows}
-      <div class="flex gap-2 mt-2">
-        <button class="btn btn-block flex-1 !py-2" data-action="add-set" data-ei="${ei}">+ הוסף סט</button>
-        ${e.sets.length > 1 ? `<button class="btn btn-ghost !py-2 !px-3 text-red-400 border border-red-500/20 text-xs" data-action="del-last-set" data-ei="${ei}">מחק סט אחרון</button>` : ''}
-      </div>
-    </div>${connectorHTML}`;
+      ${showNote ? `<label class="q-ex__note"><i data-lucide="pin"></i><input class="q-ex__note-input" placeholder="הערה קבועה לתרגיל" data-field="note" data-ei="${ei}" value="${e.note || ''}" /></label>` : ''}
+      <div class="q-set-head"><span>סט</span><span>קודם</span><span>ק״ג</span><span>חזרות</span><span><i data-lucide="check"></i></span></div>
+      <div class="q-ex__sets">${rows}</div>
+      <button class="q-btn q-btn--ghost q-btn--block q-ex__add" data-action="add-set" data-ei="${ei}"><i data-lucide="plus"></i>הוסף סט</button>
+    </section>`;
   }
 
   function bestSetOf(e) {
@@ -2054,11 +2060,14 @@
   /* ============================ EVENTS ============================ */
   document.addEventListener('click', ev => {
     const t = ev.target.closest('[data-action],[data-nav]'); if (!t) { if (ui.menu) { ui.menu = null; render(); } return; }
-    if (t.dataset.nav) { ui.tab = t.dataset.nav; ui.menu = null; render(); window.scrollTo(0, 0); return; }
+    if (t.dataset.nav) { if (t.dataset.nav === 'workout' && ui.tab !== 'workout') ui.prevTab = ui.tab; ui.tab = t.dataset.nav; ui.menu = null; render(); window.scrollTo(0, 0); return; }
     const d = t.dataset, ei = +d.ei, si = +d.si;
-    if (ui.menu && ui.menu.mid && d.action !== 'item-menu') { ui.menu = null; render(); }
+    if (ui.menu && !['item-menu', 'type-menu', 'ex-menu', 'wk-menu'].includes(d.action)) { ui.menu = null; render(); }
     switch (d.action) {
       case 'item-menu': ui.menu = ui.menu && ui.menu.mid === d.id ? null : { mid: d.id }; render(); ev.stopPropagation(); break;
+      case 'ex-menu': ui.menu = ui.menu && ui.menu.exm === ei ? null : { exm: ei }; render(); ev.stopPropagation(); break;
+      case 'wk-menu': ui.menu = ui.menu && ui.menu.wk ? null : { wk: true }; render(); ev.stopPropagation(); break;
+      case 'ex-note': { ui.noteEi = ei; render(); const ni = document.querySelector('[data-field="note"][data-ei="' + ei + '"]'); if (ni) ni.focus(); break; }
       case 'start-empty': startWorkout([]); break;
       case 'start-routine': { 
         const r = S.routines.find(x => x.id === d.id); 
@@ -2082,7 +2091,7 @@
         S.active.exercises[ei].superset = !S.active.exercises[ei].superset;
         save();
         render();
-        toast(S.active.exercises[ei].superset ? 'סופר-סט חובר לתרגיל הבא 🔗' : 'חיבור סופר-סט בוטל');
+        toast(S.active.exercises[ei].superset ? 'סופר-סט חובר לתרגיל הבא' : 'חיבור סופר-סט בוטל');
         break;
       }
       case 'pick-muscle': ui.modal.mus = d.v; renderModal(); break;
@@ -2113,7 +2122,7 @@
             sets: newSets
           };
           const exNew = exById(d.id);
-          toast(`התרגיל הוחלף ל-${exNew ? (exNew.name || exNew.en) : ''} 🔄`, true);
+          toast(`התרגיל הוחלף ל-${exNew ? (exNew.name || exNew.en) : ''}`, true);
         } else {
           addExercise(d.id); 
         }

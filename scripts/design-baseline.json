@@ -1,10 +1,10 @@
 {
   "counts": {
-    "hard-coded-colors": 337,
-    "tailwind-colors": 190,
-    "emojis": 45,
-    "forced-overrides": 74,
-    "inline-styles": 22,
-    "raw-css-values": 54
+    "hard-coded-colors": 311,
+    "tailwind-colors": 161,
+    "emojis": 37,
+    "forced-overrides": 56,
+    "inline-styles": 20,
+    "raw-css-values": 35
   }
 }
