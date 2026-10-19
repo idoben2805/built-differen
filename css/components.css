@@ -49,6 +49,13 @@
    Toast       .q-toast-region > .q-toast (+ --action) ; parts __icon __text __action
    EmptyState  .q-empty ; parts __title __text __action
    Chart       .q-chart > svg ; classes for SVG children: __line __grid __bar (muted) __bar--current __band __label ; .q-chart svg width 100%
+   AppHeader   .q-app-header (sticky top bar) ; parts __logo (ltr, letter-spaced) __stats (mono) ; <header class="q-app-header"><span class="q-app-header__logo ltr">BUILT DIFFERENT</span><span class="q-app-header__stats" id="daily-badge"></span></header>
+   AppShell    .q-app (centered column, max 448) > .q-main (screen gutters + bottom room for nav/mini bar) ; .q-nav--fixed / .q-mini-bar--fixed stack at the bottom of the column
+   MiniWorkoutBar fixed: <button class="q-mini-bar q-mini-bar--fixed" data-nav="workout"><span class="q-mini-bar__dot"></span><span class="q-mini-bar__title">Push</span><span class="q-mini-bar__time num" id="mini-time">12:04</span><i data-lucide="chevron-up" class="q-mini-bar__chevron"></i></button>
+   ScreenTitle .q-screen-title (date line .q-screen-title__sub + xl title) ; <div class="q-screen-title"><span class="q-screen-title__sub">שני, 19 באוקטובר</span><h1 class="q-screen-title__text">אימון</h1></div>
+   Grid        .q-grid-2 (two equal columns, gap 8)
+   TemplateCard .q-tpl (card, whole body = start) ; parts __main (button) __title __sub __meta __more (icon btn, top inline-end) __menu (.q-menu, absolute)
+   WorkoutLog  .q-log (history card) ; parts __head __title __date __stats __stat __table-head __row __name __best ; modifiers .q-log__stat--pr (done colour)
    Layout      .q-screen (16 gutters) .q-stack .q-row .q-grow .q-between .q-wrap .q-gap-1..6 .q-section (gap 24)
    Text        .q-text-xs|sm|md|lg|xl|2xl (size+leading+weight) .q-muted (text-2) .q-faint (text-3, placeholder/disabled only) .q-link (accent)
    Icons       .q-icon-14 .q-icon-16 .q-icon-20 .q-icon-24 (size Lucide svg) ; .q-spin (loading spinner) ; .q-sr-only
@@ -472,3 +479,56 @@
   .q-spin { animation: none; }
   .q-overlay, .q-sheet, .q-dialog, .q-toast { animation: none; }
 }
+
+
+/* ==========================================================================
+   App shell: header, main, mini bar placement, screen title, grid
+   ========================================================================== */
+.q-app { margin-inline: auto; max-width: 448px; min-height: 100vh; position: relative; display: flex; flex-direction: column; }
+.q-app-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 60px; padding: var(--space-3) var(--space-4) var(--space-1); background: var(--color-bg); }
+.q-app-header__logo { font-size: var(--text-xs); line-height: var(--leading-xs); font-weight: var(--weight-semibold); letter-spacing: .22em; }
+.q-app-header__stats { display: flex; gap: var(--space-3); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-main { flex: 1; padding-inline: var(--space-4); padding-top: var(--space-2); padding-bottom: calc(var(--size-nav) + var(--size-button-lg) + var(--space-5) + var(--space-4)); }
+.q-nav--fixed { max-width: 448px; margin-inline: auto; }
+.q-mini-bar--fixed { position: fixed; inset-inline: 0; bottom: calc(var(--size-nav) + var(--space-2)); z-index: 25; max-width: 432px; margin-inline: auto; width: calc(100% - var(--space-4)); border: 0; font-family: inherit; text-align: start; cursor: pointer; }
+.q-mini-bar--fixed[hidden] { display: none; }
+.q-screen-title { display: flex; flex-direction: column; gap: var(--space-1); }
+.q-screen-title__sub { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); }
+.q-screen-title__text { margin: 0; font-size: var(--text-xl); line-height: var(--leading-xl); font-weight: var(--weight-regular); }
+.q-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.q-main ::selection, .q-app ::selection { background: var(--color-accent); color: var(--color-on-accent); }
+
+/* ==========================================================================
+   Template card (home): whole body starts the workout, rare actions in the menu
+   ========================================================================== */
+.q-tpl { position: relative; padding: 0; gap: 0; min-height: 120px; }
+.q-tpl__main { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); flex: 1; width: 100%; min-height: 120px; padding: var(--space-3) var(--space-4) var(--space-4); padding-inline-end: var(--space-6); border: 0; border-radius: var(--radius-md); background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; transition: background var(--motion-fast) var(--ease-out); -webkit-tap-highlight-color: transparent; }
+.q-tpl__main:active { background: var(--color-surface-2); }
+.q-tpl__main:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.q-tpl__title { font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+.q-tpl__sub { flex: 1; font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-tpl__meta { display: flex; align-items: center; gap: var(--space-1); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-tpl__meta svg { width: 14px; height: 14px; stroke-width: 2; flex: none; }
+.q-tpl__more { position: absolute; top: var(--space-1); inset-inline-end: var(--space-1); }
+.q-tpl__menu { position: absolute; top: calc(var(--size-hit) + var(--space-1)); inset-inline-end: var(--space-1); z-index: 15; min-width: 0; width: max-content; }
+
+/* ==========================================================================
+   Workout log card (home history)
+   ========================================================================== */
+.q-log { gap: var(--space-3); }
+.q-log__head { display: flex; align-items: flex-start; gap: var(--space-2); }
+.q-log__title { flex: 1; min-width: 0; font-size: var(--text-md); line-height: var(--leading-md); font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+.q-log__date { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); white-space: nowrap; }
+.q-log__more { margin-block: calc(var(--space-2) * -1); margin-inline-end: calc(var(--space-3) * -1); }
+.q-log__stats { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-text-2); }
+.q-log__stat { display: flex; align-items: center; gap: 6px; }
+.q-log__stat svg { width: 16px; height: 16px; stroke-width: 2; flex: none; }
+.q-log__stat--pr { color: var(--color-done); }
+.q-log__table { display: flex; flex-direction: column; padding-top: var(--space-2); border-top: 1px solid var(--color-border); }
+.q-log__table-head { display: flex; justify-content: space-between; gap: var(--space-2); padding-bottom: var(--space-1); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-text-2); }
+.q-log__row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); min-height: 32px; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.q-log__name { min-width: 0; overflow-wrap: anywhere; }
+.q-log__best { display: flex; align-items: center; gap: 6px; flex: none; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.q-log__best svg { width: 14px; height: 14px; stroke-width: 2; color: var(--color-done); }
+.q-log { position: relative; }
+.q-log__menu { position: absolute; top: var(--size-hit); inset-inline-end: var(--space-2); z-index: 15; min-width: 0; width: max-content; }

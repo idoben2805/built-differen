@@ -20,28 +20,27 @@
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="bg-[#060911] text-slate-100 selection:bg-blue-600 selection:text-white">
-  <div id="app" class="mx-auto max-w-md min-h-screen relative flex flex-col">
-    <!-- Branding header -->
-    <header class="app-header sticky top-0 z-30 px-4 pt-3 pb-3 flex items-center justify-between">
-      <div class="leading-none">
-        <div class="logo">BUILT <span class="text-blue-500">DIFFERENT</span></div>
-        <div class="text-[10px] tracking-[0.3em] text-slate-500 mt-1">NO EXCUSES · JUST WORK</div>
-      </div>
-      <div id="daily-badge" class="daily-badge"></div>
+<body>
+  <div id="app" class="q-app">
+    <header class="q-app-header">
+      <span class="q-app-header__logo ltr">BUILT DIFFERENT</span>
+      <span id="daily-badge" class="q-app-header__stats"></span>
     </header>
 
-    <main id="screen" class="flex-1 px-3 pb-44 pt-2"></main>
+    <main id="screen" class="q-main"></main>
 
     <!-- Floating rest timer -->
     <div id="rest-bar" class="rest-bar hidden"></div>
 
+    <!-- Mini workout bar: shown only when a workout is active and the tab is not "workout" -->
+    <button id="mini-bar" class="q-mini-bar q-mini-bar--float q-mini-bar--fixed" data-nav="workout" hidden></button>
+
     <!-- Bottom navigation -->
-    <nav id="nav" class="bottom-nav">
-      <button data-nav="workout"><i data-lucide="dumbbell"></i><span>אימון</span></button>
-      <button data-nav="library"><i data-lucide="library"></i><span>ספרייה</span></button>
-      <button data-nav="nutrition"><i data-lucide="apple"></i><span>תזונה</span></button>
-      <button data-nav="progress"><i data-lucide="line-chart"></i><span>מעקב</span></button>
+    <nav id="nav" class="q-nav q-nav--fixed">
+      <button class="q-nav__item" data-nav="workout"><i data-lucide="dumbbell"></i><span>אימון</span></button>
+      <button class="q-nav__item" data-nav="library"><i data-lucide="library-big"></i><span>ספרייה</span></button>
+      <button class="q-nav__item" data-nav="nutrition"><i data-lucide="apple"></i><span>תזונה</span></button>
+      <button class="q-nav__item" data-nav="progress"><i data-lucide="chart-line"></i><span>מעקב</span></button>
     </nav>
 
     <div id="modal"></div>

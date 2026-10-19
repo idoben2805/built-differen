@@ -860,6 +860,8 @@
     if (ui.rest) renderRest();
     const t = $('#wk-timer');
     if (t && S.active) t.textContent = fmtClock((Date.now() - S.active.startedAt) / 1000);
+    const mt = $('#mini-time');
+    if (mt && S.active) mt.textContent = fmtClock((Date.now() - S.active.startedAt) / 1000);
   }, 250);
 
   /* ============================ NUTRITION ============================ */
@@ -880,14 +882,27 @@
     const g = getGoals(d);
     const el = $('#daily-badge');
     if (el) {
-      el.innerHTML = `<b>${Math.round(t.kcal)}</b> / ${g.kcal || 2000} קק"ל<br>נפח היום: ${Math.round(activeVolume() || todayVolume())} ק"ג`;
+      const kcal = Math.round(t.kcal), vol = Math.round(activeVolume() || todayVolume());
+      el.innerHTML = (kcal > 0 ? `<span><span class="num">${fmtN(kcal)}</span> קק״ל</span>` : '') +
+        (vol > 0 ? `<span><span class="num">${fmtN(vol)}</span> ק״ג</span>` : '');
     }
   }
   function todayVolume() { const k = todayKey(); return S.history.filter(w => w.date.slice(0, 10) === k || new Date(w.date).toDateString() === new Date().toDateString()).reduce((a, w) => a + w.volume, 0); }
 
+  function renderMiniBar() {
+    const el = $('#mini-bar'); if (!el) return;
+    if (!S.active || ui.tab === 'workout') { el.hidden = true; el.innerHTML = ''; return; }
+    const rid = S.active.sourceRoutineId || S.active.routineId;
+    const r = rid ? S.routines.find(x => x.id === rid) : null;
+    el.hidden = false;
+    el.innerHTML = `<span class="q-mini-bar__dot"></span><span class="q-mini-bar__title">${r ? r.name : 'אימון ריק'}</span>` +
+      `<span id="mini-time" class="q-mini-bar__time">${fmtClock((Date.now() - S.active.startedAt) / 1000)}</span>` +
+      `<i data-lucide="chevron-up" class="q-mini-bar__chevron"></i>`;
+  }
+
   function render() {
-    document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.nav === ui.tab));
-    renderHeader();
+    document.querySelectorAll('#nav button').forEach(b => { if (b.dataset.nav === ui.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    renderHeader(); renderMiniBar();
     const sc = $('#screen');
     if (sc) {
       sc.innerHTML = { workout: viewWorkout, library: viewLibrary, nutrition: viewNutrition, progress: viewProgress }[ui.tab]();
@@ -900,18 +915,24 @@
 
   function viewWorkout() {
     if (!S.active) {
-      return `<div class="card text-center py-6">
-          <div class="text-5xl mb-2">💪</div>
-          <div class="text-2xl font-black italic">מוכן להתאמץ?</div>
-        <button class="btn btn-primary btn-block text-lg mt-3" data-action="start-empty">התחל אימון ריק</button>
-      </div>
-      <div class="flex items-center justify-between mb-2">
-        <div class="card-title text-lg">התבניות שלי</div>
-        <button class="btn btn-ghost !py-1 text-sm" data-action="new-routine">+ תבנית חדשה</button>
-      </div>
-      ${S.routines.length ? S.routines.map(routineCard).join('') : '<div class="card muted text-sm text-center">אין תבניות עדיין. לחץ על "+ תבנית חדשה".</div>'}
-      <div class="card-title text-lg mt-4 mb-2">היסטוריית אימונים</div>
-      ${historyCards()}`;
+      const today = new Date().toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
+      const tplHeader = S.routines.length
+        ? `<div class="q-section-header"><span class="q-section-header__title">תבניות · <span class="num">${S.routines.length}</span></span>
+            <button class="q-section-header__action q-row q-gap-1" data-action="new-routine"><i data-lucide="plus"></i>חדשה</button></div>`
+        : `<div class="q-section-header"><span class="q-section-header__title">תבניות</span></div>`;
+      const tplBody = S.routines.length
+        ? `<div class="q-grid-2">${S.routines.map(homeRoutineCard).join('')}</div>`
+        : `<div class="q-empty"><i data-lucide="layout-list" class="q-icon-24 q-muted"></i>
+            <span class="q-empty__title">עוד אין תבניות</span>
+            <span class="q-empty__text">תבנית שומרת את התרגילים והסטים שלך. בפעם הבאה מתחילים בלחיצה אחת.</span>
+            <button class="q-btn q-btn--secondary q-empty__action" data-action="new-routine">צור תבנית</button></div>`;
+      return `<div class="q-stack q-gap-4">
+          <div class="q-screen-title"><span class="q-screen-title__sub">${today}</span><h1 class="q-screen-title__text">אימון</h1></div>
+          <button class="q-btn q-btn--primary q-btn--block" data-action="start-empty"><i data-lucide="plus"></i>התחל אימון ריק</button>
+        </div>
+        ${tplHeader}${tplBody}
+        <div class="q-section-header"><span class="q-section-header__title">היסטוריה</span></div>
+        ${historyCards()}`;
     }
     const a = S.active;
     return `<div class="card flex items-center justify-between sticky top-[62px] z-20">
@@ -997,18 +1018,37 @@
     </div>${connectorHTML}`;
   }
 
+  function bestSetOf(e) {
+    let best = null;
+    e.sets.forEach(s => { if (s.type === 'W') return; if (!best || s.kg > best.kg || (s.kg === best.kg && s.reps > best.reps)) best = s; });
+    return best || e.sets[0];
+  }
   function historyCards() {
-    if (!S.history.length) return '<div class="card muted text-sm text-center">עדיין אין אימונים שמורים. סיים אימון כדי לראות אותו כאן.</div>';
-    return S.history.slice(0, 20).map(w => `<div class="card">
-      <div class="flex items-center justify-between">
-        <div class="card-title text-sm">${w.name ? w.name : 'אימון חופשי'} · ${new Date(w.date).toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
-        <button class="btn btn-ghost !p-1" data-action="del-workout" data-id="${w.id}" aria-label="מחק אימון">🗑️</button>
+    if (!S.history.length) return '<p class="q-muted">האימון הראשון שתשמור יופיע כאן.</p>';
+    return `<div class="q-stack q-gap-2">` + S.history.slice(0, 20).map(w => {
+      const open = !!(ui.menu && ui.menu.mid === w.id);
+      return `<div class="q-card q-log">
+      <div class="q-log__head">
+        <span class="q-log__title">${w.name ? w.name : 'אימון חופשי'}</span>
+        <span class="q-log__date">${new Date(w.date).toLocaleDateString('he-IL', { day: 'numeric', month: 'short' })}</span>
+        <button class="q-icon-btn q-log__more" data-action="item-menu" data-id="${w.id}" aria-label="עוד" aria-expanded="${open}"><i data-lucide="ellipsis-vertical"></i></button>
       </div>
-      <div class="flex gap-3 text-sm my-1"><span>⏱️ ${fmtClock(w.duration)}</span><span>🏋️ ${fmtN(w.volume)} ק"ג</span>${w.prs ? `<span class="pr-badge" style="align-self:center">🏆 ${w.prs} שיאים</span>` : ''}</div>
-      <div class="text-[11px] muted">${w.exercises.map(e => {
-        const ex = exById(e.exId);
-        return `${ex ? (ex.name || ex.en) : '?'} (${e.sets.length})`;
-      }).join(' · ')}</div></div>`).join('');
+      ${open ? `<div class="q-menu q-log__menu"><button class="q-menu__item q-menu__item--danger" data-action="del-workout" data-id="${w.id}"><i data-lucide="trash-2"></i>מחק אימון</button></div>` : ''}
+      <div class="q-log__stats">
+        <span class="q-log__stat"><i data-lucide="clock"></i><span class="num">${fmtClock(w.duration)}</span></span>
+        <span class="q-log__stat"><i data-lucide="weight"></i><span><span class="num">${fmtN(w.volume)}</span> ק״ג</span></span>
+        ${w.prs ? `<span class="q-log__stat q-log__stat--pr"><i data-lucide="trophy"></i><span><span class="num">${w.prs}</span> שיאים</span></span>` : ''}
+      </div>
+      <div class="q-log__table">
+        <div class="q-log__table-head"><span>תרגיל</span><span>הסט הטוב · ק״ג × חזרות</span></div>
+        ${w.exercises.map(e => {
+          const ex = exById(e.exId), b = bestSetOf(e), isPr = e.sets.some(s => s.pr);
+          const best = b ? (b.kg > 0 ? `${fmtN(b.kg)} × ${b.reps}` : `${b.reps} חזרות`) : '';
+          return `<div class="q-log__row"><span class="q-log__name ltr">${ex ? (ex.name || ex.en) : '?'}</span>
+            <span class="q-log__best ltr">${isPr ? '<i data-lucide="trophy"></i>' : ''}<span>${best}</span></span></div>`;
+        }).join('')}
+      </div></div>`;
+    }).join('') + `</div>`;
   }
 
   /* ---- Library & Routines ---- */
@@ -1042,6 +1082,26 @@
       </div>
       <button class="btn btn-ghost" data-action="${action}" data-id="${e.id}">${btnLabel}</button>
     </div>`).join('');
+  }
+
+  function homeRoutineCard(r) {
+    const exercises = normalizeRoutineExercises(r);
+    const muscles = [];
+    exercises.forEach(item => { const ex = exById(item.exId); const m = ex && MUSCLES[ex.muscle] ? MUSCLES[ex.muscle].he : ''; if (m && !muscles.includes(m)) muscles.push(m); });
+    const last = S.history.find(w => w.name === r.name);
+    const open = !!(ui.menu && ui.menu.mid === r.id);
+    return `<div class="q-card q-tpl">
+      <button class="q-tpl__main" data-action="start-routine" data-id="${r.id}">
+        <span class="q-tpl__title">${r.name}</span>
+        <span class="q-tpl__sub">${muscles.join(' · ')}</span>
+        ${last ? `<span class="q-tpl__meta"><i data-lucide="history"></i>${fmtDate(last.date)}</span>` : `<span class="q-tpl__meta"><span class="num">${exercises.length}</span> תרגילים</span>`}
+      </button>
+      <button class="q-icon-btn q-tpl__more" data-action="item-menu" data-id="${r.id}" aria-label="עוד" aria-expanded="${open}"><i data-lucide="ellipsis-vertical"></i></button>
+      ${open ? `<div class="q-menu q-tpl__menu">
+        <button class="q-menu__item" data-action="edit-routine" data-id="${r.id}"><i data-lucide="pencil"></i>ערוך</button>
+        <button class="q-menu__item q-menu__item--danger" data-action="del-routine" data-id="${r.id}"><i data-lucide="trash-2"></i>מחק</button>
+      </div>` : ''}
+    </div>`;
   }
 
   function routineCard(r) {
@@ -1996,7 +2056,9 @@
     const t = ev.target.closest('[data-action],[data-nav]'); if (!t) { if (ui.menu) { ui.menu = null; render(); } return; }
     if (t.dataset.nav) { ui.tab = t.dataset.nav; ui.menu = null; render(); window.scrollTo(0, 0); return; }
     const d = t.dataset, ei = +d.ei, si = +d.si;
+    if (ui.menu && ui.menu.mid && d.action !== 'item-menu') { ui.menu = null; render(); }
     switch (d.action) {
+      case 'item-menu': ui.menu = ui.menu && ui.menu.mid === d.id ? null : { mid: d.id }; render(); ev.stopPropagation(); break;
       case 'start-empty': startWorkout([]); break;
       case 'start-routine': { 
         const r = S.routines.find(x => x.id === d.id); 
