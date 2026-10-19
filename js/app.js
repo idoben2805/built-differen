@@ -2290,8 +2290,12 @@
     } else if (t.id === 'auto-macro-weight') {
       updateMacroCalcDisplay();
     } else if (d.cf) { 
-      ui.modal.cf[d.cf] = t.value; 
-      if (ui.modal.type === 'plateCalc') renderModal(); 
+      if (ui.modal.type === 'plateCalc') {
+        ui.modal[d.cf] = t.value;
+        renderModal();
+        const nf = document.querySelector('[data-cf="' + d.cf + '"]');
+        if (nf) { nf.focus(); try { nf.setSelectionRange(nf.value.length, nf.value.length); } catch (e) {} }
+      } else ui.modal.cf[d.cf] = t.value;
     } else if (t.id === 'routine-name') { 
       ui.modal.name = t.value; 
     } else if (t.id === 'routine-edit-name') { 
@@ -2329,7 +2333,7 @@
       const fp = $('#food-preview'); if (fp) fp.innerHTML = foodPreview(); syncFoodCta();
     } else if (ev.target.id === 'auto-macro-weight') {
       updateMacroCalcDisplay();
-    } else if (ev.target.dataset.cf) {
+    } else if (ev.target.dataset.cf && ui.modal.cf) {
       ui.modal.cf[ev.target.dataset.cf] = ev.target.value;
     }
   });
